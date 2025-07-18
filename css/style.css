@@ -1,0 +1,279 @@
+/* 🔄 Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🌌 Estilo global */
+body {
+  font-family: "Raleway", sans-serif;
+  height: 100vh;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(
+    135deg,
+    #1e2a44,
+    #0f1a2e
+  ); /* Azul elegante oscuro */
+  color: #f0f0f0; /* Blanco suave para texto general */
+}
+
+/* 🧭 Contenedor externo centrado */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: linear-gradient(
+    135deg,
+    #1e2a44,
+    #0f1a2e
+  ); /* Azul elegante oscuro */
+  overflow-y: auto;
+  position: relative;
+}
+.wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(14, 22, 46, 0.7),
+    rgba(30, 42, 68, 0.9)
+  ); /* Capa azul más oscuro */
+  z-index: 0;
+}
+
+/* 💼 Tarjeta de contenido central */
+.box {
+  width: 100%;
+  max-width: 650px;
+  padding: 35px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  align-self: center;
+  background: linear-gradient(
+    135deg,
+    #2a4066,
+    #1e2e4a
+  ); /* Azul oscuro con gradiente */
+  border: 2px solid #d4af37; /* Borde dorado */
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.6); /* Sombra nítida */
+  clip-path: polygon(
+    15px 0,
+    100% 0,
+    100% calc(100% - 15px),
+    calc(100% - 15px) 100%,
+    0 100%,
+    0 15px
+  ); /* Esquinas cortadas solo diagonales */
+  z-index: 1;
+  margin-bottom: 30px;
+}
+
+/* 🏷️ Título principal */
+h1 {
+  font-family: "Archivo Black", sans-serif;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  color: #d4af37; /* Dorado para el título */
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  text-shadow: none; /* Sin efectos */
+}
+
+/* 📝 Contenedor de texto con alto fijo */
+.texto-contenedor {
+  height: 350px; /* Alto fijo ajustado para #final */
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(
+    135deg,
+    #2a4066,
+    #1e2e4a
+  ); /* Azul oscuro con gradiente */
+  clip-path: polygon(
+    15px 0,
+    100% 0,
+    100% calc(100% - 15px),
+    calc(100% - 15px) 100%,
+    0 100%,
+    0 15px
+  ); /* Esquinas cortadas solo diagonales */
+}
+
+/* 📝 Texto principal */
+p {
+  padding: 5px;
+  font-size: 1.1rem;
+  text-align: center;
+  line-height: 1.7;
+  width: 100%;
+  color: #f0f0f0; /* Blanco suave para texto */
+  text-shadow: none; /* Sin efectos */
+}
+
+/* Estilo específico para el monto */
+#final p {
+  position: relative;
+}
+
+#final p span.monto {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #d4af37; /* Dorado para el monto */
+  text-shadow: none; /* Sin efectos */
+}
+
+/* 🎯 Botón refinado */
+button {
+  background: linear-gradient(135deg, #d4af37, #c0a062); /* Gradiente dorado */
+  border: 2px solid #d4af37; /* Borde dorado */
+  color: #1e2a44; /* Azul oscuro para texto */
+  padding: 14px 32px;
+  font-family: "Raleway", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: polygon(
+    15px 0,
+    100% 0,
+    100% calc(100% - 15px),
+    calc(100% - 15px) 100%,
+    0 100%,
+    0 15px
+  ); /* Esquinas cortadas solo diagonales */
+  box-shadow: none; /* Sin sombra */
+  transition: none; /* Sin animaciones */
+}
+
+/* 🔤 Campo de texto */
+input[type="text"] {
+  width: 100%;
+  padding: 14px 20px;
+  margin: 15px 0;
+  font-size: 1.1rem;
+  font-family: "Raleway", sans-serif;
+  font-weight: 400;
+  background: linear-gradient(
+    135deg,
+    #2a4066,
+    #1e2e4a
+  ); /* Azul oscuro con gradiente */
+  border: 2px solid #d4af37; /* Borde dorado */
+  color: #f0f0f0; /* Texto blanco */
+  outline: none;
+  text-align: center;
+  clip-path: polygon(
+    15px 0,
+    100% 0,
+    100% calc(100% - 15px),
+    calc(100% - 15px) 100%,
+    0 100%,
+    0 15px
+  ); /* Esquinas cortadas solo diagonales */
+  box-shadow: none; /* Sin sombra */
+  transition: none; /* Sin animaciones */
+}
+
+input[type="text"]::placeholder {
+  color: #d4af37; /* Dorado para el placeholder */
+  letter-spacing: 0.5px;
+  opacity: 1; /* Visible */
+}
+
+input[type="text"]:focus {
+  border-color: #c0a062; /* Dorado más oscuro al enfocar */
+  background: linear-gradient(
+    135deg,
+    #2a4066,
+    #1e2e4a
+  ); /* Sin cambio de fondo */
+  box-shadow: none; /* Sin sombra */
+}
+
+/* 📱 Responsivo */
+@media (max-width: 768px) {
+  .box {
+    max-width: 90%;
+    padding: 25px;
+  }
+
+  .texto-contenedor {
+    height: 300px; /* Ajuste para pantallas medianas */
+  }
+}
+
+@media (max-width: 400px) {
+  .box {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  button {
+    font-size: 1rem;
+    padding: 12px 24px;
+  }
+
+  .texto-contenedor {
+    height: 250px; /* Ajuste para pantallas pequeñas */
+  }
+
+  #final p span.monto {
+    font-size: 1.5rem; /* Ajuste para pantallas pequeñas */
+  }
+}
+
+/* ❗ Mensaje de error */
+.mensaje-error {
+  font-size: 1rem;
+  color: #d4af37; /* Dorado para errores */
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  min-height: 50px;
+  transition: none; /* Sin animaciones */
+  text-shadow: none; /* Sin efectos */
+}
+
+/* 📦 Contenedor del título */
+.contenedor-titulo {
+  width: 100%;
+  text-align: center;
+}
+
+/* 🔘 Contenedor del botón */
+.boton {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* 📏 Separador premium */
+.separador {
+  width: 50%;
+  border-top: 2px solid #d4af37; /* Línea dorada */
+  margin: 25px auto;
+  box-shadow: none; /* Sin sombra */
+}

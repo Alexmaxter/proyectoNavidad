@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regalo Misterioso</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Lora:ital,wght@0,400..700;1,400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Introducción -->
+      <div class="box" id="intro">
+        <h1 class="contenedor-titulo">¡Bienvenido Valentino!</h1>
+        <div class="separador"></div>
+        <p>
+          Todo lo que realmente importa arranca de a poco, casi sin que lo
+          notes.<br />
+          Imaginate una bola de nieve que empieza a rodar sin que nadie la
+          vea.<br />
+          Y este es uno de esos momentos épicos donde todo comienza. ¡Dale el
+          primer paso y descubrí lo que te espera!
+        </p>
+        <div class="separador"></div>
+
+        <div class="boton">
+          <button onclick="mostrarAcertijo(1)">Comenzar</button>
+        </div>
+      </div>
+
+      <!-- Acertijo 1 -->
+      <div class="box" id="acertijo1" style="display: none">
+        <h1>Está en tus manos</h1>
+        <div class="separador"></div>
+        <p>
+          Algunos la esquivan sin darse cuenta. Otros la agarran como si fuera
+          liviana. A veces no está clara, pero siempre tiene peso. Nadie te
+          obliga a llevarla, y sin embargo, ya es tuya.
+          <br />
+
+          Cuando elegís, aparece. No se aplaude. No se festeja. Pero lo que
+          venga… va a depender de cómo la llevaste.
+        </p>
+        <div class="separador"></div>
+        <input type="text" id="respuesta1" placeholder="Tu respuesta..." />
+        <p class="mensaje-error" id="error1"></p>
+
+        <div class="boton">
+          <button onclick="validarAcertijo(1)">Enviar</button>
+        </div>
+      </div>
+
+      <!-- Acertijo 2 -->
+      <div class="box" id="acertijo2" style="display: none">
+        <h1>Lo que nunca vuelve</h1>
+        <div class="separador"></div>
+        <p>
+          Una bola de nieve no crece si la frenás. Lo que le da fuerza es la
+          distancia que avanza, el terreno que recorre. Si la dejás rodar, se
+          transforma.
+          <br />
+          <br />
+          Pero cada segundo que pasa sin impulso, es parte del resultado. No lo
+          ves al inicio, pero el final lo revela.
+        </p>
+        <div class="separador"></div>
+        <input type="text" id="respuesta2" placeholder="Tu respuesta..." />
+        <p class="mensaje-error" id="error2"></p>
+
+        <div class="boton">
+          <button onclick="validarAcertijo(2)">Enviar</button>
+        </div>
+      </div>
+
+      <!-- Acertijo 3 -->
+      <div class="box" id="acertijo3" style="display: none">
+        <h1>Esperar también es avanzar</h1>
+        <div class="separador"></div>
+        <p>
+          Algunos la empujan por ansiedad y terminan rompiéndola. Otros
+          simplemente la dejan rodar. Confían en que el terreno hará su trabajo.
+          No buscan atajos, no se desesperan.
+          <br />
+          <br />
+          Y al final, la bola de nieve crece más por lo que no se hizo que por
+          lo que se apuró.
+        </p>
+        <div class="separador"></div>
+        <input type="text" id="respuesta3" placeholder="Tu respuesta..." />
+        <p class="mensaje-error" id="error3"></p>
+
+        <div class="boton">
+          <button onclick="validarAcertijo(3)">Enviar</button>
+        </div>
+      </div>
+
+      <!-- Final -->
+      <div class="box" id="final" style="display: none">
+        <h1>¡Felicitaciones!</h1>
+        <div class="separador"></div>
+        <p>
+          No es un objeto. No se envuelve, no hace ruido al abrirse. No se
+          rompe… ni se puede perder. O sí... Porque lo que vale también puede
+          desaparecer si no se cuida. <br />Son
+          <span class="monto">150.000</span>. Solo tuyos. Desde hoy podés
+          decidir qué hacer con el regalo pero no puedes usarlo.
+          <br />
+          Con responsabilidad: tus decisiones empiezan ahora, aunque los
+          resultados lleguen después. Con paciencia, vas a entender que lo que
+          no se toca aún… también puede crecer. <br />Y con tiempo, lo que hoy
+          parece pequeño puede volverse algo más grande. Como una bola de nieve
+          que empieza a girar sin hacer ruido, lo importante no es cuánto mide
+          al principio, sino cómo la guiás mientras avanza. Si no la frenás, si
+          no la apurás, si la dejás rodar con constancia, va sumando peso,
+          sentido y valor.
+          <br />
+          <br />
+          Hasta que cumplas 18, va a estar bajo custodia🔒.
+          <br />
+          <br />
+          Intacto.
+        </p>
+
+        <div class="separador"></div>
+      </div>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
