@@ -9,7 +9,7 @@
 body {
   font-family: "Raleway", sans-serif;
   height: 100vh;
-  background: linear-gradient(135deg, #1e2a44, #0f1a2e);
+  background: linear-gradient(135deg, #1e2a44 0%, #0f1a2e 50%, #1e2a44 100%);
   color: #f0f0f0;
   -webkit-font-smoothing: antialiased;
 }
@@ -21,7 +21,7 @@ body {
   align-items: center;
   min-height: 100vh;
   padding: 40px 20px;
-  background: linear-gradient(135deg, #1e2a44, #0f1a2e);
+  background: linear-gradient(135deg, #1e2a44 0%, #0f1a2e 50%, #1e2a44 100%);
   overflow-y: auto;
   position: relative;
 }
@@ -35,8 +35,9 @@ body {
   height: 100%;
   background: linear-gradient(
     135deg,
-    rgba(14, 22, 46, 0.7),
-    rgba(30, 42, 68, 0.9)
+    rgba(14, 22, 46, 0.7) 0%,
+    rgba(30, 42, 68, 0.9) 50%,
+    rgba(14, 22, 46, 0.7) 100%
   );
   z-index: 0;
 }
@@ -50,7 +51,7 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background: linear-gradient(135deg, #2a4066, #1e2e4a);
+  background: linear-gradient(135deg, #2a4066 0%, #1e2e4a 50%, #2a4066 100%);
   border: 2px solid #d4af37;
   box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.6);
   clip-path: polygon(
@@ -143,7 +144,7 @@ input[type="text"] {
   margin: 15px 0;
   font-size: 1.1rem;
   font-family: "Raleway", sans-serif;
-  background: linear-gradient(135deg, #2a4066, #1e2e4a);
+  background: linear-gradient(135deg, #2a4066 0%, #1e2e4a 50%, #2a4066 100%);
   border: 2px solid #d4af37;
   color: #f0f0f0;
   outline: none;
@@ -183,7 +184,7 @@ input[type="text"]:focus {
   width: 100%;
   max-width: 600px;
   padding: 35px;
-  background: linear-gradient(135deg, #2a4066, #1e2e4a);
+  background: linear-gradient(135deg, #2a4066 0%, #1e2e4a 50%, #2a4066 100%);
   border: 2px solid #d4af37;
   clip-path: polygon(
     15px 0,
