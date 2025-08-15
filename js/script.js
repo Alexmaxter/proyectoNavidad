@@ -1,59 +1,128 @@
-// ✅ Respuestas correctas por número de acertijo
-const respuestasCorrectas = {
-  1: "responsabilidad",
-  2: "tiempo",
-  3: "paciencia",
-};
+document.addEventListener("DOMContentLoaded", () => {
+  const sections = ["intro", "acertijo1", "acertijo2", "acertijo3", "final"];
+  const audioMap = {
+    intro: "audio-01",
+    acertijo1: "audio-02",
+    acertijo2: "audio-03",
+    acertijo3: "audio-04",
+    final: "audio-05",
+  };
 
-// ✨ Muestra la sección correspondiente
-function mostrarAcertijo(num) {
-  ocultarTodasLasSecciones();
-  const acertijo = document.getElementById(`acertijo${num}`);
-  if (acertijo) acertijo.style.display = "block";
-  const error = document.getElementById(`error${num}`);
-  if (error) error.textContent = "";
-}
+  let currentSection = "intro";
+  let fondoIniciado = false;
 
-// 💡 Valida la respuesta ingresada
-
-function validarAcertijo(num) {
-  const input = document.getElementById(`respuesta${num}`);
-  const respuesta = input.value.trim().toLowerCase();
-  const correcto = respuestasCorrectas[num];
-
-  if (respuesta === correcto) {
-    num === 3 ? mostrarFinal() : mostrarAcertijo(num + 1);
-  } else {
-    const error = document.getElementById(`error${num}`);
-    if (error) {
-      error.textContent = "Respuesta incorrecta. ¡Probá de nuevo!";
+  // 🎵 Iniciar audio de fondo
+  const iniciarAudioFondo = () => {
+    if (!fondoIniciado) {
+      const audioFondo = document.getElementById("audio-fondo");
+      if (audioFondo) {
+        audioFondo.volume = 0.2;
+        audioFondo
+          .play()
+          .then(() => {
+            fondoIniciado = true;
+          })
+          .catch((error) => {
+            console.log("No se pudo iniciar el audio de fondo:", error);
+          });
+      }
     }
-  }
-}
+  };
 
-function mostrarMensaje(texto) {
-  const modal = document.getElementById("mensajeEmergente");
-  const contenido = document.getElementById("textoEmergente");
-  contenido.textContent = texto;
-  modal.style.display = "flex";
-}
+  // 🔇 Pausar todos los audios
+  const pausarTodosLosAudios = () => {
+    Object.values(audioMap).forEach((audioId) => {
+      const audio = document.getElementById(audioId);
+      if (audio && !audio.paused) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    });
 
-function cerrarMensaje() {
-  document.getElementById("mensajeEmergente").style.display = "none";
-}
+    sections.forEach((section) => {
+      const playButton = document.getElementById(`play-${section}`);
+      if (playButton) {
+        playButton.innerHTML = `<i class="fas fa-play"></i>`; // Icono de play
+      }
+    });
+  };
 
-// 🎁 Muestra el mensaje final
-function mostrarFinal() {
-  ocultarTodasLasSecciones();
-  const final = document.getElementById("final");
-  if (final) final.style.display = "block";
-}
+  // 🎧 Control de reproducción por sección
+  sections.forEach((section) => {
+    const playButton = document.getElementById(`play-${section}`);
+    const audioId = audioMap[section];
+    const audio = document.getElementById(audioId);
 
-// 🧼 Oculta todas las secciones
-function ocultarTodasLasSecciones() {
-  const ids = ["intro", "acertijo1", "acertijo2", "acertijo3", "final"];
-  ids.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = "none";
+    if (playButton && audio) {
+      playButton.addEventListener("click", () => {
+        iniciarAudioFondo();
+        if (audio.paused) {
+          pausarTodosLosAudios();
+          audio
+            .play()
+            .then(() => {
+              playButton.innerHTML = `<i class="fas fa-pause"></i>`; // Icono pausa
+            })
+            .catch((error) => {
+              console.log("Error al reproducir:", error);
+            });
+        } else {
+          audio.pause();
+          playButton.innerHTML = `<i class="fas fa-play"></i>`; // Icono play
+        }
+      });
+
+      audio.addEventListener("ended", () => {
+        playButton.innerHTML = `<i class="fas fa-play"></i>`; // Icono play
+      });
+    }
   });
-}
+
+  // 🎯 Mostrar acertijo
+  window.mostrarAcertijo = (id) => {
+    iniciarAudioFondo();
+    pausarTodosLosAudios();
+    document.getElementById(currentSection).style.display = "none";
+    currentSection = `acertijo${id}`;
+    document.getElementById(currentSection).style.display = "block";
+  };
+
+  // ✅ Validar respuesta
+  window.validarAcertijo = (id) => {
+    const respuesta = document
+      .getElementById(`respuesta${id}`)
+      .value.toLowerCase()
+      .trim();
+    const error = document.getElementById(`error${id}`);
+    const respuestasCorrectas = {
+      1: "responsabilidad",
+      2: "tiempo",
+      3: "paciencia",
+    };
+
+    if (respuesta === respuestasCorrectas[id]) {
+      error.textContent = "";
+      pausarTodosLosAudios();
+      if (id < 3) {
+        mostrarAcertijo(id + 1);
+      } else {
+        document.getElementById("acertijo3").style.display = "none";
+        document.getElementById("final").style.display = "block";
+        currentSection = "final";
+      }
+    } else {
+      error.textContent = "Respuesta incorrecta. Intenta de nuevo.";
+    }
+  };
+
+  // 🚀 Botón “Comenzar” inicia juego
+  const comenzarBtn = document.querySelector("#intro .boton button");
+  if (comenzarBtn) {
+    comenzarBtn.addEventListener("click", () => {
+      iniciarAudioFondo();
+      document.getElementById("intro").style.display = "none";
+      currentSection = "acertijo1";
+      document.getElementById("acertijo1").style.display = "block";
+    });
+  }
+});

@@ -9,9 +9,10 @@
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Lora:ital,wght@0,400..700;1,400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
     <link
       href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;600&display=swap"
       rel="stylesheet"
@@ -19,21 +20,29 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <audio id="audio-fondo" src="assets/audio/00.mp3" loop></audio>
+
     <div class="wrapper">
       <!-- Introducción -->
       <div class="box" id="intro">
         <h1 class="contenedor-titulo">¡Bienvenido Valentino!</h1>
         <div class="separador"></div>
+        <audio id="audio-01" src="assets/audio/01.mp3"></audio>
+        <button id="play-intro" type="button">
+          <i class="fas fa-play"></i>
+        </button>
+
         <p>
-          Todo lo que realmente importa arranca de a poco, casi sin que lo
-          notes.<br />
-          Imaginate una bola de nieve que empieza a rodar sin que nadie la
-          vea.<br />
-          Y este es uno de esos momentos épicos donde todo comienza. ¡Dale el
-          primer paso y descubrí lo que te espera!
+          Las cosas que realmente importan no empiezan con ruido. Arrancan de a
+          poco, casi sin que te des cuenta.<br /><br />
+          Como una bola de nieve que empieza a rodar en silencio, sin que nadie
+          la vea.<br /><br />
+          Este es uno de esos momentos épicos. El punto de partida.<br /><br />
+          Todo está listo para que empiece a tomar forma.<br /><br />
+          Solo falta el primer paso.<br /><br />
+          Dalo… y descubrí lo que te espera.
         </p>
         <div class="separador"></div>
-
         <div class="boton">
           <button onclick="mostrarAcertijo(1)">Comenzar</button>
         </div>
@@ -41,21 +50,24 @@
 
       <!-- Acertijo 1 -->
       <div class="box" id="acertijo1" style="display: none">
-        <h1>Está en tus manos</h1>
+        <h1 class="contenedor-titulo">Está en tus manos</h1>
         <div class="separador"></div>
+        <audio id="audio-02" src="assets/audio/02.mp3"></audio>
+        <button id="play-acertijo1" type="button">
+          <i class="fas fa-play"></i>
+        </button>
         <p>
-          Algunos la esquivan sin darse cuenta. Otros la agarran como si fuera
-          liviana. A veces no está clara, pero siempre tiene peso. Nadie te
-          obliga a llevarla, y sin embargo, ya es tuya.
-          <br />
-
-          Cuando elegís, aparece. No se aplaude. No se festeja. Pero lo que
-          venga… va a depender de cómo la llevaste.
+          Algunos la esquivan sin notarlo. Otros la toman como si no pesara
+          nada.<br /><br />
+          A veces no se ve con claridad, pero siempre tiene peso.<br /><br />
+          Nadie te obliga a llevarla. Y sin embargo… ya es tuya.<br /><br />
+          Aparece cuando elegís.<br /><br />
+          No se aplaude. No se festeja.<br /><br />
+          Pero lo que venga… va a depender de cómo la llevaste.s
         </p>
         <div class="separador"></div>
         <input type="text" id="respuesta1" placeholder="Tu respuesta..." />
         <p class="mensaje-error" id="error1"></p>
-
         <div class="boton">
           <button onclick="validarAcertijo(1)">Enviar</button>
         </div>
@@ -63,21 +75,24 @@
 
       <!-- Acertijo 2 -->
       <div class="box" id="acertijo2" style="display: none">
-        <h1>Lo que nunca vuelve</h1>
+        <h1 class="contenedor-titulo">Lo que nunca vuelve</h1>
         <div class="separador"></div>
+        <audio id="audio-03" src="assets/audio/03.mp3"></audio>
+        <button id="play-acertijo2" type="button">
+          <i class="fas fa-play"></i>
+        </button>
         <p>
-          Una bola de nieve no crece si la frenás. Lo que le da fuerza es la
-          distancia que avanza, el terreno que recorre. Si la dejás rodar, se
-          transforma.
-          <br />
-          <br />
-          Pero cada segundo que pasa sin impulso, es parte del resultado. No lo
-          ves al inicio, pero el final lo revela.
+          Una bola de nieve no crece si la frenás.<br /><br />
+          Su fuerza está en la distancia que avanza, en el terreno que
+          recorre.<br /><br />
+          Si la dejás rodar, se transforma.<br /><br />
+          Pero cada segundo sin impulso también deja huella.<br /><br />
+          No lo ves al principio.<br /><br />
+          Pero el final… lo revela.
         </p>
         <div class="separador"></div>
         <input type="text" id="respuesta2" placeholder="Tu respuesta..." />
         <p class="mensaje-error" id="error2"></p>
-
         <div class="boton">
           <button onclick="validarAcertijo(2)">Enviar</button>
         </div>
@@ -85,21 +100,24 @@
 
       <!-- Acertijo 3 -->
       <div class="box" id="acertijo3" style="display: none">
-        <h1>Esperar también es avanzar</h1>
+        <h1 class="contenedor-titulo">Esperar también es avanzar</h1>
         <div class="separador"></div>
+        <audio id="audio-04" src="assets/audio/04.mp3"></audio>
+        <button id="play-acertijo3" type="button">
+          <i class="fas fa-play"></i>
+        </button>
         <p>
-          Algunos la empujan por ansiedad y terminan rompiéndola. Otros
-          simplemente la dejan rodar. Confían en que el terreno hará su trabajo.
-          No buscan atajos, no se desesperan.
-          <br />
-          <br />
-          Y al final, la bola de nieve crece más por lo que no se hizo que por
-          lo que se apuró.
+          Esperar también es avanzar.<br /><br />
+          Algunos la empujan por ansiedad… y terminan rompiéndola.<br /><br />
+          Otros simplemente la dejan rodar.<br /><br />
+          Confían en que el terreno hará su trabajo.<br /><br />
+          No buscan atajos. No se desesperan.<br /><br />
+          Y al final, la bola de nieve crece más por lo que no se hizo…<br />
+          que por lo que se apuró.
         </p>
         <div class="separador"></div>
         <input type="text" id="respuesta3" placeholder="Tu respuesta..." />
         <p class="mensaje-error" id="error3"></p>
-
         <div class="boton">
           <button onclick="validarAcertijo(3)">Enviar</button>
         </div>
@@ -107,31 +125,57 @@
 
       <!-- Final -->
       <div class="box" id="final" style="display: none">
-        <h1>¡Felicitaciones!</h1>
+        <h1 class="contenedor-titulo">¡Felicitaciones!</h1>
         <div class="separador"></div>
-        <p>
-          No es un objeto. No se envuelve, no hace ruido al abrirse. No se
-          rompe… ni se puede perder. O sí... Porque lo que vale también puede
-          desaparecer si no se cuida. <br />Son
-          <span class="monto">150.000</span>. Solo tuyos. Desde hoy podés
-          decidir qué hacer con el regalo pero no puedes usarlo.
-          <br />
-          Con responsabilidad: tus decisiones empiezan ahora, aunque los
-          resultados lleguen después. Con paciencia, vas a entender que lo que
-          no se toca aún… también puede crecer. <br />Y con tiempo, lo que hoy
-          parece pequeño puede volverse algo más grande. Como una bola de nieve
-          que empieza a girar sin hacer ruido, lo importante no es cuánto mide
-          al principio, sino cómo la guiás mientras avanza. Si no la frenás, si
-          no la apurás, si la dejás rodar con constancia, va sumando peso,
-          sentido y valor.
-          <br />
-          <br />
-          Hasta que cumplas 18, va a estar bajo custodia🔒.
-          <br />
-          <br />
-          Intacto.
-        </p>
+        <div class="mensaje-final">
+          <p>¡Felicitaciones!</p>
 
+          <p>
+            No es un objeto.<br />
+            No se envuelve. No hace ruido al abrirse.<br />
+            No se rompe… aunque sí puede perderse.
+          </p>
+
+          <p>Porque lo que vale también desaparece si no se cuida.</p>
+
+          <audio id="audio-05" src="assets/audio/05.mp3"></audio>
+          <button id="play-final" type="button">Reproducir</button>
+          <p>
+            Este es tu regalo.<br />
+            Solo tuyo.
+          </p>
+
+          <p>
+            Desde hoy, podés decidir qué hacer con el regalo.<br />
+            Pero no podés usarlo. Aún.
+          </p>
+
+          <p>
+            Con responsabilidad: tus decisiones empiezan ahora, aunque los
+            resultados lleguen después.<br />
+            Con paciencia: vas a entender que lo que no se toca todavía… también
+            puede crecer.<br />
+            Y con tiempo: lo que hoy parece pequeño puede volverse enorme.
+          </p>
+
+          <p>
+            Como una bola de nieve que empieza a girar sin hacer ruido,<br />
+            lo importante no es cuánto mide al principio,<br />
+            sino cómo la guiás mientras avanza.
+          </p>
+
+          <p>
+            Si no la frenás,<br />
+            si no la apurás,<br />
+            si la dejás rodar con constancia,<br />
+            va sumando peso, sentido y valor.
+          </p>
+
+          <p>
+            Hasta que cumplas 18, va a estar bajo custodia 🔒<br />
+            Intacto.
+          </p>
+        </div>
         <div class="separador"></div>
       </div>
     </div>
