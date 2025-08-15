@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (respuesta === respuestasCorrectas[id]) {
       error.textContent = "";
+      error.classList.remove("show", "error");
       pausarTodosLosAudios();
       if (id < 3) {
         mostrarAcertijo(id + 1);
@@ -112,17 +113,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } else {
       error.textContent = "Respuesta incorrecta. Intenta de nuevo.";
+      error.classList.add("show", "error");
     }
   };
 
-  // 🚀 Botón “Comenzar” inicia juego
+  // 🚀 Botón "Comenzar" inicia juego
   const comenzarBtn = document.querySelector("#intro .boton button");
   if (comenzarBtn) {
     comenzarBtn.addEventListener("click", () => {
       iniciarAudioFondo();
-      document.getElementById("intro").style.display = "none";
-      currentSection = "acertijo1";
-      document.getElementById("acertijo1").style.display = "block";
+      mostrarAcertijo(1); // Usar la función que ya existe
     });
   }
 });
