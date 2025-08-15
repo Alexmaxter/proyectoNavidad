@@ -5,17 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Regalo Misterioso</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;600&display=swap"
-      rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
   </head>
@@ -25,45 +24,76 @@
     <div class="wrapper">
       <!-- Introducción -->
       <div class="box" id="intro">
-        <h1 class="contenedor-titulo">¡Bienvenido Valentino!</h1>
+        <div class="contenedor-titulo">
+          <h1>¡Bienvenido Valentino!</h1>
+        </div>
         <div class="separador"></div>
-        <audio id="audio-01" src="assets/audio/01.mp3"></audio>
+        <audio id="audio-01" src="assets/audio/001.mp3"></audio>
         <button id="play-intro" type="button">
           <i class="fas fa-play"></i>
         </button>
 
         <p>
-          Las cosas que realmente importan no empiezan con ruido. Arrancan de a
-          poco, casi sin que te des cuenta.<br /><br />
-          Como una bola de nieve que empieza a rodar en silencio, sin que nadie
-          la vea.<br /><br />
-          Este es uno de esos momentos épicos. El punto de partida.<br /><br />
-          Todo está listo para que empiece a tomar forma.<br /><br />
-          Solo falta el primer paso.<br /><br />
-          Dalo… y descubrí lo que te espera.
+          Ya diste el primer impulso, y lo que parecía pequeño comienza a
+          moverse.<br />
+          Las cosas importantes no hacen ruido cuando empiezan.<br />
+          A veces avanzan en silencio, sin que nadie las vea.<br />
+          <br />
+          Como una bola de nieve que empieza a rodar,<br />
+          pequeña, blanca y tranquila.<br />
+          <br />
+          Valentino, este es uno de esos momentos.<br />
+          Parece chico,<br />
+          pero guarda algo muy grande.<br />
+          <br />
+          Todo está listo para empezar a tomar forma.<br />
+          Solo falta que des el próximo paso.
         </p>
         <div class="separador"></div>
         <div class="boton">
-          <button onclick="mostrarAcertijo(1)">Comenzar</button>
+          <button onclick="mostrarDecision()">Comenzar</button>
+        </div>
+      </div>
+
+      <!-- Sección de decisión -->
+      <div class="box" id="decision" style="display: none">
+        <div class="contenedor-titulo">
+          <h1>Una Decisión Importante</h1>
+        </div>
+        <div class="separador"></div>
+
+        <div class="decision-container">
+          <div class="opcion inmediata" onclick="elegirOpcion('inmediata')">
+            <h3>🎁 Opción Inmediata</h3>
+          </div>
+
+          <div class="opcion esperar" onclick="elegirOpcion('esperar')">
+            <h3>⭐ Esperar y Confiar</h3>
+          </div>
         </div>
       </div>
 
       <!-- Acertijo 1 -->
       <div class="box" id="acertijo1" style="display: none">
-        <h1 class="contenedor-titulo">Está en tus manos</h1>
+        <div class="contenedor-titulo">
+          <h1>Está en tus manos</h1>
+        </div>
         <div class="separador"></div>
-        <audio id="audio-02" src="assets/audio/02.mp3"></audio>
+        <audio id="audio-02" src="assets/audio/002.mp3"></audio>
         <button id="play-acertijo1" type="button">
           <i class="fas fa-play"></i>
         </button>
         <p>
-          Algunos la esquivan sin notarlo. Otros la toman como si no pesara
-          nada.<br /><br />
-          A veces no se ve con claridad, pero siempre tiene peso.<br /><br />
-          Nadie te obliga a llevarla. Y sin embargo… ya es tuya.<br /><br />
-          Aparece cuando elegís.<br /><br />
-          No se aplaude. No se festeja.<br /><br />
-          Pero lo que venga… va a depender de cómo la llevaste.
+          Hay algo que no se ve… pero aparece cada vez que elegís.<br />
+          No todos la reconocen. Algunos la cargan sin saberlo.<br />
+          Nadie te obliga a tenerla.<br />
+          Y sin embargo… ya es tuya.<br />
+          <br />
+          No brilla, no se celebra.<br />
+          Pero todo lo que viene después…<br />
+          depende de cómo la lleves.<br />
+          <br />
+          ¿Qué es?
         </p>
         <div class="separador"></div>
         <input type="text" id="respuesta1" placeholder="Tu respuesta..." />
@@ -75,20 +105,24 @@
 
       <!-- Acertijo 2 -->
       <div class="box" id="acertijo2" style="display: none">
-        <h1 class="contenedor-titulo">Lo que nunca vuelve</h1>
+        <div class="contenedor-titulo">
+          <h1>Lo que nunca vuelve</h1>
+        </div>
         <div class="separador"></div>
-        <audio id="audio-03" src="assets/audio/03.mp3"></audio>
+        <audio id="audio-03" src="assets/audio/003.mp3"></audio>
         <button id="play-acertijo2" type="button">
           <i class="fas fa-play"></i>
         </button>
         <p>
-          Una bola de nieve no crece si la frenás.<br /><br />
-          Su fuerza está en la distancia que avanza, en el terreno que
-          recorre.<br /><br />
-          Si la dejás rodar, se transforma.<br /><br />
-          Pero cada segundo sin impulso también deja huella.<br /><br />
-          No lo ves al principio.<br /><br />
-          Pero el final… lo revela.
+          Una bola de nieve no crece si se queda quieta.<br />
+          Cada paso la cambia. Cada segundo suma.<br />
+          Si la empujás con constancia, crece.<br />
+          Si la frenás… se enfría.<br />
+          <br />
+          Al principio no se nota.<br />
+          Pero con el tiempo… lo vas a ver.<br />
+          <br />
+          ¿Qué es lo que siempre avanza, aunque no lo veas?
         </p>
         <div class="separador"></div>
         <input type="text" id="respuesta2" placeholder="Tu respuesta..." />
@@ -100,20 +134,26 @@
 
       <!-- Acertijo 3 -->
       <div class="box" id="acertijo3" style="display: none">
-        <h1 class="contenedor-titulo">Esperar también es avanzar</h1>
+        <div class="contenedor-titulo">
+          <h1>Esperar también es avanzar</h1>
+        </div>
         <div class="separador"></div>
-        <audio id="audio-04" src="assets/audio/04.mp3"></audio>
+        <audio id="audio-04" src="assets/audio/004.mp3"></audio>
         <button id="play-acertijo3" type="button">
           <i class="fas fa-play"></i>
         </button>
         <p>
-          Esperar también es avanzar.<br /><br />
-          Algunos la empujan por ansiedad… y terminan rompiéndola.<br /><br />
-          Otros simplemente la dejan rodar.<br /><br />
-          Confían en que el terreno hará su trabajo.<br /><br />
-          No buscan atajos. No se desesperan.<br /><br />
-          Y al final, la bola de nieve crece más por lo que no se hizo…<br />
-          que por lo que se apuró.
+          Hay quienes la empujan con apuro… y terminan rompiéndola.<br />
+          Otros… la dejan rodar.<br />
+          No tienen prisa. Confían.<br />
+          <br />
+          Porque saben que lo que crece bien…<br />
+          no necesita correr.<br />
+          <br />
+          Lo importante no es llegar primero,<br />
+          sino saber esperar.<br />
+          <br />
+          ¿Qué tenés cuando no te apurás?
         </p>
         <div class="separador"></div>
         <input type="text" id="respuesta3" placeholder="Tu respuesta..." />
@@ -125,59 +165,51 @@
 
       <!-- Final -->
       <div class="box" id="final" style="display: none">
-        <h1 class="contenedor-titulo">¡Felicitaciones!</h1>
+        <div class="contenedor-titulo">
+          <h1>¡Felicitaciones!</h1>
+        </div>
         <div class="separador"></div>
         <div class="mensaje-final">
-          <audio id="audio-05" src="assets/audio/05.mp3"></audio>
+          <audio id="audio-05" src="assets/audio/005.mp3"></audio>
           <button id="play-final" type="button">Reproducir</button>
-
           <p>
-            No es un objeto.<br />
-            No se envuelve. No hace ruido al abrirse.<br />
-            No se rompe… aunque sí puede perderse.
+            Este regalo no suena.<br />
+            No se rompe. No tiene moño.<br />
+            <br />
+            Pero es tuyo, Valentino.<br />
+            Y guarda algo que puede crecer… mucho más de lo que imaginás.<br />
+            <br />
+            Este es tu regalo,
           </p>
 
-          <p>Porque lo que vale también desaparece si no se cuida.</p>
-          
-          <p>
-            Este es tu regalo.<br />
-            <p class="final"><span class="monto">$200.000</span>
-            Solo tuyo.</p>
+          <p class="final" id="mensaje-final-contenido">
+            <span class="monto">$200.000</span> solo tuyo...<br />
+            <br />
+            Desde hoy, está a tu nombre.<br />
+            No para usar ahora.<br />
+            Sino para dejar que crezca.<br />
+            <br />
+            ¿Cómo crecerá?<br />
+            <br />
+            Con responsabilidad, porque las decisiones importan incluso antes de
+            ver qué pasa.<br />
+            Con paciencia, porque lo valioso se hace esperar.<br />
+            Y con tiempo, porque lo pequeño se vuelve grande si lo dejás
+            avanzar.<br />
+            <br />
+            Como esa bola de nieve que empezó rodando en silencio.<br />
+            Si no la frenás…<br />
+            Si no la apurás…<br />
+            <br />
+            Va ganando forma.<br />
+            Va sumando sentido.<br />
+            <br />
+            Este regalo va a estar guardado, creciendo sin que lo veas,<br />
+            hasta que cumplas 18.<br />
+            <br />
+            Y cuando llegue ese día, Valentino…<br />
+            va a estar listo para que vos decidas qué hacer con él.
           </p>
-
-          <p>
-            Desde hoy, podés decidir qué hacer con el regalo.<br />
-            Pero no podés usarlo. Aún...
-          </p>
-
-          <p>
-            Con responsabilidad: tus decisiones empiezan ahora, aunque los
-            resultados lleguen después.<br />
-            Con paciencia: vas a entender que lo que no se toca todavía… también
-            puede crecer.<br />
-            Y con tiempo: lo que hoy parece pequeño puede volverse enorme.
-          </p>
-
-          <p>
-            Como una bola de nieve que empieza a girar sin hacer ruido,<br />
-            lo importante no es cuánto mide al principio,<br />
-            sino cómo la guiás mientras avanza.
-          </p>
-
-          <p>
-            Si no la frenás,<br />
-            si no la apurás,<br />
-            si la dejás rodar con constancia,<br />
-            va sumando peso, sentido y valor.
-          </p>
-
-          <p>
-            Hasta que cumplas 18, va a estar bajo custodia 🔒<br />
-
-            
-            Intacto.
-          </p>
-
         </div>
         <div class="separador"></div>
       </div>

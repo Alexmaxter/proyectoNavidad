@@ -1,7 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const sections = ["intro", "acertijo1", "acertijo2", "acertijo3", "final"];
+  const sections = [
+    "intro",
+    "decision",
+    "acertijo1",
+    "acertijo2",
+    "acertijo3",
+    "final",
+  ];
   const audioMap = {
     intro: "audio-01",
+    decision: "audio-decision",
     acertijo1: "audio-02",
     acertijo2: "audio-03",
     acertijo3: "audio-04",
@@ -10,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentSection = "intro";
   let fondoIniciado = false;
+  let eleccionRealizada = false;
 
   // 🎵 Iniciar audio de fondo
   const iniciarAudioFondo = () => {
@@ -42,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sections.forEach((section) => {
       const playButton = document.getElementById(`play-${section}`);
       if (playButton) {
-        playButton.innerHTML = `<i class="fas fa-play"></i>`; // Icono de play
+        playButton.innerHTML = `<i class="fas fa-play"></i>`;
       }
     });
   };
@@ -61,22 +70,72 @@ document.addEventListener("DOMContentLoaded", () => {
           audio
             .play()
             .then(() => {
-              playButton.innerHTML = `<i class="fas fa-pause"></i>`; // Icono pausa
+              playButton.innerHTML = `<i class="fas fa-pause"></i>`;
             })
             .catch((error) => {
               console.log("Error al reproducir:", error);
             });
         } else {
           audio.pause();
-          playButton.innerHTML = `<i class="fas fa-play"></i>`; // Icono play
+          playButton.innerHTML = `<i class="fas fa-play"></i>`;
         }
       });
 
       audio.addEventListener("ended", () => {
-        playButton.innerHTML = `<i class="fas fa-play"></i>`; // Icono play
+        playButton.innerHTML = `<i class="fas fa-play"></i>`;
       });
     }
   });
+
+  // 🎯 Mostrar sección de decisión
+  window.mostrarDecision = () => {
+    iniciarAudioFondo();
+    pausarTodosLosAudios();
+    document.getElementById(currentSection).style.display = "none";
+    currentSection = "decision";
+    document.getElementById(currentSection).style.display = "block";
+  };
+
+  // ⭐ Manejar elección de opción
+  window.elegirOpcion = (tipo) => {
+    if (eleccionRealizada) return;
+
+    eleccionRealizada = true;
+    iniciarAudioFondo();
+    pausarTodosLosAudios();
+
+    if (tipo === "inmediata") {
+      // Si elige la opción inmediata, mostrar mensaje especial y terminar
+      document.getElementById("decision").style.display = "none";
+      document.getElementById("final").style.display = "block";
+      currentSection = "final";
+
+      // Cambiar el contenido del mensaje final
+      document.querySelector("#final .monto").textContent = "$50.000";
+      document.getElementById("mensaje-final-contenido").innerHTML = `
+        <span class="monto">$50.000</span> ahora mismo...<br />
+        <br />
+        Elegiste tomar el dinero ahora, Valentino.<br />
+        Es una decisión válida.<br />
+        A veces lo inmediato también tiene su valor.<br />
+        <br />
+        Pero recordá...<br />
+        En la vida siempre hay momentos donde podés elegir<br />
+        entre lo que querés ahora y lo que podrías tener después.<br />
+        <br />
+        La paciencia y la confianza a menudo traen<br />
+        recompensas mucho mayores.<br />
+        <br />
+        Esta fue tu primera gran decisión.<br />
+        Habrá muchas más en el futuro.<br />
+        <br />
+        🎁 ¡Feliz Navidad, Valentino! ✨
+      `;
+    } else {
+      // Si elige esperar, continúa con los acertijos
+      mostrarAcertijo(1);
+    }
+  };
 
   // 🎯 Mostrar acertijo
   window.mostrarAcertijo = (id) => {
@@ -112,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentSection = "final";
       }
     } else {
-      error.textContent = "Respuesta incorrecta. Intenta de nuevo.";
+      error.textContent = "✨ Respuesta incorrecta. Intenta de nuevo. ✨";
       error.classList.add("show", "error");
     }
   };
@@ -122,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (comenzarBtn) {
     comenzarBtn.addEventListener("click", () => {
       iniciarAudioFondo();
-      mostrarAcertijo(1); // Usar la función que ya existe
+      mostrarDecision();
     });
   }
 });

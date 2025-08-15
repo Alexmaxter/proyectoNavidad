@@ -5,96 +5,87 @@
   padding: 0;
 }
 
-/* ❄️ Variables CSS para consistencia */
+/* ❄️ Variables CSS para consistencia navideña */
 :root {
   --royal-blue: #1e40af;
   --deep-blue: #1e3a8a;
+  --ice-blue: #e0f7fa; /* Azul hielo navideño */
   --bright-blue: #3b82f6;
   --luxury-gold: #fbbf24;
   --deep-gold: #f59e0b;
-  --bright-gold: #fde047;
-  --snow-white: #ffffff;
+  --frosty-silver: #d1d5db; /* Plateado navideño */
+  --snow-white: #f9fafb;
   --pure-white: #fefefe;
-  --soft-white: #f9fafb;
   --shadow-dark: rgba(0, 0, 0, 0.3);
   --shadow-blue: rgba(30, 64, 175, 0.4);
-  --shadow-gold: rgba(251, 191, 36, 0.4);
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.25);
+  --shadow-silver: rgba(209, 213, 219, 0.4); /* Sombra plateada */
+  --glass-bg: rgba(255, 255, 255, 0.15); /* Más translúcido */
+  --glass-border: rgba(255, 255, 255, 0.3);
 }
 
-/* 🌟 HTML base para móviles */
-html {
-  scroll-behavior: smooth;
-  /* Evita el zoom en inputs en iOS */
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-}
-
-/* 🌨️ Estilo global con fondo fijo mejorado para móviles */
+/* 🌨️ Fondo navideño con desenfoque */
 body {
   font-family: "Inter", "Segoe UI", sans-serif;
   min-height: 100vh;
-  /* 📱 CLAVE: Usar min-height: 100vh y background-attachment: fixed */
   background: radial-gradient(
-      circle at 20% 50%,
-      rgba(30, 64, 175, 0.15) 0%,
-      transparent 60%
+      circle at 10% 20%,
+      var(--ice-blue) 0%,
+      transparent 50%
     ),
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(251, 191, 36, 0.2) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at 40% 80%,
-      rgba(30, 64, 175, 0.1) 0%,
-      transparent 60%
-    ),
-    linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 100%);
-
-  /* 🔧 Evita repetición del fondo en móviles */
+    radial-gradient(circle at 90% 30%, var(--frosty-silver) 0%, transparent 50%),
+    linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #2d4360 50%, #0f172a 100%);
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-size: 100% 100%;
-
+  background-size: cover;
   color: var(--snow-white);
   -webkit-font-smoothing: antialiased;
   position: relative;
   overflow-x: hidden;
 }
 
-/* 📱 Fix específico para iOS y móviles */
+/* 📱 Fix para iOS y móviles */
 @supports (-webkit-touch-callout: none) {
   body {
-    /* En iOS, fixed puede causar problemas, usamos scroll */
     background-attachment: scroll;
-    /* Asegurar que cubra toda la pantalla */
-    background-size: 100% max(100vh, 100%);
+    background-size: cover;
   }
 }
 
-/* ✨ Partículas de nieve flotantes - ajustadas para móviles */
+/* ✨ Partículas de nieve mejoradas */
 body::before {
-  content: "❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅";
+  content: "❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅";
   position: fixed;
   top: -50px;
   left: 0;
   width: 100%;
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.6);
-  animation: snowfall 15s linear infinite;
+  font-size: clamp(12px, 3vw, 18px);
+  color: rgba(255, 255, 255, 0.7);
+  animation: snowfall 20s linear infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+body::after {
+  content: "❄️ ❅ ❄️ ❅ ❄️ ❅ ❄️ ❅";
+  position: fixed;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  font-size: clamp(10px, 2vw, 14px);
+  color: rgba(255, 255, 255, 0.5);
+  animation: snowfall 25s linear infinite;
+  animation-delay: 2s;
   z-index: 1;
   pointer-events: none;
 }
 
 @keyframes snowfall {
   to {
-    transform: translateY(100vh) rotate(360deg);
+    transform: translateY(120vh) rotate(720deg);
   }
 }
 
-/* 🎅 Contenedor externo premium */
+/* 🎅 Contenedor externo */
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -103,11 +94,10 @@ body::before {
   padding: 40px 20px;
   position: relative;
   z-index: 2;
-  /* 📱 Asegura espacio adicional en móviles */
   padding-bottom: max(40px, env(safe-area-inset-bottom));
 }
 
-/* 🎁 Tarjeta de contenido glassmorphism */
+/* 🎁 Tarjeta de contenido con glassmorphism */
 .box {
   width: 100%;
   max-width: 680px;
@@ -117,16 +107,15 @@ body::before {
   justify-content: flex-start;
   align-items: center;
   background: linear-gradient(
-      135deg,
-      var(--glass-bg),
-      rgba(255, 255, 255, 0.05)
-    ),
-    linear-gradient(45deg, rgba(30, 64, 175, 0.1), rgba(251, 191, 36, 0.1));
-  backdrop-filter: blur(20px);
-  border: 2px solid var(--glass-border);
+    135deg,
+    var(--glass-bg),
+    rgba(224, 247, 250, 0.1)
+  );
+  backdrop-filter: blur(25px);
+  border: 2px solid var(--frosty-silver);
   border-radius: 24px;
-  box-shadow: 0 20px 40px var(--shadow-dark), 0 0 30px var(--shadow-blue),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px var(--shadow-dark), 0 0 30px var(--shadow-silver),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
   z-index: 3;
   margin-bottom: 30px;
   position: relative;
@@ -144,13 +133,13 @@ body::before {
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    var(--luxury-gold) 90deg,
+    var(--frosty-silver) 90deg,
     transparent 180deg,
-    var(--royal-blue) 270deg,
+    var(--ice-blue) 270deg,
     transparent 360deg
   );
-  opacity: 0.08;
-  animation: rotate-bg 25s linear infinite;
+  opacity: 0.1;
+  animation: rotate-bg 20s linear infinite;
   z-index: -1;
 }
 
@@ -161,11 +150,11 @@ body::before {
 }
 
 .box:hover {
-  box-shadow: 0 20px 40px var(--shadow-dark), 0 0 40px var(--shadow-gold),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px var(--shadow-dark), 0 0 40px var(--shadow-silver),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-/* 🌟 Título principal elegante */
+/* 🌟 Título principal con destello navideño */
 h1 {
   font-family: "Playfair Display", serif;
   font-weight: 800;
@@ -176,7 +165,7 @@ h1 {
     135deg,
     var(--luxury-gold) 0%,
     var(--snow-white) 50%,
-    var(--royal-blue) 100%
+    var(--ice-blue) 100%
   );
   background-clip: text;
   -webkit-background-clip: text;
@@ -185,16 +174,27 @@ h1 {
   margin-bottom: 10px;
   text-shadow: 0 2px 4px var(--shadow-dark);
   position: relative;
+  animation: twinkle 3s ease-in-out infinite;
 }
 
 h1::after {
-  content: "✨";
+  content: "❄️";
   position: absolute;
   right: -30px;
   top: -5px;
   font-size: 0.8em;
-  color: var(--luxury-gold);
+  color: var(--frosty-silver);
   animation: sparkle 2s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px var(--ice-blue));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px var(--frosty-silver));
+  }
 }
 
 @keyframes sparkle {
@@ -227,30 +227,30 @@ p {
   margin-bottom: 20px;
 }
 
-/* 🌟 Separador elegante */
+/* 🌟 Separador navideño */
 .separador {
   width: 60%;
   height: 3px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--royal-blue) 25%,
-    var(--luxury-gold) 50%,
+    var(--ice-blue) 25%,
+    var(--frosty-silver) 50%,
     var(--snow-white) 75%,
     transparent 100%
   );
   margin: 30px auto;
   border-radius: 2px;
-  box-shadow: 0 2px 8px var(--shadow-gold);
+  box-shadow: 0 2px 8px var(--shadow-silver);
   animation: glow-separator 3s ease-in-out infinite alternate;
 }
 
 @keyframes glow-separator {
   from {
-    filter: drop-shadow(0 0 5px var(--royal-blue));
+    filter: drop-shadow(0 0 5px var(--ice-blue));
   }
   to {
-    filter: drop-shadow(0 0 15px var(--luxury-gold));
+    filter: drop-shadow(0 0 15px var(--frosty-silver));
   }
 }
 
@@ -262,10 +262,10 @@ p {
   width: 100%;
 }
 
-/* 🎁 Botón elegante moderno */
+/* 🎁 Botón elegante con toque navideño */
 button {
-  background: linear-gradient(135deg, var(--royal-blue), var(--deep-blue));
-  border: 2px solid var(--luxury-gold);
+  background: linear-gradient(135deg, var(--ice-blue), var(--deep-blue));
+  border: 2px solid var(--frosty-silver);
   color: var(--snow-white);
   padding: 16px 40px;
   font-family: "Inter", sans-serif;
@@ -278,8 +278,9 @@ button {
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 20px var(--shadow-blue),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 20px var(--shadow-silver),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
 }
 
 button::before {
@@ -292,16 +293,16 @@ button::before {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.5),
     transparent
   );
   transition: left 0.6s;
 }
 
 button:hover {
-  background: linear-gradient(135deg, var(--bright-blue), var(--royal-blue));
-  box-shadow: 0 8px 20px var(--shadow-blue), 0 0 25px var(--shadow-gold);
-  border-color: var(--bright-gold);
+  background: linear-gradient(135deg, var(--bright-blue), var(--ice-blue));
+  box-shadow: 0 8px 20px var(--shadow-silver), 0 0 25px var(--shadow-silver);
+  border-color: var(--luxury-gold);
 }
 
 button:hover::before {
@@ -312,66 +313,101 @@ button:active {
   transform: scale(1.02);
 }
 
-/* ⏯️ Botones de reproducir especiales */
-button[id^="play-"],
-#play-intro {
-  background: none;
-  border: 2px solid var(--luxury-gold);
-  color: var(--luxury-gold);
-  font-size: 2.5rem;
+/* ⏯️ Botones de reproducir con estilo navideño mejorado */
+button[id^="play-"] {
+  background: linear-gradient(
+    135deg,
+    rgba(224, 247, 250, 0.2),
+    rgba(255, 255, 255, 0.1)
+  );
+  border: 2px solid var(--frosty-silver);
+  color: var(--snow-white);
+  font-size: clamp(2rem, 5vw, 2.8rem); /* Ícono más grande */
   cursor: pointer;
   padding: 15px;
   margin: 20px auto;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   transition: all 0.3s ease;
   position: relative;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px); /* Desenfoque más fuerte */
+  box-shadow: 0 4px 15px var(--shadow-silver),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  animation: glow-button 2s ease-in-out infinite alternate;
 }
 
-button[id^="play-"]::before,
-#play-intro::before {
-  content: "🎵";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.8em;
+button[id^="play-"] i {
+  font-size: clamp(1.8rem, 4vw, 2.5rem); /* Ícono ajustado */
+  color: var(--luxury-gold); /* Dorado para contraste */
 }
 
-button[id^="play-"]:hover,
-#play-intro:hover {
+button[id^="play-"]:hover {
+  background: linear-gradient(135deg, var(--ice-blue), var(--frosty-silver));
+  border-color: var(--luxury-gold);
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px var(--shadow-silver), 0 0 30px var(--shadow-silver);
+}
+
+button[id^="play-"]:hover i {
   color: var(--snow-white);
-  background: var(--luxury-gold);
-  border-color: var(--bright-gold);
-  transform: scale(1.1) rotate(10deg);
-  box-shadow: 0 8px 25px var(--shadow-gold);
 }
 
-/* 🔤 Campo de texto premium */
+button[id^="play-"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+button[id^="play-"]:hover::before {
+  left: 100%;
+}
+
+@keyframes glow-button {
+  from {
+    box-shadow: 0 4px 15px var(--shadow-silver),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+  to {
+    box-shadow: 0 8px 25px var(--shadow-silver),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 20px var(--ice-blue);
+  }
+}
+
+/* 🔤 Campo de texto con cristal helado */
 input[type="text"] {
   width: 100%;
   padding: 18px 25px;
   margin: 20px 0;
   font-size: 1.15rem;
   font-family: "Inter", sans-serif;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 2px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border: 2px solid var(--frosty-silver);
   color: var(--pure-white);
   outline: none;
   text-align: center;
   border-radius: 15px;
   transition: all 0.3s ease;
   box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
-  /* 📱 Evita zoom en iOS */
   font-size: max(16px, 1.15rem);
 }
 
 input[type="text"]::placeholder {
-  color: var(--soft-white);
+  color: var(--snow-white);
   letter-spacing: 0.8px;
   opacity: 0.7;
   font-weight: 300;
@@ -379,8 +415,8 @@ input[type="text"]::placeholder {
 
 input[type="text"]:focus {
   border-color: var(--luxury-gold);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 20px var(--shadow-gold);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 20px var(--shadow-silver);
 }
 
 /* ❗ Mensaje de error elegante */
@@ -391,118 +427,70 @@ input[type="text"]:focus {
   font-weight: 500;
   letter-spacing: 0.6px;
   padding: 15px;
-  background: rgba(30, 64, 175, 0.15);
+  background: rgba(30, 64, 175, 0.2);
   border-radius: 12px;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(30, 64, 175, 0.3);
-  box-shadow: 0 4px 15px var(--shadow-blue);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--frosty-silver);
+  box-shadow: 0 4px 15px var(--shadow-silver);
   margin: 15px 0;
-
-  /* Oculto por defecto */
   display: none;
   opacity: 0;
   transform: translateY(-10px);
   transition: all 0.3s ease;
 }
 
-/* Mostrar solo cuando hay error */
 .mensaje-error.show {
   display: block;
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Variante para diferentes tipos de error */
 .mensaje-error.error {
-  background: rgba(220, 38, 38, 0.15);
+  background: rgba(220, 38, 38, 0.2);
   border-color: rgba(220, 38, 38, 0.3);
   box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
 }
 
 .mensaje-error.warning {
-  background: rgba(251, 191, 36, 0.15);
+  background: rgba(251, 191, 36, 0.2);
   border-color: rgba(251, 191, 36, 0.3);
-  box-shadow: 0 4px 15px var(--shadow-gold);
+  box-shadow: 0 4px 15px var(--shadow-silver);
 }
 
 .mensaje-error.success {
-  background: rgba(5, 150, 105, 0.15);
+  background: rgba(5, 150, 105, 0.2);
   border-color: rgba(5, 150, 105, 0.3);
   box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
 }
 
-/* 🎵 Audio Player elegante */
-.audio-player {
-  width: 100%;
-  max-width: 650px;
-  padding: 40px;
-  background: linear-gradient(
-      135deg,
-      var(--glass-bg),
-      rgba(255, 255, 255, 0.05)
-    ),
-    linear-gradient(45deg, rgba(30, 64, 175, 0.15), rgba(251, 191, 36, 0.1));
-  backdrop-filter: blur(20px);
-  border: 2px solid var(--glass-border);
-  border-radius: 24px;
-  text-align: center;
-  box-shadow: 0 20px 40px var(--shadow-dark), 0 0 30px var(--shadow-blue);
-  transition: all 0.3s ease;
-}
-
-.audio-player:hover {
-  box-shadow: 0 20px 40px var(--shadow-dark), 0 0 40px var(--shadow-gold);
-}
-
-.audio-player button#play {
-  background: linear-gradient(135deg, var(--luxury-gold), var(--deep-gold));
-  border: 2px solid var(--snow-white);
-  color: var(--snow-white);
-  padding: 16px 40px;
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: 1.1rem;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 50px;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 20px var(--shadow-gold);
-}
-
-.audio-player button#play:hover {
-  background: linear-gradient(135deg, var(--bright-gold), var(--luxury-gold));
-  box-shadow: 0 8px 20px var(--shadow-gold);
-}
-
-/* 💰 Monto destacado elegante */
+/* 💰 Monto destacado navideño */
 #final p span.monto {
   font-size: 2rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--luxury-gold), var(--snow-white));
+  background: linear-gradient(135deg, var(--luxury-gold), var(--frosty-silver));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 10px var(--shadow-gold);
+  text-shadow: 0 2px 10px var(--shadow-silver);
   position: relative;
   animation: pulse-glow 2s ease-in-out infinite alternate;
 }
 
 #final p span.monto::before {
-  content: "💎";
+  content: "🎁";
   position: absolute;
   left: -40px;
   font-size: 0.8em;
-  color: var(--luxury-gold);
+  color: var(--frosty-silver);
   animation: bounce 2s infinite;
 }
 
 @keyframes pulse-glow {
   from {
-    filter: drop-shadow(0 0 5px var(--luxury-gold));
+    filter: drop-shadow(0 0 5px var(--frosty-silver));
   }
   to {
-    filter: drop-shadow(0 0 20px var(--royal-blue));
+    filter: drop-shadow(0 0 20px var(--ice-blue));
   }
 }
 
@@ -522,21 +510,18 @@ input[type="text"]:focus {
   }
 }
 
-/* 📱 Responsivo mejorado con fixes específicos para móviles */
+/* 📱 Responsivo mejorado */
 @media screen and (max-width: 768px) {
-  /* 🔧 Fix específico para móviles */
   body {
-    background-size: 100% max(100vh, 100%);
+    background-size: cover;
     background-position: center top;
   }
 
   .wrapper {
-    /* Espacio adicional para teclados virtuales */
     padding-bottom: max(60px, env(safe-area-inset-bottom));
   }
 
-  .box,
-  .audio-player {
+  .box {
     max-width: 95%;
     padding: 30px 20px;
     border-radius: 20px;
@@ -550,16 +535,26 @@ input[type="text"]:focus {
     padding: 14px 30px;
     font-size: 1rem;
   }
+
+  button[id^="play-"] {
+    width: 70px;
+    height: 70px;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+  }
+
+  button[id^="play-"] i {
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+  }
 }
 
 @media screen and (max-width: 480px) {
-  /* 📱 Optimizaciones específicas para pantallas pequeñas */
   body {
-    background-size: 100% max(120vh, 100%);
+    background-size: cover;
   }
 
-  body::before {
-    font-size: 16px;
+  body::before,
+  body::after {
+    font-size: clamp(10px, 2vw, 14px);
   }
 
   .wrapper {
@@ -567,8 +562,7 @@ input[type="text"]:focus {
     padding-bottom: max(80px, env(safe-area-inset-bottom));
   }
 
-  .box,
-  .audio-player {
+  .box {
     padding: 25px 15px;
     border-radius: 16px;
     margin-bottom: 20px;
@@ -584,19 +578,21 @@ input[type="text"]:focus {
     line-height: 1.6;
   }
 
-  button,
-  .audio-player button#play {
+  button {
     font-size: 0.9rem;
     padding: 12px 25px;
     margin: 20px auto;
     display: block;
   }
 
-  button[id^="play-"],
-  #play-intro {
+  button[id^="play-"] {
     width: 60px;
     height: 60px;
-    font-size: 2rem;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+  }
+
+  button[id^="play-"] i {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
   }
 
   #final p span.monto {
@@ -610,17 +606,63 @@ input[type="text"]:focus {
   }
 }
 
-/* 🌟 Efectos adicionales elegantes */
+/* 🌟 Efectos adicionales navideños */
 @keyframes glow-pulse {
   0%,
   100% {
-    filter: drop-shadow(0 0 8px var(--luxury-gold)) brightness(1);
+    filter: drop-shadow(0 0 8px var(--frosty-silver)) brightness(1);
   }
   50% {
-    filter: drop-shadow(0 0 25px var(--royal-blue)) brightness(1.1);
+    filter: drop-shadow(0 0 25px var(--ice-blue)) brightness(1.1);
   }
 }
 
 .box:hover h1 {
   animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* 🎁 Estilo para el contenedor de opciones de decisión */
+.decision-container {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.opcion {
+  flex: 1;
+  min-width: 250px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border: 2px solid var(--frosty-silver);
+  border-radius: 15px;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.opcion:hover {
+  background: rgba(224, 247, 250, 0.15);
+  border-color: var(--luxury-gold);
+  box-shadow: 0 0 20px var(--shadow-silver);
+}
+
+.opcion h3 {
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--snow-white);
+  margin-bottom: 10px;
+}
+
+.monto-opcion {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--luxury-gold), var(--frosty-silver));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 10px 0;
 }
