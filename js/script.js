@@ -168,7 +168,7 @@ const contenidoTexto = {
       "Este regalo va a estar guardado, creciendo sin que lo veas,",
       "hasta que cumplas 18 años.",
       "Y cuando llegue ese día, Valentino…",
-      "va a estará listo para que vos decidas qué hacer con él.",
+      "estará listo para que vos decidas qué hacer con él.",
     ],
   },
 
@@ -202,6 +202,20 @@ const utilidades = {
       audio.currentTime = 0;
     }
   },
+
+  fadeOutAudio: (audio, duration = 2000) => {
+    if (!audio) return;
+    let step = audio.volume / (duration / 100);
+    const fade = setInterval(() => {
+      if (audio.volume - step > 0.01) {
+        audio.volume = Math.max(0, audio.volume - step);
+      } else {
+        audio.volume = 0;
+        audio.pause();
+        clearInterval(fade);
+      }
+    }, 100);
+  },
 };
 
 // Gestor de audio
@@ -233,10 +247,14 @@ const gestorAudio = {
     });
     estadoApp.audioActual = null;
   },
-
   reproducirAudio: async (sectionId) => {
     const refs = obtenerReferencias();
     gestorAudio.detenerAudiosSeccion();
+
+    // 👇 Si es la última sección, apagamos música de fondo suavemente
+    if (sectionId === "final" && refs.audios.fondo) {
+      utilidades.fadeOutAudio(refs.audios.fondo, 3000); // 3 segundos de fade
+    }
 
     const audio = refs.audios[sectionId];
     if (!audio) return false;

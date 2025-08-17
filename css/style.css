@@ -119,7 +119,7 @@ body {
 .background .particle-5 {
   background: linear-gradient(45deg, #2c2f5a, #3f4278);
   width: 555px;
-  height: 555px;
+  height: 55px;
   top: 40%;
   left: 90%;
   animation: move7 19s infinite linear, blur2 12s infinite alternate;
@@ -356,6 +356,8 @@ body {
   width: 100%;
   max-width: 800px;
   text-align: center;
+
+  vertical-align: top;
   z-index: 20;
 }
 
@@ -395,11 +397,11 @@ body {
 }
 
 .narrativa p {
-  font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+  font-size: clamp(1.9rem, 2.5vw, 1.3rem);
   line-height: 1;
   margin-bottom: 1.5rem;
   color: #ffffff;
-  font-weight: 300;
+  font-weight: 100;
 }
 
 .narrativa p:last-child {
@@ -412,42 +414,61 @@ body {
   gap: 2rem;
   align-items: center;
 }
-
-.play-center {
+/* Botón de play */
+#intro .play-center {
+  position: fixed; /* Cambiado a fixed para centrado respecto a la ventana */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.4s ease-out;
   z-index: 20;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.play-center.visible {
+#intro .play-center.visible {
   opacity: 1;
 }
 
-.play-center button {
+#intro .play-center button {
   background: none;
   border: none;
-  color: #ff8c42;
+  color: #ffffff; /* Cambiado a blanco para máximo contraste */
   font-size: 4rem;
   font-family: "Josefin Sans", sans-serif;
   font-weight: 300;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, transform 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
 }
 
-.play-center button:hover {
-  color: #ffb366;
+#intro .play-center button:hover {
+  color: #ffb366; /* Naranja claro al pasar el mouse */
   transform: scale(1.1);
 }
 
-.play-center button i {
+#intro .play-center button i {
   font-size: 4rem;
+  color: inherit; /* Hereda el color del botón */
+  display: inline-block; /* Asegura que el ícono se renderice */
 }
 
+/* Respaldo si Font Awesome no carga */
+#intro .play-center button::before {
+  content: "▶"; /* Símbolo de play como respaldo */
+  display: none; /* Oculto por defecto */
+  font-size: 4rem;
+  color: #ffffff;
+}
+
+#intro .play-center button i:not(.fa-play)::before {
+  display: inline-block; /* Muestra el respaldo si el ícono no carga */
+}
 .acciones {
   opacity: 0;
   display: flex;
