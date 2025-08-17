@@ -2,219 +2,225 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Twinkle+Star&display=swap"
+      rel="stylesheet"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Regalo Misterioso</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&display=swap"
-      rel="stylesheet"
+    <meta
+      name="description"
+      content="Una experiencia interactiva especial para Valentino"
     />
+    <title>¡Bienvenido Valentino!</title>
+
+    <!-- Preload critical fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@600&display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@600&display=swap"
+      />
+    </noscript>
+
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
+
+    <!-- Custom CSS con ruta corregida -->
     <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Preload audio files para mejor rendimiento -->
+    <link rel="preload" href="assets/audio/Fondo.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/01.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/02.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/03.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/04.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/05.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/06.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/c1.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/c2.mp3" as="audio" />
+    <link rel="preload" href="assets/audio/07.mp3" as="audio" />
   </head>
   <body>
-    <audio id="audio-fondo" src="assets/audio/00.mp3" loop></audio>
-
     <div class="wrapper">
-      <!-- Introducción -->
-      <div class="box" id="intro">
-        <div class="contenedor-titulo">
-          <h1>¡Bienvenido Valentino!</h1>
-        </div>
-        <div class="separador"></div>
-        <audio id="audio-01" src="assets/audio/001.mp3"></audio>
-        <button id="play-intro" type="button">
-          <i class="fas fa-play"></i>
-        </button>
+      <!-- Elementos de audio optimizados -->
+      <audio
+        id="audio-fondo"
+        src="assets/audio/Fondo.mp3"
+        preload="metadata"
+        loop
+        aria-label="Música de fondo"
+      ></audio>
+      <audio
+        id="audio-intro"
+        src="assets/audio/01.mp3"
+        preload="metadata"
+        aria-label="Narración de introducción"
+      ></audio>
+      <audio
+        id="audio-decision"
+        src="assets/audio/02.mp3"
+        preload="metadata"
+        aria-label="Narración de decisión"
+      ></audio>
+      <audio
+        id="audio-acertijo1"
+        src="assets/audio/03.mp3"
+        preload="metadata"
+        aria-label="Narración primer acertijo"
+      ></audio>
+      <audio
+        id="audio-acertijo2"
+        src="assets/audio/04.mp3"
+        preload="metadata"
+        aria-label="Narración segundo acertijo"
+      ></audio>
+      <audio
+        id="audio-acertijo3"
+        src="assets/audio/05.mp3"
+        preload="metadata"
+        aria-label="Narración tercer acertijo"
+      ></audio>
+      <audio
+        id="audio-final"
+        src="assets/audio/06.mp3"
+        preload="metadata"
+        aria-label="Narración final"
+      ></audio>
+      <audio
+        id="audio-confirmacion1"
+        src="assets/audio/c1.mp3"
+        preload="metadata"
+        aria-label="Primera confirmación"
+      ></audio>
+      <audio
+        id="audio-confirmacion2"
+        src="assets/audio/c2.mp3"
+        preload="metadata"
+        aria-label="Segunda confirmación"
+      ></audio>
+      <audio
+        id="audio-final2"
+        src="assets/audio/07.mp3"
+        preload="metadata"
+        aria-label="Final alternativo"
+      ></audio>
 
-        <p>
-          Ya diste el primer impulso, y lo que parecía pequeño comienza a
-          moverse.<br />
-          Las cosas importantes no hacen ruido cuando empiezan.<br />
-          A veces avanzan en silencio, sin que nadie las vea.<br />
-          <br />
-          Como una bola de nieve que empieza a rodar,<br />
-          pequeña, blanca y tranquila.<br />
-          <br />
-          Valentino, este es uno de esos momentos.<br />
-          Parece chico,<br />
-          pero guarda algo muy grande.<br />
-          <br />
-          Todo está listo para empezar a tomar forma.<br />
-          Solo falta que des el próximo paso.
-        </p>
-        <div class="separador"></div>
-        <div class="boton">
-          <button onclick="mostrarDecision()">Comenzar</button>
-        </div>
+      <!-- Indicador de carga optimizado -->
+      <div id="loading-indicator" class="loading-indicator" aria-live="polite">
+        <div class="snowflake" aria-hidden="true">❄</div>
+        <p>Cargando tu experiencia...</p>
       </div>
 
-      <!-- Sección de decisión -->
-      <div class="box" id="decision" style="display: none">
-        <div class="contenedor-titulo">
-          <h1>Una Decisión Importante</h1>
+      <!-- Sección Intro -->
+      <section id="intro" class="box" role="main" aria-label="Introducción">
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
         </div>
-        <div class="separador"></div>
+      </section>
 
-        <div class="decision-container">
-          <div class="opcion inmediata" onclick="elegirOpcion('inmediata')">
-            <h3>🎁 Opción Inmediata</h3>
-          </div>
+      <!-- Sección Decisión -->
+      <section
+        id="decision"
+        class="box"
+        role="main"
+        aria-label="Toma de decisión"
+      >
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
+        </div>
+      </section>
 
-          <div class="opcion esperar" onclick="elegirOpcion('esperar')">
-            <h3>⭐ Esperar y Confiar</h3>
-          </div>
+      <!-- Sección Confirmación 1 -->
+      <section
+        id="confirmacion1"
+        class="box"
+        role="main"
+        aria-label="Primera confirmación"
+      >
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
         </div>
-      </div>
+      </section>
 
-      <!-- Acertijo 1 -->
-      <div class="box" id="acertijo1" style="display: none">
-        <div class="contenedor-titulo">
-          <h1>Está en tus manos</h1>
+      <!-- Sección Confirmación 2 -->
+      <section
+        id="confirmacion2"
+        class="box"
+        role="main"
+        aria-label="Segunda confirmación"
+      >
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
         </div>
-        <div class="separador"></div>
-        <audio id="audio-02" src="assets/audio/002.mp3"></audio>
-        <button id="play-acertijo1" type="button">
-          <i class="fas fa-play"></i>
-        </button>
-        <p>
-          Hay algo que no se ve… pero aparece cada vez que elegís.<br />
-          No todos la reconocen. Algunos la cargan sin saberlo.<br />
-          Nadie te obliga a tenerla.<br />
-          Y sin embargo… ya es tuya.<br />
-          <br />
-          No brilla, no se celebra.<br />
-          Pero todo lo que viene después…<br />
-          depende de cómo la lleves.<br />
-          <br />
-          ¿Qué es?
-        </p>
-        <div class="separador"></div>
-        <input type="text" id="respuesta1" placeholder="Tu respuesta..." />
-        <p class="mensaje-error" id="error1"></p>
-        <div class="boton">
-          <button onclick="validarAcertijo(1)">Enviar</button>
-        </div>
-      </div>
+      </section>
 
-      <!-- Acertijo 2 -->
-      <div class="box" id="acertijo2" style="display: none">
-        <div class="contenedor-titulo">
-          <h1>Lo que nunca vuelve</h1>
+      <!-- Sección Acertijo 1 -->
+      <section
+        id="acertijo1"
+        class="box"
+        role="main"
+        aria-label="Primer acertijo"
+      >
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
         </div>
-        <div class="separador"></div>
-        <audio id="audio-03" src="assets/audio/003.mp3"></audio>
-        <button id="play-acertijo2" type="button">
-          <i class="fas fa-play"></i>
-        </button>
-        <p>
-          Una bola de nieve no crece si se queda quieta.<br />
-          Cada paso la cambia. Cada segundo suma.<br />
-          Si la empujás con constancia, crece.<br />
-          Si la frenás… se enfría.<br />
-          <br />
-          Al principio no se nota.<br />
-          Pero con el tiempo… lo vas a ver.<br />
-          <br />
-          ¿Qué es lo que siempre avanza, aunque no lo veas?
-        </p>
-        <div class="separador"></div>
-        <input type="text" id="respuesta2" placeholder="Tu respuesta..." />
-        <p class="mensaje-error" id="error2"></p>
-        <div class="boton">
-          <button onclick="validarAcertijo(2)">Enviar</button>
-        </div>
-      </div>
+      </section>
 
-      <!-- Acertijo 3 -->
-      <div class="box" id="acertijo3" style="display: none">
-        <div class="contenedor-titulo">
-          <h1>Esperar también es avanzar</h1>
+      <!-- Sección Acertijo 2 -->
+      <section
+        id="acertijo2"
+        class="box"
+        role="main"
+        aria-label="Segundo acertijo"
+      >
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
         </div>
-        <div class="separador"></div>
-        <audio id="audio-04" src="assets/audio/004.mp3"></audio>
-        <button id="play-acertijo3" type="button">
-          <i class="fas fa-play"></i>
-        </button>
-        <p>
-          Hay quienes la empujan con apuro… y terminan rompiéndola.<br />
-          Otros… la dejan rodar.<br />
-          No tienen prisa. Confían.<br />
-          <br />
-          Porque saben que lo que crece bien…<br />
-          no necesita correr.<br />
-          <br />
-          Lo importante no es llegar primero,<br />
-          sino saber esperar.<br />
-          <br />
-          ¿Qué tenés cuando no te apurás?
-        </p>
-        <div class="separador"></div>
-        <input type="text" id="respuesta3" placeholder="Tu respuesta..." />
-        <p class="mensaje-error" id="error3"></p>
-        <div class="boton">
-          <button onclick="validarAcertijo(3)">Enviar</button>
-        </div>
-      </div>
+      </section>
 
-      <!-- Final -->
-      <div class="box" id="final" style="display: none">
-        <div class="contenedor-titulo">
-          <h1>¡Felicitaciones!</h1>
+      <!-- Sección Acertijo 3 -->
+      <section
+        id="acertijo3"
+        class="box"
+        role="main"
+        aria-label="Tercer acertijo"
+      >
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
         </div>
-        <div class="separador"></div>
-        <div class="mensaje-final">
-          <audio id="audio-05" src="assets/audio/005.mp3"></audio>
-          <button id="play-final" type="button">Reproducir</button>
-          <p>
-            Este regalo no suena.<br />
-            No se rompe. No tiene moño.<br />
-            <br />
-            Pero es tuyo, Valentino.<br />
-            Y guarda algo que puede crecer… mucho más de lo que imaginás.<br />
-            <br />
-            Este es tu regalo,
-          </p>
+      </section>
 
-          <p class="final" id="mensaje-final-contenido">
-            <span class="monto">$200.000</span> solo tuyo...<br />
-            <br />
-            Desde hoy, está a tu nombre.<br />
-            No para usar ahora.<br />
-            Sino para dejar que crezca.<br />
-            <br />
-            ¿Cómo crecerá?<br />
-            <br />
-            Con responsabilidad, porque las decisiones importan incluso antes de
-            ver qué pasa.<br />
-            Con paciencia, porque lo valioso se hace esperar.<br />
-            Y con tiempo, porque lo pequeño se vuelve grande si lo dejás
-            avanzar.<br />
-            <br />
-            Como esa bola de nieve que empezó rodando en silencio.<br />
-            Si no la frenás…<br />
-            Si no la apurás…<br />
-            <br />
-            Va ganando forma.<br />
-            Va sumando sentido.<br />
-            <br />
-            Este regalo va a estar guardado, creciendo sin que lo veas,<br />
-            hasta que cumplas 18.<br />
-            <br />
-            Y cuando llegue ese día, Valentino…<br />
-            va a estar listo para que vos decidas qué hacer con él.
-          </p>
+      <!-- Sección Final (para esperar) -->
+      <section id="final" class="box" role="main" aria-label="Felicitaciones">
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
         </div>
-        <div class="separador"></div>
-      </div>
+      </section>
+
+      <!-- Sección Final Alternativo (para inmediato) -->
+      <section
+        id="final2"
+        class="box"
+        role="main"
+        aria-label="Regalo inmediato"
+      >
+        <div class="narrativa">
+          <!-- Contenido generado dinámicamente -->
+        </div>
+      </section>
     </div>
 
-    <script src="js/script.js"></script>
+    <!-- JavaScript con ruta corregida -->
+    <script src="js/script.js" defer></script>
   </body>
 </html>
