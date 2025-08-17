@@ -1,97 +1,243 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎁</text></svg>"
-    />
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Experiencia Interactiva Navideña</title>
+    <title>Experiencia Navideña</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Cinzel:wght@700&family=Twinkle+Star&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;600&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
-      rel="stylesheet"
-    />
-
     <link rel="stylesheet" href="css/style.css" />
-    <script src="js/script.js" defer></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
   </head>
   <body>
-    <div class="snow-layer"></div>
-
-    <div class="wrapper">
-      <div class="box active" id="intro">
-        <div class="narrativa"></div>
-      </div>
-      <div class="box" id="decision">
-        <div class="narrativa"></div>
-      </div>
-      <div class="box" id="confirmacion1">
-        <div class="narrativa"></div>
-      </div>
-      <div class="box" id="confirmacion2">
-        <div class="narrativa"></div>
-      </div>
-      <div class="box" id="acertijo1">
-        <div class="narrativa"></div>
-      </div>
-      <div class="box" id="acertijo2">
-        <div class="narrativa"></div>
-      </div>
-      <div class="box" id="acertijo3">
-        <div class="narrativa"></div>
-      </div>
-      <div class="box" id="final">
-        <div class="narrativa"></div>
-      </div>
-      <div class="box" id="final2">
-        <div class="narrativa"></div>
-      </div>
+    <div class="background">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+      <div class="particle particle-4"></div>
+      <div class="particle particle-5"></div>
+      <div class="particle particle-6"></div>
+      <div class="particle particle-7"></div>
+      <div class="particle particle-8"></div>
+      <div class="particle particle-9"></div>
+      <div class="particle particle-10"></div>
+      <div class="particle particle-11"></div>
+      <div class="particle particle-12"></div>
     </div>
+    <audio id="audio-fondo" loop src="assets/audio/Fondo.mp3"></audio>
+    <audio id="audio-intro" src="assets/audio/01.mp3"></audio>
+    <audio id="audio-decision" src="assets/audio/02.mp3"></audio>
+    <audio id="audio-confirmacion1" src="assets/audio/C1.mp3"></audio>
+    <audio id="audio-confirmacion2" src="assets/audio/C2.mp3"></audio>
+    <audio id="audio-acertijo1" src="assets/audio/03.mp3"></audio>
+    <audio id="audio-acertijo2" src="assets/audio/04.mp3"></audio>
+    <audio id="audio-acertijo3" src="assets/audio/05.mp3"></audio>
+    <audio id="audio-final" src="assets/audio/06.mp3"></audio>
+    <audio id="audio-final2" src="assets/audio/07.mp3"></audio>
 
-    <audio
-      id="audio-fondo"
-      src="assets/audio/Fondo.mp3"
-      loop
-      preload="auto"
-    ></audio>
-    <audio id="audio-intro" src="assets/audio/01.mp3" preload="auto"></audio>
-    <audio id="audio-decision" src="assets/audio/02.mp3" preload="auto"></audio>
-    <audio
-      id="audio-confirmacion1"
-      src="assets/audio/C1.mp3"
-      preload="auto"
-    ></audio>
-    <audio
-      id="audio-confirmacion2"
-      src="assets/audio/C2.mp3"
-      preload="auto"
-    ></audio>
-    <audio
-      id="audio-acertijo1"
-      src="assets/audio/03.mp3"
-      preload="auto"
-    ></audio>
-    <audio
-      id="audio-acertijo2"
-      src="assets/audio/04.mp3"
-      preload="auto"
-    ></audio>
-    <audio
-      id="audio-acertijo3"
-      src="assets/audio/05.mp3"
-      preload="auto"
-    ></audio>
-    <audio id="audio-final" src="assets/audio/06.mp3" preload="auto"></audio>
-    <audio id="audio-final2" src="assets/audio/07.mp3" preload="auto"></audio>
+    <div class="container">
+      <!-- Sección Intro -->
+      <section id="intro" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="play-center">
+            <button><i class="fas fa-play"></i></button>
+          </div>
+          <div class="acciones"></div>
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Decision -->
+      <section id="decision" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="acciones"></div>
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Confirmacion1 -->
+      <section id="confirmacion1" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="acciones"></div>
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Confirmacion2 -->
+      <section id="confirmacion2" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="acciones"></div>
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Acertijo1 -->
+      <section id="acertijo1" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="input-group">
+            <div>
+              <input
+                type="text"
+                id="respuesta1"
+                placeholder="Escribe tu respuesta..."
+              />
+              <button class="send-button">Enviar</button>
+            </div>
+            <div class="mensaje-error" id="error1"></div>
+          </div>
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Acertijo2 -->
+      <section id="acertijo2" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="input-group">
+            <div>
+              <input
+                type="text"
+                id="respuesta2"
+                placeholder="Escribe tu respuesta..."
+              />
+              <button class="send-button">Enviar</button>
+            </div>
+            <div class="mensaje-error" id="error2"></div>
+          </div>
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Acertijo3 -->
+      <section id="acertijo3" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="input-group">
+            <div>
+              <input
+                type="text"
+                id="respuesta3"
+                placeholder="Escribe tu respuesta..."
+              />
+              <button class="send-button">Enviar</button>
+            </div>
+            <div class="mensaje-error" id="error3"></div>
+          </div>
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Final -->
+      <section id="final" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección Final2 -->
+      <section id="final2" class="section">
+        <div class="titulo">
+          <h1></h1>
+        </div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="replay-button">
+            <button>Repetir</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script src="js/script.js"></script>
+    <svg 
+  class="bokeh" 
+  viewBox="0 0 10 10" 
+  xmlns="http://www.w3.org/2000/svg" 
+
+     >
+  
+  <circle cx="10%" cy="85%" r="75%"  />
+  <circle cx="45%" cy="50%" r="15%"   />
+  <circle cx="85%" cy="35%" r="30%"  />
+  <circle cx="60%" cy="85%" r="20%"   />
+  <circle cx="45%" cy="50%" r="30%"   />
+  <circle cx="35%" cy="25%" r="20%"   />
+  <circle cx="90%" cy="-25%" r="35%"  />
+  <circle cx="-15%" cy="30%" r="30%"  />
+  <circle cx="65%" cy="85%" r="55%"   />
+  <circle cx="45%" cy="50%" r="20%"   />
+
+</svg>
+
+<section>
+
   </body>
 </html>

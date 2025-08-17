@@ -2,20 +2,23 @@
  * EXPERIENCIA INTERACTIVA NAVIDEÑA OPTIMIZADA
  */
 
-// Variables globales
+// Estado de la aplicación
 let estadoApp = {
   fondoIniciado: false,
   seccionActiva: null,
   audioActual: null,
   eventListenersRegistrados: false,
-  seccionesYaCargadas: new Set(),
+  seccionCount: 0, // Contador para oscurecer fondo
+  playClicked: false, // Estado para controlar el botón play
 };
 
+// Configuración de audio
 const configAudio = {
   volumenFondo: 0.1,
   volumenNarracion: 0.8,
 };
 
+// Referencias DOM
 let referencias = {};
 
 // Obtener referencias DOM
@@ -46,7 +49,7 @@ const obtenerReferencias = () => {
       final2: document.getElementById("final2"),
     };
 
-    referencias.wrapper = document.querySelector(".wrapper");
+    referencias.container = document.querySelector(".container");
   }
   return referencias;
 };
@@ -112,7 +115,6 @@ const contenidoTexto = {
       "Es algo que cargas cada vez que eliges.",
     ],
     respuestaCorrecta: "responsabilidad",
-    placeholder: "Tu respuesta...",
   },
 
   acertijo2: {
@@ -130,7 +132,6 @@ const contenidoTexto = {
       "¿Qué es?",
     ],
     respuestaCorrecta: "tiempo",
-    placeholder: "Tu respuesta...",
   },
 
   acertijo3: {
@@ -146,18 +147,15 @@ const contenidoTexto = {
       "es algo que llevas dentro cada vez que decides no apurarte.",
     ],
     respuestaCorrecta: "paciencia",
-    placeholder: "Tu respuesta...",
   },
 
   final: {
     titulo: "¡Felicitaciones!",
     lineas: [
-      "Este regalo no suena.",
-      "No se rompe. No tiene moño.",
+      "Este regalo no suena. No se rompe. No tiene moño.",
       "Pero es tuyo, Valentino,",
       "y guarda algo capaz de crecer… más de lo que ahora podés imaginar.",
-      "$200.000 solo tuyo.",
-      "Desde hoy, está a tu nombre.",
+      "$200.000 solo tuyo. Desde hoy, está a tu nombre.",
       "No para usar ahora, sino para dejar que se transforme con el tiempo.",
       "¿Cómo crecerá?",
       "Con responsabilidad, porque cada decisión que tomás puede cambiar su destino.",
@@ -165,8 +163,7 @@ const contenidoTexto = {
       "Y con tiempo, porque incluso lo pequeño puede volverse imparable si lo dejás avanzar,",
       "como esa bola de nieve que empezó rodando en silencio…",
       "y ahora va ganando fuerza con cada vuelta.",
-      "Si no la frenás…",
-      "Si no la apurás…",
+      "Si no la frenás… Si no la apurás…",
       "Va tomando forma, va sumando sentido, va construyendo su propia grandeza.",
       "Este regalo va a estar guardado, creciendo sin que lo veas,",
       "hasta que cumplas 18 años.",
@@ -197,14 +194,6 @@ const utilidades = {
       clearTimeout(timeout);
       timeout = setTimeout(later, wait);
     };
-  },
-
-  validarElemento: (elemento, nombre) => {
-    if (!elemento) {
-      console.warn(`Elemento ${nombre} no encontrado en el DOM`);
-      return false;
-    }
-    return true;
   },
 
   limpiarAudio: (audio) => {
@@ -259,273 +248,188 @@ const gestorAudio = {
           ? configAudio.volumenFondo
           : configAudio.volumenNarracion;
       audio.onended = () => {
-        gestorSecciones.mostrarAccionesDespuesDelAudio(sectionId);
+        gestorSecciones.mostrarControlesdespuesDelAudio(sectionId);
       };
       await audio.play();
       estadoApp.audioActual = audio;
       return true;
     } catch (error) {
       console.error(`Error al reproducir audio ${sectionId}:`, error);
+      gestorSecciones.mostrarControlesdespuesDelAudio(sectionId);
       return false;
     }
   },
 };
 
-// Generador de contenido optimizado (evita elementos vacíos)
+// Generador de contenido
 const generadorContenido = {
-  crearElemento: (tag, className = "", textContent = "", attributes = {}) => {
-    const elemento = document.createElement(tag);
-    if (className) elemento.className = className;
-    if (textContent) elemento.textContent = textContent;
-    Object.entries(attributes).forEach(([key, value]) =>
-      elemento.setAttribute(key, value)
-    );
-    return elemento;
-  },
-
-  crearContenidoSeccion: (seccionId, contenido) => {
+  actualizarTitulo: (seccionId) => {
     const refs = obtenerReferencias();
     const seccion = refs.secciones[seccionId];
-    if (!utilidades.validarElemento(seccion, `sección ${seccionId}`)) return;
+    const contenido = contenidoTexto[seccionId];
 
-    const narrativa = seccion.querySelector(".narrativa");
-    if (!utilidades.validarElemento(narrativa, `narrativa de ${seccionId}`))
-      return;
-
-    const fragment = document.createDocumentFragment();
-
-    // Título siempre presente
-    const titulo = generadorContenido.crearElemento("div", "titulo");
-    titulo.innerHTML = `<h1>${contenido.titulo}</h1>`;
-    fragment.appendChild(titulo);
-
-    // Botón de play solo para intro
-    if (seccionId === "intro") {
-      const playCenter = generadorContenido.crearElemento("div", "play-center");
-      playCenter.innerHTML =
-        '<button type="button" aria-label="Reproducir audio"><i class="fas fa-play"></i></button>';
-      fragment.appendChild(playCenter);
+    if (seccion && contenido) {
+      const titulo = seccion.querySelector(".titulo h1");
+      if (titulo && estadoApp.playClicked) {
+        titulo.textContent = contenido.titulo;
+      }
     }
+  },
 
-    // Párrafos
-    contenido.lineas.forEach((linea) => {
-      const p = generadorContenido.crearElemento("p", "", linea, {
-        "data-appear": "",
-      });
-      fragment.appendChild(p);
-    });
+  actualizarNarrativa: (seccionId) => {
+    const refs = obtenerReferencias();
+    const seccion = refs.secciones[seccionId];
+    const contenido = contenidoTexto[seccionId];
 
-    // Controles solo para acertijos
-    if (contenido.respuestaCorrecta) {
-      const controles = generadorContenido.crearElemento("div", "controles");
-      const inputId = `respuesta${seccionId.replace("acertijo", "")}`;
-      const errorId = `error${seccionId.replace("acertijo", "")}`;
-
-      const input = generadorContenido.crearElemento("input", "", "", {
-        type: "text",
-        id: inputId,
-        required: "true",
-        maxlength: "50",
-        placeholder: contenido.placeholder,
-        autocomplete: "off",
-      });
-
-      const button = generadorContenido.crearElemento(
-        "button",
-        "send-button",
-        "",
-        {
-          type: "button",
-          "aria-label": "Enviar respuesta",
-        }
-      );
-      button.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
-
-      const error = generadorContenido.crearElemento(
-        "div",
-        "mensaje-error",
-        "",
-        { id: errorId }
-      );
-
-      controles.appendChild(input);
-      controles.appendChild(button);
-      controles.appendChild(error);
-      fragment.appendChild(controles);
+    if (seccion && contenido) {
+      const narrativa = seccion.querySelector(".narrativa");
+      if (narrativa) {
+        narrativa.innerHTML = "";
+        contenido.lineas.forEach((linea) => {
+          const p = document.createElement("p");
+          p.textContent = linea;
+          narrativa.appendChild(p);
+        });
+      }
     }
+  },
 
-    // Acciones solo si hay botones o boton único
-    if (contenido.botones || contenido.boton) {
-      const acciones = generadorContenido.crearElemento("div", "acciones");
+  actualizarBotones: (seccionId) => {
+    const refs = obtenerReferencias();
+    const seccion = refs.secciones[seccionId];
+    const contenido = contenidoTexto[seccionId];
 
-      if (contenido.botones) {
+    if (seccion && contenido) {
+      const acciones = seccion.querySelector(".acciones");
+      if (acciones && contenido.botones) {
+        acciones.innerHTML = "";
         contenido.botones.forEach((texto) => {
-          const className = seccionId === "decision" ? "opcion" : "";
-          const button = generadorContenido.crearElemento(
-            "button",
-            className,
-            texto,
-            { type: "button" }
-          );
+          const button = document.createElement("button");
+          button.textContent = texto;
+          button.type = "button";
           acciones.appendChild(button);
         });
-      } else if (contenido.boton) {
-        const button = generadorContenido.crearElemento(
-          "button",
-          "",
-          contenido.boton,
-          { type: "button" }
-        );
+      } else if (acciones && contenido.boton) {
+        acciones.innerHTML = "";
+        const button = document.createElement("button");
+        button.textContent = contenido.boton;
+        button.type = "button";
         acciones.appendChild(button);
       }
-
-      fragment.appendChild(acciones);
     }
-
-    // Replay button para secciones con audio (excepto intro)
-    if (seccionId !== "intro") {
-      const replayButton = generadorContenido.crearElemento(
-        "div",
-        "replay-button"
-      );
-      replayButton.innerHTML =
-        '<button type="button" aria-label="Repetir audio"><i class="fas fa-redo"></i> Repetir</button>';
-      fragment.appendChild(replayButton);
-    }
-
-    narrativa.innerHTML = "";
-    narrativa.appendChild(fragment);
   },
 };
 
 // Gestor de secciones
 const gestorSecciones = {
+  mostrarNarrativa: (seccion) => {
+    const narrativa = seccion.querySelector(".narrativa");
+    if (narrativa) {
+      narrativa.classList.add("visible");
+    }
+  },
+
   mostrarSeccion: (id) => {
     const refs = obtenerReferencias();
     gestorAudio.detenerAudiosSeccion();
 
+    // Incrementar contador para oscurecer fondo (máximo 0.5 para evitar oscuridad excesiva)
+    if (id !== "intro") {
+      estadoApp.seccionCount = Math.min(estadoApp.seccionCount + 1, 5);
+      document.body.style.setProperty(
+        "--bg-opacity",
+        estadoApp.seccionCount * 0.1
+      );
+    }
+
+    // Ocultar todas las secciones
     Object.values(refs.secciones).forEach((seccion) =>
       seccion.classList.remove("active")
     );
 
+    // Mostrar la nueva sección
     const nuevaSeccion = refs.secciones[id];
-    if (!utilidades.validarElemento(nuevaSeccion, `sección ${id}`)) return;
+    if (!nuevaSeccion) return;
 
     nuevaSeccion.classList.add("active");
+    nuevaSeccion.id = id; // Asegurar que el ID esté correctamente asignado
     estadoApp.seccionActiva = nuevaSeccion;
 
-    if (id === "decision" && estadoApp.seccionesYaCargadas.has(id)) {
-      gestorSecciones.mostrarTodoInmediatamente(nuevaSeccion);
-    } else {
-      const elementos = {
-        lineas: nuevaSeccion.querySelectorAll("p[data-appear]"),
-        acciones: nuevaSeccion.querySelector(".acciones"),
-        playCenter: nuevaSeccion.querySelector(".play-center"),
-        replayButton: nuevaSeccion.querySelector(".replay-button"),
-        controles: nuevaSeccion.querySelector(".controles"),
-      };
+    // Actualizar contenido
+    generadorContenido.actualizarTitulo(id);
+    generadorContenido.actualizarNarrativa(id);
+    generadorContenido.actualizarBotones(id);
 
-      elementos.lineas.forEach((p) => p.classList.remove("visible"));
-      if (elementos.acciones) elementos.acciones.classList.remove("visible");
-      if (elementos.controles) elementos.controles.classList.remove("visible");
-      if (elementos.playCenter) elementos.playCenter.classList.remove("hidden");
-      if (elementos.replayButton)
-        elementos.replayButton.classList.remove("visible");
+    // Ocultar todos los controles inicialmente
+    gestorSecciones.ocultarControles(nuevaSeccion);
 
-      if (id !== "intro") {
-        setTimeout(() => {
-          gestorAudio.reproducirAudio(id);
-          gestorSecciones.animarTexto(id);
-        }, 300);
+    // Para intro, mostrar el botón de play si no se ha clicado
+    if (id === "intro" && !estadoApp.playClicked) {
+      const playCenter = nuevaSeccion.querySelector(".play-center");
+      if (playCenter) {
+        playCenter.classList.add("visible");
+        playCenter.style.display = "block";
       }
+    } else {
+      // Para otras secciones, reproducir audio automáticamente
+      setTimeout(() => {
+        gestorAudio.reproducirAudio(id);
+        gestorSecciones.mostrarNarrativa(nuevaSeccion);
+      }, 300);
     }
   },
 
-  mostrarTodoInmediatamente: (seccion) => {
-    const elementos = {
-      lineas: seccion.querySelectorAll("p[data-appear]"),
-      acciones: seccion.querySelector(".acciones"),
-      controles: seccion.querySelector(".controles"),
-      replayButton: seccion.querySelector(".replay-button"),
-    };
+  ocultarControles: (seccion) => {
+    const elementos = [
+      ".play-center",
+      ".acciones",
+      ".input-group",
+      ".replay-button",
+    ];
 
-    elementos.lineas.forEach((linea, index) => {
-      linea.classList.add("visible");
-      const seccionId = seccion.id;
-      const contenido = contenidoTexto[seccionId];
-      if (contenido && contenido.lineas[index]) {
-        linea.textContent = contenido.lineas[index];
+    elementos.forEach((selector) => {
+      const elemento = seccion.querySelector(selector);
+      if (elemento) {
+        elemento.classList.remove("visible");
+        if (selector === ".replay-button") {
+          // Limpiar contenido del botón repetir para evitar duplicados
+          elemento.innerHTML = "";
+        }
+        if (selector !== ".play-center") {
+          elemento.style.display = "block";
+        }
       }
     });
 
-    if (elementos.acciones) elementos.acciones.classList.add("visible");
-    if (elementos.controles) elementos.controles.classList.add("visible");
-    if (elementos.replayButton) elementos.replayButton.classList.add("visible");
+    // Ocultar narrativa también
+    const narrativa = seccion.querySelector(".narrativa");
+    if (narrativa) {
+      narrativa.classList.remove("visible");
+    }
   },
 
-  mostrarAccionesDespuesDelAudio: (sectionId) => {
+  mostrarControlesdespuesDelAudio: (sectionId) => {
     const seccion = estadoApp.seccionActiva;
     if (!seccion || seccion.id !== sectionId) return;
 
-    const elementos = {
-      acciones: seccion.querySelector(".acciones"),
-      controles: seccion.querySelector(".controles"),
-      replayButton: seccion.querySelector(".replay-button"),
-    };
+    setTimeout(() => {
+      const acciones = seccion.querySelector(".acciones");
+      const inputGroup = seccion.querySelector(".input-group");
+      const replayButton = seccion.querySelector(".replay-button");
 
-    if (elementos.acciones)
-      setTimeout(() => elementos.acciones.classList.add("visible"), 500);
-    if (elementos.controles)
-      setTimeout(() => elementos.controles.classList.add("visible"), 500);
-    if (elementos.replayButton)
-      setTimeout(() => elementos.replayButton.classList.add("visible"), 800);
+      // Recrear completamente el botón de repetir sin CSS ::before
+      if (replayButton) {
+        replayButton.innerHTML = '<button class="replay-btn">Repetir</button>';
+        replayButton.classList.add("visible");
+      }
 
-    estadoApp.seccionesYaCargadas.add(sectionId);
-  },
-
-  animarTexto: (sectionId) => {
-    const seccion = estadoApp.seccionActiva;
-    if (!seccion || seccion.id !== sectionId) return;
-
-    const elementos = {
-      playCenter: seccion.querySelector(".play-center"),
-      lineas: Array.from(seccion.querySelectorAll("p[data-appear]")),
-    };
-
-    if (elementos.playCenter) elementos.playCenter.classList.add("hidden");
-
-    elementos.lineas.forEach((linea) => {
-      linea.classList.remove("visible");
-      linea.textContent = "";
-      linea.style.opacity = "1";
-    });
-
-    const escribirLinea = (linea, texto) =>
-      new Promise((resolve) => {
-        linea.classList.add("visible");
-        let i = 0;
-        const escribir = () => {
-          if (i < texto.length) {
-            linea.textContent += texto[i];
-            i++;
-            const velocidades = { ".": 400, ",": 200, "…": 600 };
-            const velocidad = velocidades[texto[i - 1]] || 50;
-            setTimeout(escribir, velocidad);
-          } else {
-            resolve();
-          }
-        };
-        escribir();
-      });
-
-    const contenido = contenidoTexto[sectionId];
-    if (!contenido) return;
-
-    elementos.lineas.reduce(
-      (promise, linea, index) =>
-        promise.then(() => escribirLinea(linea, contenido.lineas[index])),
-      Promise.resolve()
-    );
+      if (acciones) {
+        acciones.classList.add("visible");
+      }
+      if (inputGroup) {
+        inputGroup.classList.add("visible");
+      }
+    }, 500);
   },
 };
 
@@ -541,27 +445,16 @@ const validadorRespuestas = {
     paciencia: ["paciencia", "la paciencia"],
   },
 
-  estilos: {
-    correcto: {
-      border: "rgba(34, 139, 34, 0.4)",
-      bg: "rgba(34, 139, 34, 0.1)",
-    },
-    incorrecto: {
-      border: "rgba(220, 20, 60, 0.3)",
-      bg: "rgba(220, 20, 60, 0.1)",
-    },
-    neutro: {
-      border: "rgba(255, 255, 255, 0.15)",
-      bg: "rgba(255, 255, 255, 0.05)",
-    },
+  obtenerMensajeError: () => {
+    const mensajes = [
+      "Intenta pensar más profundamente...",
+      "No es la respuesta correcta, reflexiona...",
+      "Piensa en lo que representa la historia...",
+    ];
+    return mensajes[Math.floor(Math.random() * mensajes.length)];
   },
 
-  aplicarEstilo(input, estilo) {
-    input.style.borderColor = estilo.border;
-    input.style.background = estilo.bg;
-  },
-
-  validarAcertijo(numero) {
+  validarAcertijo: (numero) => {
     const input = document.getElementById(`respuesta${numero}`);
     const error = document.getElementById(`error${numero}`);
     const contenido = contenidoTexto[`acertijo${numero}`];
@@ -579,20 +472,22 @@ const validadorRespuestas = {
 
     if (esCorrecta) {
       error.classList.remove("show");
-      this.aplicarEstilo(input, this.estilos.correcto);
+      input.classList.remove("input-incorrect");
+      input.classList.add("input-correct");
 
       setTimeout(() => {
         const siguienteSeccion = numero < 3 ? `acertijo${numero + 1}` : "final";
         gestorSecciones.mostrarSeccion(siguienteSeccion);
-      }, 500);
+      }, 800);
     } else {
-      error.textContent = this.obtenerMensajeError();
+      error.textContent = validadorRespuestas.obtenerMensajeError();
       error.classList.add("show");
-      this.aplicarEstilo(input, this.estilos.incorrecto);
+      input.classList.remove("input-correct");
+      input.classList.add("input-incorrect");
 
       setTimeout(() => {
         input.value = "";
-        this.aplicarEstilo(input, this.estilos.neutro);
+        input.classList.remove("input-correct", "input-incorrect");
         error.classList.remove("show");
       }, 2000);
     }
@@ -602,12 +497,14 @@ const validadorRespuestas = {
 // Navegación
 const navegacion = {
   mostrarDecision: () => {
-    gestorAudio.iniciarAudioFondo();
     gestorSecciones.mostrarSeccion("decision");
   },
 
   elegirOpcion: (opcion) => {
-    const destinos = { inmediata: "confirmacion1", esperar: "acertijo1" };
+    const destinos = {
+      inmediata: "confirmacion1",
+      esperar: "acertijo1",
+    };
     const destino = destinos[opcion];
     if (destino) gestorSecciones.mostrarSeccion(destino);
   },
@@ -627,21 +524,36 @@ const gestorEventos = {
   manejarClick: utilidades.debounce((e) => {
     const { target } = e;
     const playButton = target.closest(".play-center button");
-    const replayButton = target.closest(".replay-button button");
+    const replayButton = target.closest(
+      ".replay-button button, .replay-button .replay-btn"
+    );
     const actionButton = target.closest(".acciones button");
     const sendButton = target.closest(".send-button");
 
     if (playButton && estadoApp.seccionActiva) {
       const sectionId = estadoApp.seccionActiva.id;
+
+      // Ocultar botón de play permanentemente
+      const playCenter = estadoApp.seccionActiva.querySelector(".play-center");
+      if (playCenter) {
+        playCenter.style.display = "none";
+        playCenter.classList.remove("visible");
+        estadoApp.playClicked = true;
+      }
+
+      // Iniciar audio de fondo AQUÍ cuando se da play
+      gestorAudio.iniciarAudioFondo();
+
+      // Reproducir audio de la sección y mostrar título
       gestorAudio.reproducirAudio(sectionId);
-      gestorSecciones.animarTexto(sectionId);
+      generadorContenido.actualizarTitulo(sectionId);
+      gestorSecciones.mostrarNarrativa(estadoApp.seccionActiva);
       return;
     }
 
     if (replayButton && estadoApp.seccionActiva) {
       const sectionId = estadoApp.seccionActiva.id;
       gestorAudio.reproducirAudio(sectionId);
-      gestorSecciones.animarTexto(sectionId);
       return;
     }
 
@@ -661,30 +573,24 @@ const gestorEventos = {
     const action = button.textContent.toLowerCase().trim();
     const seccionActual = estadoApp.seccionActiva?.id;
 
-    const mapaAcciones = {
-      comenzar: () => navegacion.mostrarDecision(),
-      "regalo ahora": () => navegacion.elegirOpcion("inmediata"),
-      esperar: () => navegacion.elegirOpcion("esperar"),
-      sí: () => {
-        if (seccionActual === "confirmacion1")
-          return navegacion.confirmarOpcion(1, "si");
-        if (seccionActual === "confirmacion2")
-          return navegacion.confirmarOpcion(2, "si");
-      },
-      no: () => {
-        if (seccionActual === "confirmacion1")
-          return navegacion.confirmarOpcion(1, "no");
-        if (seccionActual === "confirmacion2")
-          return navegacion.confirmarOpcion(2, "no");
-      },
-    };
-
-    const accionEncontrada = Object.keys(mapaAcciones).find(
-      (key) => action.includes(key) || action === key
-    );
-
-    if (accionEncontrada && mapaAcciones[accionEncontrada]) {
-      mapaAcciones[accionEncontrada]();
+    if (action.includes("comenzar")) {
+      navegacion.mostrarDecision();
+    } else if (action.includes("regalo ahora") || action.includes("quiero")) {
+      navegacion.elegirOpcion("inmediata");
+    } else if (action.includes("esperaré") || action.includes("esperar")) {
+      navegacion.elegirOpcion("esperar");
+    } else if (action === "sí") {
+      if (seccionActual === "confirmacion1") {
+        navegacion.confirmarOpcion(1, "si");
+      } else if (seccionActual === "confirmacion2") {
+        navegacion.confirmarOpcion(2, "si");
+      }
+    } else if (action === "no") {
+      if (seccionActual === "confirmacion1") {
+        navegacion.confirmarOpcion(1, "no");
+      } else if (seccionActual === "confirmacion2") {
+        navegacion.confirmarOpcion(2, "no");
+      }
     }
   },
 
@@ -700,7 +606,7 @@ const gestorEventos = {
     if (estadoApp.eventListenersRegistrados) return;
 
     const refs = obtenerReferencias();
-    refs.wrapper.addEventListener("click", gestorEventos.manejarClick);
+    refs.container.addEventListener("click", gestorEventos.manejarClick);
     document.addEventListener("keydown", gestorEventos.manejarTeclado);
 
     estadoApp.eventListenersRegistrados = true;
@@ -709,27 +615,25 @@ const gestorEventos = {
 
 // Inicializador
 const inicializador = {
-  inicializarSecciones: () => {
-    Object.keys(contenidoTexto).forEach((seccionId) => {
-      generadorContenido.crearContenidoSeccion(
-        seccionId,
-        contenidoTexto[seccionId]
-      );
-    });
-  },
-
   iniciar: () => {
     try {
-      inicializador.inicializarSecciones();
       gestorEventos.registrarEventListeners();
       const refs = obtenerReferencias();
       estadoApp.seccionActiva = refs.secciones.intro;
+      gestorSecciones.mostrarSeccion("intro");
+      // Forzar visibilidad del botón de play al inicio
+      const playCenter = refs.secciones.intro.querySelector(".play-center");
+      if (playCenter) {
+        playCenter.classList.add("visible");
+        playCenter.style.display = "block";
+      }
     } catch (error) {
       console.error("Error durante la inicialización:", error);
     }
   },
 };
 
+// Inicializar cuando el DOM esté listo
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", inicializador.iniciar);
 } else {
