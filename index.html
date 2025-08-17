@@ -1,226 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎁</text></svg>"
+    />
+
     <meta charset="UTF-8" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Twinkle+Star&display=swap"
-      rel="stylesheet"
-    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Una experiencia interactiva especial para Valentino"
-    />
-    <title>¡Bienvenido Valentino!</title>
-
-    <!-- Preload critical fonts -->
+    <title>Experiencia Interactiva Navideña</title>
     <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@600&display=swap"
-      as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Cinzel:wght@700&family=Twinkle+Star&display=swap"
+      rel="stylesheet"
     />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@600&display=swap"
-      />
-    </noscript>
-
-    <!-- Font Awesome -->
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
+      rel="stylesheet"
     />
 
-    <!-- Custom CSS con ruta corregida -->
     <link rel="stylesheet" href="css/style.css" />
-
-    <!-- Preload audio files para mejor rendimiento -->
-    <link rel="preload" href="assets/audio/Fondo.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/01.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/02.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/03.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/04.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/05.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/06.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/c1.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/c2.mp3" as="audio" />
-    <link rel="preload" href="assets/audio/07.mp3" as="audio" />
+    <script src="js/script.js" defer></script>
   </head>
   <body>
+    <div class="snow-layer"></div>
+
     <div class="wrapper">
-      <!-- Elementos de audio optimizados -->
-      <audio
-        id="audio-fondo"
-        src="assets/audio/Fondo.mp3"
-        preload="metadata"
-        loop
-        aria-label="Música de fondo"
-      ></audio>
-      <audio
-        id="audio-intro"
-        src="assets/audio/01.mp3"
-        preload="metadata"
-        aria-label="Narración de introducción"
-      ></audio>
-      <audio
-        id="audio-decision"
-        src="assets/audio/02.mp3"
-        preload="metadata"
-        aria-label="Narración de decisión"
-      ></audio>
-      <audio
-        id="audio-acertijo1"
-        src="assets/audio/03.mp3"
-        preload="metadata"
-        aria-label="Narración primer acertijo"
-      ></audio>
-      <audio
-        id="audio-acertijo2"
-        src="assets/audio/04.mp3"
-        preload="metadata"
-        aria-label="Narración segundo acertijo"
-      ></audio>
-      <audio
-        id="audio-acertijo3"
-        src="assets/audio/05.mp3"
-        preload="metadata"
-        aria-label="Narración tercer acertijo"
-      ></audio>
-      <audio
-        id="audio-final"
-        src="assets/audio/06.mp3"
-        preload="metadata"
-        aria-label="Narración final"
-      ></audio>
-      <audio
-        id="audio-confirmacion1"
-        src="assets/audio/c1.mp3"
-        preload="metadata"
-        aria-label="Primera confirmación"
-      ></audio>
-      <audio
-        id="audio-confirmacion2"
-        src="assets/audio/c2.mp3"
-        preload="metadata"
-        aria-label="Segunda confirmación"
-      ></audio>
-      <audio
-        id="audio-final2"
-        src="assets/audio/07.mp3"
-        preload="metadata"
-        aria-label="Final alternativo"
-      ></audio>
-
-      <!-- Indicador de carga optimizado -->
-      <div id="loading-indicator" class="loading-indicator" aria-live="polite">
-        <div class="snowflake" aria-hidden="true">❄</div>
-        <p>Cargando tu experiencia...</p>
+      <div class="box active" id="intro">
+        <div class="narrativa"></div>
       </div>
-
-      <!-- Sección Intro -->
-      <section id="intro" class="box" role="main" aria-label="Introducción">
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
-
-      <!-- Sección Decisión -->
-      <section
-        id="decision"
-        class="box"
-        role="main"
-        aria-label="Toma de decisión"
-      >
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
-
-      <!-- Sección Confirmación 1 -->
-      <section
-        id="confirmacion1"
-        class="box"
-        role="main"
-        aria-label="Primera confirmación"
-      >
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
-
-      <!-- Sección Confirmación 2 -->
-      <section
-        id="confirmacion2"
-        class="box"
-        role="main"
-        aria-label="Segunda confirmación"
-      >
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
-
-      <!-- Sección Acertijo 1 -->
-      <section
-        id="acertijo1"
-        class="box"
-        role="main"
-        aria-label="Primer acertijo"
-      >
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
-
-      <!-- Sección Acertijo 2 -->
-      <section
-        id="acertijo2"
-        class="box"
-        role="main"
-        aria-label="Segundo acertijo"
-      >
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
-
-      <!-- Sección Acertijo 3 -->
-      <section
-        id="acertijo3"
-        class="box"
-        role="main"
-        aria-label="Tercer acertijo"
-      >
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
-
-      <!-- Sección Final (para esperar) -->
-      <section id="final" class="box" role="main" aria-label="Felicitaciones">
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
-
-      <!-- Sección Final Alternativo (para inmediato) -->
-      <section
-        id="final2"
-        class="box"
-        role="main"
-        aria-label="Regalo inmediato"
-      >
-        <div class="narrativa">
-          <!-- Contenido generado dinámicamente -->
-        </div>
-      </section>
+      <div class="box" id="decision">
+        <div class="narrativa"></div>
+      </div>
+      <div class="box" id="confirmacion1">
+        <div class="narrativa"></div>
+      </div>
+      <div class="box" id="confirmacion2">
+        <div class="narrativa"></div>
+      </div>
+      <div class="box" id="acertijo1">
+        <div class="narrativa"></div>
+      </div>
+      <div class="box" id="acertijo2">
+        <div class="narrativa"></div>
+      </div>
+      <div class="box" id="acertijo3">
+        <div class="narrativa"></div>
+      </div>
+      <div class="box" id="final">
+        <div class="narrativa"></div>
+      </div>
+      <div class="box" id="final2">
+        <div class="narrativa"></div>
+      </div>
     </div>
 
-    <!-- JavaScript con ruta corregida -->
-    <script src="js/script.js" defer></script>
+    <audio
+      id="audio-fondo"
+      src="assets/audio/Fondo.mp3"
+      loop
+      preload="auto"
+    ></audio>
+    <audio id="audio-intro" src="assets/audio/01.mp3" preload="auto"></audio>
+    <audio id="audio-decision" src="assets/audio/02.mp3" preload="auto"></audio>
+    <audio
+      id="audio-confirmacion1"
+      src="assets/audio/C1.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="audio-confirmacion2"
+      src="assets/audio/C2.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="audio-acertijo1"
+      src="assets/audio/03.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="audio-acertijo2"
+      src="assets/audio/04.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="audio-acertijo3"
+      src="assets/audio/05.mp3"
+      preload="auto"
+    ></audio>
+    <audio id="audio-final" src="assets/audio/06.mp3" preload="auto"></audio>
+    <audio id="audio-final2" src="assets/audio/07.mp3" preload="auto"></audio>
   </body>
 </html>
