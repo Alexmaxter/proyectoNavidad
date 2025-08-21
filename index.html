@@ -15,20 +15,11 @@
     />
   </head>
   <body>
+    <!-- El div 'background' ahora será el contenedor para el canvas del efecto Bokeh -->
     <div class="background">
-      <div class="particle particle-1"></div>
-      <div class="particle particle-2"></div>
-      <div class="particle particle-3"></div>
-      <div class="particle particle-4"></div>
-      <div class="particle particle-5"></div>
-      <div class="particle particle-6"></div>
-      <div class="particle particle-7"></div>
-      <div class="particle particle-8"></div>
-      <div class="particle particle-9"></div>
-      <div class="particle particle-10"></div>
-      <div class="particle particle-11"></div>
-      <div class="particle particle-12"></div>
+      <canvas id="bokehCanvas"></canvas>
     </div>
+
     <audio id="audio-fondo" loop src="assets/audio/Fondo.mp3"></audio>
     <audio id="audio-intro" src="assets/audio/01.mp3"></audio>
     <audio id="audio-decision" src="assets/audio/02.mp3"></audio>
@@ -217,27 +208,6 @@
       </section>
     </div>
     <script src="js/script.js"></script>
-    <svg 
-  class="bokeh" 
-  viewBox="0 0 10 10" 
-  xmlns="http://www.w3.org/2000/svg" 
-
-     >
-  
-  <circle cx="10%" cy="85%" r="75%"  />
-  <circle cx="45%" cy="50%" r="15%"   />
-  <circle cx="85%" cy="35%" r="30%"  />
-  <circle cx="60%" cy="85%" r="20%"   />
-  <circle cx="45%" cy="50%" r="30%"   />
-  <circle cx="35%" cy="25%" r="20%"   />
-  <circle cx="90%" cy="-25%" r="35%"  />
-  <circle cx="-15%" cy="30%" r="30%"  />
-  <circle cx="65%" cy="85%" r="55%"   />
-  <circle cx="45%" cy="50%" r="20%"   />
-
-</svg>
-
-<section>
-
+    <!-- El SVG bokeh ya no es necesario, se reemplaza por el canvas -->
   </body>
 </html>
