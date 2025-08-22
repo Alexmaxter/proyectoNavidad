@@ -1,213 +1,207 @@
+<!-- MultipleFiles/index.html -->
+
 <!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Experiencia Navideña</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;600&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎁</text></svg>"
+    />
+
     <link rel="stylesheet" href="css/style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
   </head>
   <body>
-    <!-- El div 'background' ahora será el contenedor para el canvas del efecto Bokeh -->
-    <div class="background">
-      <canvas id="bokehCanvas"></canvas>
-    </div>
-
-    <audio id="audio-fondo" loop src="assets/audio/Fondo.mp3"></audio>
-    <audio id="audio-intro" src="assets/audio/01.mp3"></audio>
-    <audio id="audio-decision" src="assets/audio/02.mp3"></audio>
-    <audio id="audio-confirmacion1" src="assets/audio/C1.mp3"></audio>
-    <audio id="audio-confirmacion2" src="assets/audio/C2.mp3"></audio>
-    <audio id="audio-acertijo1" src="assets/audio/03.mp3"></audio>
-    <audio id="audio-acertijo2" src="assets/audio/04.mp3"></audio>
-    <audio id="audio-acertijo3" src="assets/audio/05.mp3"></audio>
-    <audio id="audio-final" src="assets/audio/06.mp3"></audio>
-    <audio id="audio-final2" src="assets/audio/07.mp3"></audio>
-
+    <!-- El body tendrá opacity: 0 por defecto en CSS y se le añadirá la clase 'loaded' por JS -->
+    <div class="background"></div>
+    <canvas id="bokehCanvas"></canvas>
     <div class="container">
-      <!-- Sección Intro -->
-      <section id="intro" class="section">
-        <div class="titulo">
-          <h1></h1>
-        </div>
+      <audio id="audio-fondo" preload="auto" loop>
+        <source src="assets/audio/background.mp3" type="audio/mpeg" />
+      </audio>
+      <div id="intro" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
           <div class="play-center">
-            <button><i class="fas fa-play"></i></button>
+            <button type="button">▶</button>
           </div>
           <div class="acciones"></div>
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <audio id="audio-intro" preload="auto">
+            <source src="assets/audio/intro.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
-
-      <!-- Sección Decision -->
-      <section id="decision" class="section">
-        <div class="titulo">
-          <h1></h1>
-        </div>
+      </div>
+      <div id="decision" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
           <div class="acciones"></div>
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <div class="replay-button"></div>
+          <audio id="audio-decision" preload="auto">
+            <source src="assets/audio/decision.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
-
-      <!-- Sección Confirmacion1 -->
-      <section id="confirmacion1" class="section">
-        <div class="titulo">
-          <h1></h1>
-        </div>
+      </div>
+      <div id="confirmacion1" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
           <div class="acciones"></div>
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <div class="replay-button"></div>
+          <audio id="audio-confirmacion1" preload="auto">
+            <source src="assets/audio/confirmacion1.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
-
-      <!-- Sección Confirmacion2 -->
-      <section id="confirmacion2" class="section">
-        <div class="titulo">
-          <h1></h1>
-        </div>
+      </div>
+      <div id="confirmacion2" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
           <div class="acciones"></div>
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <div class="replay-button"></div>
+          <audio id="audio-confirmacion2" preload="auto">
+            <source src="assets/audio/confirmacion2.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
-
-      <!-- Sección Acertijo1 -->
-      <section id="acertijo1" class="section">
-        <div class="titulo">
-          <h1></h1>
-        </div>
+      </div>
+      <div id="acertijo1" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
           <div class="input-group">
             <div>
-              <input
-                type="text"
-                id="respuesta1"
-                placeholder="Escribe tu respuesta..."
-              />
+              <input id="respuesta1" type="text" placeholder="Tu respuesta" />
               <button class="send-button">Enviar</button>
             </div>
-            <div class="mensaje-error" id="error1"></div>
+            <div id="error1" class="mensaje-error"></div>
           </div>
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <div class="replay-button"></div>
+          <audio id="audio-acertijo1" preload="auto">
+            <source src="assets/audio/acertijo1.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
-
-      <!-- Sección Acertijo2 -->
-      <section id="acertijo2" class="section">
-        <div class="titulo">
-          <h1></h1>
+      </div>
+      <div id="explicacion1" class="section">
+        <div class="titulo"><h1></h1></div>
+        <div class="contenido">
+          <div class="narrativa"></div>
         </div>
+        <div class="controles">
+          <div class="acciones"></div>
+          <div class="replay-button"></div>
+          <audio id="audio-explicacion1" preload="auto">
+            <source src="assets/audio/explicacion1.mp3" type="audio/mpeg" />
+          </audio>
+        </div>
+      </div>
+      <div id="acertijo2" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
           <div class="input-group">
             <div>
-              <input
-                type="text"
-                id="respuesta2"
-                placeholder="Escribe tu respuesta..."
-              />
+              <input id="respuesta2" type="text" placeholder="Tu respuesta" />
               <button class="send-button">Enviar</button>
             </div>
-            <div class="mensaje-error" id="error2"></div>
+            <div id="error2" class="mensaje-error"></div>
           </div>
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <div class="replay-button"></div>
+          <audio id="audio-acertijo2" preload="auto">
+            <source src="assets/audio/acertijo2.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
-
-      <!-- Sección Acertijo3 -->
-      <section id="acertijo3" class="section">
-        <div class="titulo">
-          <h1></h1>
+      </div>
+      <div id="explicacion2" class="section">
+        <div class="titulo"><h1></h1></div>
+        <div class="contenido">
+          <div class="narrativa"></div>
         </div>
+        <div class="controles">
+          <div class="acciones"></div>
+          <div class="replay-button"></div>
+          <audio id="audio-explicacion2" preload="auto">
+            <source src="assets/audio/explicacion2.mp3" type="audio/mpeg" />
+          </audio>
+        </div>
+      </div>
+      <div id="acertijo3" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
           <div class="input-group">
             <div>
-              <input
-                type="text"
-                id="respuesta3"
-                placeholder="Escribe tu respuesta..."
-              />
+              <input id="respuesta3" type="text" placeholder="Tu respuesta" />
               <button class="send-button">Enviar</button>
             </div>
-            <div class="mensaje-error" id="error3"></div>
+            <div id="error3" class="mensaje-error"></div>
           </div>
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <div class="replay-button"></div>
+          <audio id="audio-acertijo3" preload="auto">
+            <source src="assets/audio/acertijo3.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
-
-      <!-- Sección Final -->
-      <section id="final" class="section">
-        <div class="titulo">
-          <h1></h1>
-        </div>
+      </div>
+      <div id="explicacion3" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <div class="acciones"></div>
+          <div class="replay-button"></div>
+          <audio id="audio-explicacion3" preload="auto">
+            <source src="assets/audio/explicacion3.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
-
-      <!-- Sección Final2 -->
-      <section id="final2" class="section">
-        <div class="titulo">
-          <h1></h1>
-        </div>
+      </div>
+      <div id="final" class="section">
+        <div class="titulo"><h1></h1></div>
         <div class="contenido">
           <div class="narrativa"></div>
         </div>
         <div class="controles">
-          <div class="replay-button">
-            <button>Repetir</button>
-          </div>
+          <div class="replay-button"></div>
+          <audio id="audio-final" preload="auto">
+            <source src="assets/audio/final1.mp3" type="audio/mpeg" />
+          </audio>
         </div>
-      </section>
+      </div>
+      <div id="final2" class="section">
+        <div class="titulo"><h1></h1></div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="replay-button"></div>
+          <audio id="audio-final2" preload="auto">
+            <source src="assets/audio/final2.mp3" type="audio/mpeg" />
+          </audio>
+        </div>
+      </div>
     </div>
     <script src="js/script.js"></script>
-    <!-- El SVG bokeh ya no es necesario, se reemplaza por el canvas -->
   </body>
 </html>
