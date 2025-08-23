@@ -7,7 +7,7 @@
 html,
 body {
   height: 100%;
-  font-family: "Verlag-Book";
+  font-family: "Verlag-Light";
   color: #ffffff;
   position: relative;
   z-index: 1;
@@ -151,7 +151,6 @@ body {
   margin: clamp(1rem, 3vw, 2rem) 0;
   color: #ffffff;
   opacity: 50%;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
   letter-spacing: 0.05em;
 }
 
@@ -265,19 +264,17 @@ body {
   background: none;
   border: none;
   color: #ff8c42;
+  font-family: "Verlag-Light";
   font-size: clamp(1.6rem, 4vw, 3rem);
-  font-weight: 300;
   cursor: pointer;
   padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.5rem, 3.5vw, 2.5rem);
   transition: all 0.3s ease;
   text-decoration: none;
   margin: clamp(0.5rem, 1vw, 1rem);
-  border-radius: 4px;
 }
 
 .acciones button:hover {
   text-decoration: underline;
-  color: #ffb366;
 }
 
 .replay-button button {
@@ -289,7 +286,6 @@ body {
   cursor: pointer;
   padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1rem);
   transition: opacity 0.3s ease;
-  opacity: 0.8;
 }
 
 .replay-button button:hover {
@@ -305,10 +301,6 @@ body {
   cursor: pointer;
   padding: clamp(0.6rem, 1.5vw, 0.9rem) clamp(1rem, 2.5vw, 1.4rem);
   transition: opacity 0.3s ease;
-}
-
-.send-button:hover {
-  opacity: 0.7;
 }
 
 .input-group {

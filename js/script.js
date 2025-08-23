@@ -651,7 +651,7 @@ const bokeh = {
       speedX: (Math.random() - 0.5) * 0.8,
       speedY: (Math.random() - 0.5) * 0.8,
       opacity:
-        Math.random() * (isDefined ? 0.12 : 0.15) + (isDefined ? 0.06 : 0.05),
+        Math.random() * (isDefined ? 0.5 : 0.5) + (isDefined ? 0.5 : 0.5),
       pulse: Math.random() * 0.002 + 0.001,
       pulseDirection: 1,
       isDefined,
@@ -755,7 +755,6 @@ const bokeh = {
     );
     g.addColorStop(1, c.color + "0)");
     this.ctx.fillStyle = g;
-    this.ctx.filter = c.isDefined ? "blur(2px)" : "blur(8px)";
     this.ctx.globalCompositeOperation = "screen";
     this.ctx.beginPath();
     this.ctx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
@@ -770,7 +769,6 @@ const bokeh = {
     g.addColorStop(0.7, c.color + c.opacity * 0.3 + ")");
     g.addColorStop(1, c.color + "0)");
     this.ctx.fillStyle = g;
-    this.ctx.filter = "blur(1px)";
     this.ctx.globalCompositeOperation = "screen";
     this.ctx.beginPath();
     this.ctx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
@@ -781,7 +779,6 @@ const bokeh = {
     this.ctx.save();
     this.ctx.globalCompositeOperation = "screen";
     this.ctx.fillStyle = p.color + p.opacity + ")";
-    this.ctx.filter = "blur(0.3px)";
     this.ctx.beginPath();
     this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
     this.ctx.fill();
