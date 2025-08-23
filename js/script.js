@@ -1,11 +1,6 @@
-// MultipleFiles/script.js
-
-/**
- * Experiencia Navideña Optimizada
- * @version 2.4 - Corrección de audio en intro, final y final2
- */
-
-// Estado global de la aplicación
+// =============================
+// ESTADO GLOBAL
+// =============================
 const estado = {
   fondoIniciado: false,
   seccionActiva: null,
@@ -15,7 +10,9 @@ const estado = {
   audioReproduciendo: false,
 };
 
-// Configuración de la aplicación
+// =============================
+// CONFIGURACIÓN
+// =============================
 const config = {
   audio: {
     volumenFondoNormal: 0.3,
@@ -26,129 +23,89 @@ const config = {
   },
   bokeh: {
     intro: {
-      color: [255, 100, 140], // Increased red, reduced green/blue for more vivid pinkish-red
-      radioGrande: 300,
-      radioPequeno: 12,
-      opacidad: 1,
-      opacidadFondo: 0.12,
-      posicion: { x: "50%", y: "50%" },
-      brillo: 80, // Increased from 25 (+20%)
+      color: [60, 180, 140],
+      cantidadBokeh: 12,
+      cantidadDefinidos: 6,
+      cantidadParticulas: 20,
     },
     decision: {
-      color: [100, 255, 160], // Increased green, adjusted red/blue for vivid green
-      radioGrande: 130,
-      radioPequeno: 14,
-      opacidad: 1,
-      opacidadFondo: 0.15,
-      posicion: { x: "60%", y: "40%" },
-      brillo: 36, // Increased from 30 (+20%)
+      color: [100, 255, 160],
+      cantidadBokeh: 10,
+      cantidadDefinidos: 6,
+      cantidadParticulas: 18,
     },
     confirmacion1: {
-      color: [120, 120, 255], // Increased blue, adjusted red/green for vivid blue
-      radioGrande: 140,
-      radioPequeno: 16,
-      opacidad: 1,
-      opacidadFondo: 0.18,
-      posicion: { x: "45%", y: "55%" },
-      brillo: 42, // Increased from 35 (+20%)
+      color: [40, 160, 180],
+      cantidadBokeh: 8,
+      cantidadDefinidos: 5,
+      cantidadParticulas: 15,
     },
     confirmacion2: {
-      color: [255, 200, 100], // Increased red, adjusted green/blue for vivid orange
-      radioGrande: 200,
-      radioPequeno: 18,
-      opacidad: 1,
-      opacidadFondo: 0.2,
-      posicion: { x: "55%", y: "45%" },
-      brillo: 48, // Increased from 40 (+20%)
+      color: [255, 200, 100],
+      cantidadBokeh: 10,
+      cantidadDefinidos: 7,
+      cantidadParticulas: 20,
     },
     acertijo1: {
-      color: [255, 100, 255], // Increased red/blue, reduced green for vivid magenta
-      radioGrande: 160,
-      radioPequeno: 20,
-      opacidad: 1,
-      opacidadFondo: 0.22,
-      posicion: { x: "70%", y: "50%" },
-      brillo: 54, // Increased from 45 (+20%)
+      color: [255, 100, 255],
+      cantidadBokeh: 9,
+      cantidadDefinidos: 6,
+      cantidadParticulas: 17,
     },
     explicacion1: {
-      color: [255, 120, 255], // Increased red/blue, adjusted green for vivid purple
-      radioGrande: 400,
-      radioPequeno: 22,
-      opacidad: 1,
-      opacidadFondo: 0.25,
-      posicion: { x: "50%", y: "60%" },
-      brillo: 60, // Increased from 50 (+20%)
+      color: [80, 200, 160],
+      cantidadBokeh: 11,
+      cantidadDefinidos: 8,
+      cantidadParticulas: 22,
     },
     acertijo2: {
-      color: [100, 255, 255], // Increased green/blue, reduced red for vivid cyan
-      radioGrande: 180,
-      radioPequeno: 24,
-      opacidad: 1,
-      opacidadFondo: 0.28,
-      posicion: { x: "40%", y: "50%" },
-      brillo: 66, // Increased from 55 (+20%)
+      color: [100, 255, 255],
+      cantidadBokeh: 8,
+      cantidadDefinidos: 5,
+      cantidadParticulas: 16,
     },
     explicacion2: {
-      color: [120, 240, 255], // Increased blue, adjusted red/green for vivid sky blue
-      radioGrande: 300,
-      radioPequeno: 26,
-      opacidad: 1,
-      opacidadFondo: 0.3,
-      posicion: { x: "60%", y: "55%" },
-      brillo: 72, // Increased from 60 (+20%)
+      color: [120, 240, 255],
+      cantidadBokeh: 12,
+      cantidadDefinidos: 9,
+      cantidadParticulas: 24,
     },
     acertijo3: {
-      color: [255, 180, 100], // Increased red, adjusted green/blue for vivid orange
-      radioGrande: 200,
-      radioPequeno: 28,
-      opacidad: 1,
-      opacidadFondo: 0.32,
-      posicion: { x: "50%", y: "45%" },
-      brillo: 78, // Increased from 65 (+20%)
+      color: [255, 180, 100],
+      cantidadBokeh: 10,
+      cantidadDefinidos: 7,
+      cantidadParticulas: 19,
     },
-    explicacion3: {
-      color: [240, 255, 120], // Increased green, adjusted red/blue for vivid lime
-      radioGrande: 210,
-      radioPequeno: 30,
-      opacidad: 1,
-      opacidadFondo: 0.35,
-      posicion: { x: "55%", y: "50%" },
-      brillo: 84, // Increased from 70 (+20%)
+    explicJon: {
+      color: [240, 255, 120],
+      cantidadBokeh: 13,
+      cantidadDefinidos: 10,
+      cantidadParticulas: 25,
     },
     final: {
-      color: [220, 100, 255], // Increased blue, adjusted red/green for vivid purple
-      radioGrande: 220,
-      radioPequeno: 32,
-      opacidad: 1,
-      opacidadFondo: 0.38,
-      posicion: { x: "50%", y: "55%" },
-      brillo: 90, // Increased from 75 (+20%)
+      color: [220, 100, 255],
+      cantidadBokeh: 15,
+      cantidadDefinidos: 12,
+      cantidadParticulas: 30,
     },
     final2: {
-      color: [100, 255, 200], // Increased green, adjusted red/blue for vivid teal
-      radioGrande: 230,
-      radioPequeno: 34,
-      opacidad: 1,
-      opacidadFondo: 0.4,
-      posicion: { x: "45%", y: "50%" },
-      brillo: 96, // Increased from 80 (+20%)
+      color: [100, 255, 200],
+      cantidadBokeh: 14,
+      cantidadDefinidos: 11,
+      cantidadParticulas: 28,
     },
   },
 };
 
-// Contenido de las secciones
+// =============================
+// CONTENIDO DE SECCIONES
+// (idéntico al que enviaste)
+// =============================
 const contenido = {
   intro: {
     titulo: "¡Bienvenido Valentino!",
     lineas: [
-      "¡Bien hecho, Valentino!",
-      "<br>",
-      "Acabás de empujar tu bola de nieve y ya comenzó a rodar.",
-      "Es pequeña todavía, pero cada vuelta la transforma, la hace crecer.",
-      "Este viaje no se trata de apurarse, sino de descubrir qué pasa cuando le das tiempo a algo pequeño.",
-      "La bola ya está en movimiento…",
-      "<br>",
-      "Ahora, para que siga avanzando, ¡es hora de enfrentar algunos desafíos!",
+      "¡Bien hecho, Valentino!<br>Acabás de empujar tu bola de nieve y ya comenzó a rodar.<br><br> Es pequeña todavía, pero cada vuelta la transforma, la hace crecer. Este viaje no se trata de apurarse, sino de descubrir qué pasa cuando le das tiempo a algo pequeño. La bola ya está en movimiento…<br><br>Ahora, para que siga avanzando, ¡es hora de enfrentar algunos desafíos!",
     ],
     boton: "Comenzar",
   },
@@ -288,161 +245,102 @@ const contenido = {
   },
 };
 
-// Utilidades
+// =============================
+// UTILIDADES
+// =============================
 const utilidades = {
   debounce(func, wait) {
     let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
-    };
+    return (...args) => (
+      clearTimeout(timeout), (timeout = setTimeout(() => func(...args), wait))
+    );
   },
-  normalizar(str) {
-    return str
+  normalizar: (str) =>
+    str
       .toLowerCase()
       .trim()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, " ");
-  },
-  lerp(inicio, fin, t) {
-    return inicio + (fin - inicio) * t;
-  },
+      .replace(/\s+/g, " "),
+  lerp: (inicio, fin, t) => inicio + (fin - inicio) * t,
   fadeAudio(elementoAudio, volumenInicio, volumenFin, duracion, callback) {
-    if (!elementoAudio) {
-      console.warn("Elemento de audio no encontrado para fade");
-      if (callback) callback();
-      return;
-    }
-
-    console.log(
-      `Fade audio: ${volumenInicio} -> ${volumenFin} en ${duracion}ms`
-    );
-
-    const pasos = 30;
-    const tiempoPaso = duracion / pasos;
-    const cambioVolumenPorPaso = (volumenFin - volumenInicio) / pasos;
-    let volumenActual = volumenInicio;
-    let conteoPasos = 0;
-
-    const intervaloFade = setInterval(() => {
-      conteoPasos++;
-      volumenActual += cambioVolumenPorPaso;
-
-      volumenActual = Math.max(0, Math.min(1, volumenActual));
-
+    if (!elementoAudio) return callback?.();
+    const pasos = 30,
+      tiempoPaso = duracion / pasos,
+      cambio = (volumenFin - volumenInicio) / pasos;
+    let volumenActual = volumenInicio,
+      conteo = 0;
+    const intervalo = setInterval(() => {
+      volumenActual = Math.max(0, Math.min(1, volumenActual + cambio));
       elementoAudio.volume = volumenActual;
-
       if (
-        conteoPasos >= pasos ||
-        (cambioVolumenPorPaso > 0 && volumenActual >= volumenFin) ||
-        (cambioVolumenPorPaso < 0 && volumenActual <= volumenFin)
+        ++conteo >= pasos ||
+        (cambio > 0 && volumenActual >= volumenFin) ||
+        (cambio < 0 && volumenActual <= volumenFin)
       ) {
         elementoAudio.volume = volumenFin;
-        clearInterval(intervaloFade);
-        console.log(`Fade completado: volumen final = ${volumenFin}`);
-        if (callback) callback();
+        clearInterval(intervalo);
+        callback?.();
       }
     }, tiempoPaso);
   },
 };
 
-// Referencias DOM (cache)
+// =============================
+// CACHE DE REFERENCIAS DOM
+// =============================
 const referencias = (() => {
   const cache = {};
   return {
-    obtener(id) {
-      if (!cache[id]) cache[id] = document.getElementById(id);
-      return cache[id];
-    },
-    obtenerTodos(selector) {
-      return document.querySelectorAll(selector);
-    },
+    obtener: (id) => cache[id] ?? (cache[id] = document.getElementById(id)),
+    obtenerTodos: (selector) => document.querySelectorAll(selector),
   };
 })();
 
-// Manejador de audio
+// =============================
+// AUDIO
+// =============================
 const manejadorAudio = {
   audioFondo: null,
   audiosNarracion: null,
-
   init() {
     this.audioFondo = referencias.obtener("audio-fondo");
-    this.audiosNarracion = Array.from(
-      referencias.obtenerTodos("audio:not(#audio-fondo)")
-    );
-    if (this.audioFondo) {
+    this.audiosNarracion = [
+      ...referencias.obtenerTodos("audio:not(#audio-fondo)"),
+    ];
+    if (this.audioFondo)
       this.audioFondo.volume = config.audio.volumenFondoNormal;
-      console.log("Manejador de audio inicializado correctamente");
-      console.log(
-        `Volumen inicial de fondo: ${config.audio.volumenFondoNormal}`
-      );
-    } else {
-      console.error("Audio de fondo no encontrado en el DOM");
-    }
   },
-
   async reproducirFondo() {
-    if (!this.audioFondo) {
-      console.warn("Audio de fondo no encontrado");
-      return;
-    }
-
-    if (estado.fondoIniciado) {
-      console.log("Audio de fondo ya está reproduciéndose");
-      return;
-    }
-
+    if (!this.audioFondo || estado.fondoIniciado) return;
     try {
       this.audioFondo.volume = config.audio.volumenFondoNormal;
       await this.audioFondo.play();
       estado.fondoIniciado = true;
-      console.log("Audio de fondo iniciado correctamente");
     } catch (error) {
       console.warn("Error al iniciar audio de fondo:", error);
     }
   },
-
   detenerFondo() {
-    if (this.audioFondo && estado.fondoIniciado) {
-      utilidades.fadeAudio(
-        this.audioFondo,
-        this.audioFondo.volume,
-        0,
-        config.audio.duracionFade,
-        () => {
-          this.audioFondo.pause();
-          this.audioFondo.currentTime = 0;
-          estado.fondoIniciado = false;
-          console.log("Audio de fondo detenido correctamente");
-        }
-      );
-    }
-  },
-
-  fadeVolumenFondo(volumenObjetivo) {
-    if (!this.audioFondo) {
-      console.warn("Audio de fondo no encontrado");
-      return;
-    }
-
-    if (!estado.fondoIniciado) {
-      console.log("Audio de fondo no está reproduciéndose, iniciando...");
-      this.reproducirFondo().then(() => {
-        utilidades.fadeAudio(
-          this.audioFondo,
-          this.audioFondo.volume,
-          volumenObjetivo,
-          config.audio.duracionFade / 2
-        );
-      });
-      return;
-    }
-
-    console.log(
-      `Fade volumen de fondo: ${this.audioFondo.volume} -> ${volumenObjetivo}`
+    if (!this.audioFondo || !estado.fondoIniciado) return;
+    utilidades.fadeAudio(
+      this.audioFondo,
+      this.audioFondo.volume,
+      0,
+      config.audio.duracionFade,
+      () => {
+        this.audioFondo.pause();
+        this.audioFondo.currentTime = 0;
+        estado.fondoIniciado = false;
+      }
     );
-
+  },
+  fadeVolumenFondo(volumenObjetivo) {
+    if (!this.audioFondo) return;
+    if (!estado.fondoIniciado)
+      return this.reproducirFondo().then(() =>
+        this.fadeVolumenFondo(volumenObjetivo)
+      );
     utilidades.fadeAudio(
       this.audioFondo,
       this.audioFondo.volume,
@@ -450,222 +348,163 @@ const manejadorAudio = {
       config.audio.duracionFade / 2
     );
   },
-
-  detenerTodasNarraciones() {
-    console.log("Deteniendo todas las narraciones");
-
+  detenerNarraciones() {
     this.audiosNarracion.forEach((audio) => {
       if (!audio.paused) {
-        console.log(`Deteniendo audio: ${audio.id}`);
         audio.pause();
         audio.currentTime = 0;
       }
     });
-
     estado.audioActual = null;
     estado.audioReproduciendo = false;
-
-    // Restaurar volumen de fondo solo si no estamos en final o final2
     if (
       estado.fondoIniciado &&
       estado.seccionActiva?.id !== "final" &&
       estado.seccionActiva?.id !== "final2"
     ) {
-      console.log(
-        "Restaurando volumen de fondo después de detener narraciones"
-      );
       this.fadeVolumenFondo(config.audio.volumenFondoNormal);
     }
   },
-
   async reproducirNarracion(id) {
-    console.log(`Reproduciendo narración: ${id}`);
-
-    this.detenerTodasNarraciones();
-
-    // Asegurar que el fondo esté reproduciendo antes de ajustar volumen
-    if (!estado.fondoIniciado) {
-      await this.reproducirFondo();
-    }
-
-    // Determinar el volumen de fondo según la sección
-    const volumenFondoObjetivo =
+    this.detenerNarraciones();
+    if (!estado.fondoIniciado) await this.reproducirFondo();
+    const volumenFondo =
       id === "final" || id === "final2"
         ? config.audio.volumenFondoMudo
         : config.audio.volumenFondoBajo;
-
-    if (estado.fondoIniciado) {
-      console.log(`Ajustando volumen de fondo a: ${volumenFondoObjetivo}`);
-      this.fadeVolumenFondo(volumenFondoObjetivo);
-    }
-
+    if (estado.fondoIniciado) this.fadeVolumenFondo(volumenFondo);
     const audio = referencias.obtener(`audio-${id}`);
-
-    if (!audio) {
-      console.warn(`Audio no encontrado: audio-${id}`);
-      manejadorSecciones.mostrarControles(id);
-      return;
-    }
-
+    if (!audio) return manejadorSecciones.mostrarControles(id);
     try {
       audio.currentTime = 0;
       audio.volume = config.audio.volumenNarracion;
       estado.audioReproduciendo = true;
-
       audio.onended = () => {
-        console.log(`Audio terminado: ${id}`);
         estado.audioReproduciendo = false;
-        // No restaurar volumen de fondo para final o final2
-        if (id !== "final" && id !== "final2") {
-          console.log(
-            `Restaurando volumen de fondo a: ${config.audio.volumenFondoNormal}`
-          );
+        if (id !== "final" && id !== "final2")
           this.fadeVolumenFondo(config.audio.volumenFondoNormal);
-        }
         manejadorSecciones.mostrarControles(id);
       };
-
-      audio.onerror = (error) => {
-        console.error(`Error en audio ${id}:`, error);
+      audio.onerror = () => {
         estado.audioReproduciendo = false;
-        if (id !== "final" && id !== "final2") {
+        if (id !== "final" && id !== "final2")
           this.fadeVolumenFondo(config.audio.volumenFondoNormal);
-        }
         manejadorSecciones.mostrarControles(id);
       };
-
       await audio.play();
       estado.audioActual = audio;
-      console.log(`Audio iniciado correctamente: ${id}`);
     } catch (error) {
       console.warn(`Error al reproducir audio ${id}:`, error);
       estado.audioReproduciendo = false;
-      if (id !== "final" && id !== "final2") {
+      if (id !== "final" && id !== "final2")
         this.fadeVolumenFondo(config.audio.volumenFondoNormal);
-      }
       manejadorSecciones.mostrarControles(id);
     }
   },
 };
 
-// Manejador de contenido
+// =============================
+// RENDER DE CONTENIDO
+// =============================
 const manejadorContenido = {
   render(id) {
-    const seccion = referencias.obtener(id);
-    const datos = contenido[id];
-
+    const seccion = referencias.obtener(id),
+      datos = contenido[id];
     if (!seccion || !datos) return;
-
-    const elementoTitulo = seccion.querySelector(".titulo h1");
-    if (elementoTitulo) elementoTitulo.textContent = datos.titulo;
-
-    const elementoNarrativa = seccion.querySelector(".narrativa");
-    if (elementoNarrativa)
-      elementoNarrativa.innerHTML = datos.lineas
-        .map((linea) => `<p>${linea}</p>`)
+    const titulo = seccion.querySelector(".titulo h1");
+    if (titulo) titulo.textContent = datos.titulo || "";
+    const narrativa = seccion.querySelector(".narrativa");
+    if (narrativa)
+      narrativa.innerHTML = (datos.lineas || [])
+        .map((l) => `<p>${l}</p>`)
         .join("");
-
-    const elementoAcciones = seccion.querySelector(".acciones");
-    if (elementoAcciones) {
-      if (datos.botones || datos.boton) {
-        const botones = datos.botones || [datos.boton];
-        elementoAcciones.innerHTML = botones
-          .map((texto) => `<button type="button">${texto}</button>`)
-          .join("");
-      } else {
-        elementoAcciones.innerHTML = "";
-      }
-    }
-
-    if (id.startsWith("explicacion") && elementoAcciones) {
-      elementoAcciones.innerHTML = '<button type="button">Siguiente</button>';
+    const acciones = seccion.querySelector(".acciones");
+    if (acciones) {
+      acciones.innerHTML = datos.botones
+        ? datos.botones
+            .map((t) => `<button type="button">${t}</button>`)
+            .join("")
+        : datos.boton
+        ? `<button type="button">${datos.boton}</button>`
+        : id.startsWith("explicacion")
+        ? `<button type="button">Siguiente</button>`
+        : "";
     }
   },
 };
 
-// Manejador de secciones
+// =============================
+// MANEJO DE SECCIONES + FUNDIDO
+// =============================
 const manejadorSecciones = {
   async mostrar(id, saltarAudio = false) {
-    document.body.style.opacity = "0";
-    manejadorAudio.detenerTodasNarraciones();
+    const fadeOverlay = referencias.obtener("fadeOverlay");
+    if (fadeOverlay) fadeOverlay.style.opacity = "1"; // Iniciar fundido a negro
 
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    manejadorAudio.detenerNarraciones();
+    await new Promise((r) => setTimeout(r, 400));
 
-    referencias.obtenerTodos(".section").forEach((s) => {
-      s.classList.remove("active");
-      s.offsetHeight;
-    });
+    referencias
+      .obtenerTodos(".section")
+      .forEach((s) => s.classList.remove("active"));
+    document.body.style.backgroundColor =
+      id === "intro" ? "#090a0f" : "#1a1a1a";
 
-    if (id !== "intro") {
-      document.body.style.backgroundColor = "#1a1a1a";
-      bokeh.transicion(id);
-    } else {
-      document.body.style.backgroundColor = "#090a0f";
-      bokeh.transicion("intro");
-    }
+    // Transición de Bokeh por sección
+    bokeh.transicion(id);
 
     const seccion = referencias.obtener(id);
     if (!seccion) {
-      console.error(`Sección ${id} no encontrada`);
-      document.body.style.opacity = "1";
+      if (fadeOverlay) fadeOverlay.style.opacity = "0";
       return;
     }
 
     manejadorContenido.render(id);
     this.ocultarControles(seccion);
-
     seccion.classList.add("active");
     estado.seccionActiva = seccion;
 
-    document.body.style.opacity = "1";
-
     setTimeout(() => {
+      if (fadeOverlay) fadeOverlay.style.opacity = "0"; // Finalizar fundido
+
       if (id === "intro" && !estado.playClickeado) {
         this.mostrarBotonPlay(seccion);
         seccion.classList.remove("show-content");
       } else if (id === "intro" && estado.playClickeado) {
         seccion.classList.add("show-content");
         this.mostrarNarrativa(seccion);
-        // Iniciar fondo y narración con retraso mínimo para sincronización
-        manejadorAudio.reproducirFondo().then(() => {
+        manejadorAudio.reproducirFondo().then(() =>
           setTimeout(() => {
             manejadorAudio.reproducirNarracion(id);
             this.mostrarNarrativa(seccion);
-          }, 100);
-        });
+          }, 100)
+        );
       } else if (saltarAudio || estado.seccionesVisitadas.has(id)) {
         this.mostrarNarrativa(seccion);
         this.mostrarControles(id);
       } else {
-        manejadorAudio.reproducirFondo().then(() => {
+        manejadorAudio.reproducirFondo().then(() =>
           setTimeout(() => {
             manejadorAudio.reproducirNarracion(id);
             this.mostrarNarrativa(seccion);
-          }, 100);
-        });
+          }, 100)
+        );
         estado.seccionesVisitadas.add(id);
       }
 
-      if (id === "final" || id === "final2") {
-        manejadorAudio.detenerFondo();
-      }
+      if (id === "final" || id === "final2") manejadorAudio.detenerFondo();
     }, 100);
   },
-
-  mostrarNarrativa(seccion) {
-    const narrativa = seccion.querySelector(".narrativa");
-    if (narrativa) narrativa.classList.add("visible");
-  },
-
-  mostrarBotonPlay(seccion) {
+  mostrarNarrativa: (seccion) =>
+    seccion.querySelector(".narrativa")?.classList.add("visible"),
+  mostrarBotonPlay: (seccion) => {
     const playCentro = seccion.querySelector(".play-center");
     if (playCentro) {
       playCentro.classList.add("visible");
       playCentro.style.display = "flex";
     }
   },
-
-  ocultarControles(seccion) {
+  ocultarControles: (seccion) => {
     [".play-center", ".acciones", ".input-group", ".replay-button"].forEach(
       (selector) => {
         const elemento = seccion.querySelector(selector);
@@ -675,35 +514,31 @@ const manejadorSecciones = {
         }
       }
     );
-
-    const narrativa = seccion.querySelector(".narrativa");
-    if (narrativa) narrativa.classList.remove("visible");
-
-    if (seccion.id === "intro" && !estado.playClickeado) {
+    seccion.querySelector(".narrativa")?.classList.remove("visible");
+    if (seccion.id === "intro" && !estado.playClickeado)
       seccion.classList.remove("show-content");
-    }
   },
-
-  mostrarControles(id) {
-    const seccion = estado.seccionActiva;
+  mostrarControles: (id) => {
+    const { seccionActiva: seccion } = estado;
     if (!seccion || seccion.id !== id) return;
-
     setTimeout(() => {
-      const botonRepetir = seccion.querySelector(".replay-button");
-      const acciones = seccion.querySelector(".acciones");
-      const grupoInput = seccion.querySelector(".input-group");
-
-      if (botonRepetir) {
-        botonRepetir.innerHTML = '<button type="button">Repetir</button>';
-        botonRepetir.classList.add("visible");
-      }
-      if (acciones) acciones.classList.add("visible");
-      if (grupoInput) grupoInput.classList.add("visible");
+      const controles = [
+        [".replay-button", '<button type="button">Repetir</button>'],
+        [".acciones"],
+        [".input-group"],
+      ];
+      controles.forEach(([selector, html]) => {
+        const elemento = seccion.querySelector(selector);
+        if (elemento && html) elemento.innerHTML = html;
+        if (elemento) elemento.classList.add("visible");
+      });
     }, 500);
   },
 };
 
-// Validador de respuestas
+// =============================
+// VALIDACIÓN DE RESPUESTAS
+// =============================
 const validadorRespuestas = {
   respuestasValidas: {
     responsabilidad: [
@@ -715,35 +550,27 @@ const validadorRespuestas = {
     tiempo: ["tiempo", "el tiempo", "tiempos"],
     paciencia: ["paciencia", "la paciencia", "paciencias"],
   },
-
   validar(numero) {
-    const input = referencias.obtener(`respuesta${numero}`);
-    const error = referencias.obtener(`error${numero}`);
-    const datos = contenido[`acertijo${numero}`];
-
+    const input = referencias.obtener(`respuesta${numero}`),
+      error = referencias.obtener(`error${numero}`),
+      datos = contenido[`acertijo${numero}`];
     if (!input || !error || !datos) return;
-
     const respuesta = utilidades.normalizar(input.value);
-    const estaVacio = !respuesta;
-    const esCorrecta =
-      !estaVacio &&
-      this.respuestasValidas[datos.respuesta]?.includes(respuesta);
-
+    const esVacio = !respuesta,
+      esCorrecta =
+        !esVacio &&
+        this.respuestasValidas[datos.respuesta]?.includes(respuesta);
     error.classList.remove("show");
     input.classList.remove("input-correct", "input-incorrect", "shake");
-
-    if (estaVacio || !esCorrecta) {
-      const mensajes = [
-        "Por favor, escribe una respuesta.",
-        "Intenta pensar más profundamente...",
-        "No es la respuesta correcta, reflexiona...",
-      ];
-      error.textContent = estaVacio
-        ? mensajes[0]
-        : mensajes[Math.floor(Math.random() * (mensajes.length - 1)) + 1];
+    if (esVacio || !esCorrecta) {
+      error.textContent = esVacio
+        ? "Por favor, escribe una respuesta."
+        : [
+            "Intenta pensar más profundamente...",
+            "No es la respuesta correcta, reflexiona...",
+          ][Math.floor(Math.random() * 2)];
       error.classList.add("show");
       input.classList.add("input-incorrect", "shake");
-
       setTimeout(() => {
         input.value = "";
         input.classList.remove("input-incorrect", "shake");
@@ -751,624 +578,353 @@ const validadorRespuestas = {
       }, 3000);
       return;
     }
-
     input.classList.add("input-correct");
-    setTimeout(() => {
-      const siguienteSeccion = `explicacion${numero}`;
-      manejadorSecciones.mostrar(siguienteSeccion);
-    }, 800);
+    setTimeout(() => manejadorSecciones.mostrar(`explicacion${numero}`), 800);
   },
 };
 
-// Navegación
+// =============================
+// NAVEGACIÓN
+// =============================
 const navegacion = {
-  irADecision() {
-    manejadorSecciones.mostrar("decision");
-  },
-
-  elegirOpcion(opcion) {
-    const siguienteSeccion =
-      opcion === "inmediata" ? "confirmacion1" : "acertijo1";
-    manejadorSecciones.mostrar(siguienteSeccion);
-  },
-
-  confirmarOpcion(numero, respuesta) {
+  irADecision: () => manejadorSecciones.mostrar("decision"),
+  elegirOpcion: (opcion) =>
+    manejadorSecciones.mostrar(
+      opcion === "inmediata" ? "confirmacion1" : "acertijo1"
+    ),
+  confirmarOpcion: (numero, respuesta) => {
     const acciones = {
       1: { sí: "confirmacion2", no: "decision" },
       2: { sí: "final2", no: "decision" },
     };
-    const siguienteSeccion = acciones[numero]?.[respuesta.toLowerCase()];
-    if (siguienteSeccion) {
-      const saltarAudio = siguienteSeccion === "decision";
-      manejadorSecciones.mostrar(siguienteSeccion, saltarAudio);
-    }
+    const siguiente = acciones[numero]?.[respuesta.toLowerCase()];
+    if (siguiente)
+      manejadorSecciones.mostrar(siguiente, siguiente === "decision");
   },
-
-  continuarDesdeExplicacion(numeroExplicacion) {
-    const siguientesSecciones = {
-      1: "acertijo2",
-      2: "acertijo3",
-      3: "final",
-    };
-    const siguienteSeccion = siguientesSecciones[numeroExplicacion];
-    if (siguienteSeccion) manejadorSecciones.mostrar(siguienteSeccion);
+  continuarDesdeExplicacion: (numero) => {
+    const siguientes = { 1: "acertijo2", 2: "acertijo3", 3: "final" };
+    if (siguientes[numero]) manejadorSecciones.mostrar(siguientes[numero]);
   },
 };
 
-// Efecto Bokeh Mejorado
+// =============================
+// BOKEH: FONDO ANIMADO
+// =============================
 const bokeh = {
   canvas: null,
   ctx: null,
-  ancho: 0,
-  alto: 0,
-  burbujas: [],
-  destellos: [],
-  colorActual: [255, 120, 120],
-  colorObjetivo: [255, 120, 120],
-  opacidadFondo: 0,
-  opacidadFondoObjetivo: 0,
-  brilloActual: 15,
-  brilloObjetivo: 15,
-  tiempo: 0,
-  enTransicion: false,
+  width: 0,
+  height: 0,
+  bokehCircles: [],
+  definedCircles: [],
+  particles: [],
+  colorActual: [60, 180, 140],
+  colorObjetivo: [60, 180, 140],
 
   init() {
     this.canvas = referencias.obtener("bokehCanvas");
-    if (!this.canvas) {
-      console.error("Canvas bokeh no encontrado");
-      return;
-    }
-
-    this.ctx = this.canvas.getContext("2d", { alpha: true });
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext("2d");
     this.redimensionar();
     window.addEventListener(
       "resize",
-      utilidades.debounce(this.redimensionar.bind(this), 100)
+      utilidades.debounce(() => this.redimensionar(), 100)
     );
-
-    const esMovil = window.innerWidth <= 768;
-    const esBajoRendimiento = esMovil && window.devicePixelRatio < 2;
-    this.crearBurbujas(esMovil ? 2 : 3, "large");
-    this.crearBurbujas(esMovil ? 6 : 12, "small");
-    if (!esBajoRendimiento) this.crearDestellos(esMovil ? 10 : 20);
-    this.transicion("intro");
+    this._initElementsFrom("intro"); // elementos iniciales
     this.animar();
   },
 
   redimensionar() {
-    this.ancho = window.innerWidth;
-    this.alto = window.innerHeight;
-    this.canvas.width = this.ancho * window.devicePixelRatio;
-    this.canvas.height = this.alto * window.devicePixelRatio;
-    this.canvas.style.width = `${this.ancho}px`;
-    this.canvas.style.height = `${this.alto}px`;
-    this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
   },
 
-  crearBurbujas(cantidad, tipo) {
-    const cfg = config.bokeh.intro;
-    const radioBase = tipo === "large" ? cfg.radioGrande : cfg.radioPequeno;
-
-    for (let i = 0; i < cantidad; i++) {
-      let x, y;
-
-      if (tipo === "large") {
-        const posiciones = [
-          { x: this.ancho * 0.3, y: -radioBase * 0.2 },
-          { x: this.ancho * 0.7, y: -radioBase * 0.2 },
-          { x: this.ancho * 0.5, y: -radioBase * 0.3 },
-          { x: -radioBase * 0.2, y: this.alto * 0.7 },
-          { x: this.ancho * 0.2, y: this.alto * 0.8 },
-          { x: this.ancho + radioBase * 0.2, y: this.alto * 0.3 },
-          { x: this.ancho + radioBase * 0.2, y: this.alto * 0.7 },
-          { x: -radioBase * 0.1, y: -radioBase * 0.1 },
-          { x: this.ancho + radioBase * 0.1, y: -radioBase * 0.1 },
-        ];
-
-        const pos = posiciones[i % posiciones.length];
-        x = pos.x + (Math.random() - 0.5) * radioBase * 0.6;
-        y = pos.y + (Math.random() - 0.5) * radioBase * 0.6;
-      } else {
-        const zonas = [
-          { x: 0.05, y: 0.05, w: 0.25, h: 0.25 },
-          { x: 0.7, y: 0.05, w: 0.25, h: 0.25 },
-          { x: 0.05, y: 0.7, w: 0.25, h: 0.25 },
-          { x: 0.7, y: 0.7, w: 0.25, h: 0.25 },
-          { x: 0.02, y: 0.3, w: 0.15, h: 0.4 },
-          { x: 0.83, y: 0.3, w: 0.15, h: 0.4 },
-          { x: 0.3, y: 0.02, w: 0.4, h: 0.15 },
-          { x: 0.3, y: 0.83, w: 0.4, h: 0.15 },
-        ];
-
-        const zona = zonas[Math.floor(Math.random() * zonas.length)];
-        x = (zona.x + Math.random() * zona.w) * this.ancho;
-        y = (zona.y + Math.random() * zona.h) * this.alto;
-      }
-
-      const variacionTamano = 0.5 + Math.random() * 1.0;
-      const radio = radioBase * variacionTamano;
-      const variacionOpacidad = 0.7 + Math.random() * 0.6;
-
-      this.burbujas.push({
-        x: x,
-        y: y,
-        radio: radio,
-        velocidadBaseX: (Math.random() - 0.5) * 0.4,
-        velocidadBaseY: (Math.random() - 0.5) * 0.4,
-        velocidadX: (Math.random() - 0.5) * 0.4,
-        velocidadY: (Math.random() - 0.5) * 0.4,
-        opacidad: cfg.opacidad * variacionOpacidad,
-        desenfoque: tipo === "large" ? 20 + Math.random() * 15 : 0,
-        tipo,
-        radioObjetivo: radio,
-        opacidadObjetivo: cfg.opacidad * variacionOpacidad,
-        fase: Math.random() * Math.PI * 2,
-        velocidadOscilacion: 0.003 + Math.random() * 0.012,
-        amplitudOscilacion: 8 + Math.random() * 12,
-        xObjetivo: x,
-        yObjetivo: y,
-        velocidadPulso: 0.008 + Math.random() * 0.012,
-        fasePulso: Math.random() * Math.PI * 2,
-      });
-    }
+  // ---- creadores ----
+  crearBokehCircle() {
+    const isDefined = Math.random() < 0.3;
+    return {
+      x: Math.random() * this.width,
+      y: Math.random() * this.height,
+      size: isDefined ? Math.random() * 300 : Math.random() * 100,
+      speedX: (Math.random() - 0.5) * 0.8,
+      speedY: (Math.random() - 0.5) * 0.8,
+      opacity:
+        Math.random() * (isDefined ? 0.12 : 0.15) + (isDefined ? 0.06 : 0.05),
+      pulse: Math.random() * 0.002 + 0.001,
+      pulseDirection: 1,
+      isDefined,
+      color: `rgba(${this.colorActual[0]}, ${this.colorActual[1]}, ${this.colorActual[2]}, `,
+    };
+  },
+  crearDefinedCircle() {
+    return {
+      x: Math.random() * this.width,
+      y: Math.random() * this.height,
+      size: Math.random() * 320,
+      speedX: (Math.random() - 0.5) * 0.04,
+      speedY: (Math.random() - 0.5) * 0.04,
+      opacity: Math.random() * 0.12 + 0.06,
+      pulse: Math.random() * 0.003 + 0.001,
+      pulseDirection: 1,
+      color: `rgba(${Math.min(255, this.colorActual[0] + 20)}, ${Math.min(
+        255,
+        this.colorActual[1] + 20
+      )}, ${Math.min(255, this.colorActual[2] + 20)}, `,
+    };
+  },
+  crearParticle() {
+    return {
+      x: Math.random() * this.width,
+      y: Math.random() * this.height,
+      size: Math.random() * 2 + 1,
+      speedX: (Math.random() - 0.5) * 0.3,
+      speedY: (Math.random() - 0.5) * 0.3,
+      opacity: Math.random() * 0.8 + 0.3,
+      twinkle: Math.random() * 0.03 + 0.015,
+      twinkleDirection: 1,
+      color: `rgba(${Math.min(255, this.colorActual[0] + 90)}, ${Math.min(
+        255,
+        this.colorActual[1] + 75
+      )}, ${Math.min(255, this.colorActual[2] + 60)}, `,
+    };
   },
 
-  crearDestellos(cantidad) {
-    for (let i = 0; i < cantidad; i++) {
-      const zonas = [
-        { x: 0.05, y: 0.05, w: 0.25, h: 0.25 },
-        { x: 0.7, y: 0.05, w: 0.25, h: 0.25 },
-        { x: 0.05, y: 0.7, w: 0.25, h: 0.25 },
-        { x: 0.7, y: 0.7, w: 0.25, h: 0.25 },
-        { x: 0.02, y: 0.3, w: 0.15, h: 0.4 },
-        { x: 0.83, y: 0.3, w: 0.15, h: 0.4 },
-        { x: 0.3, y: 0.02, w: 0.4, h: 0.15 },
-        { x: 0.3, y: 0.83, w: 0.4, h: 0.15 },
-        { x: 0.15, y: 0.15, w: 0.2, h: 0.2 },
-        { x: 0.65, y: 0.15, w: 0.2, h: 0.2 },
-        { x: 0.15, y: 0.65, w: 0.2, h: 0.2 },
-        { x: 0.65, y: 0.65, w: 0.2, h: 0.2 },
-      ];
-
-      const zona = zonas[Math.floor(Math.random() * zonas.length)];
-      const x = (zona.x + Math.random() * zona.w) * this.ancho;
-      const y = (zona.y + Math.random() * zona.h) * this.alto;
-
-      this.destellos.push({
-        x: x,
-        y: y,
-        tamano: Math.random() * 4 + 0.5,
-        opacidad: 0,
-        opacidadMaxima: Math.random() * 0.8 + 0.3,
-        fase: Math.random() * Math.PI * 2,
-        velocidad: Math.random() * 0.025 + 0.015,
-        tiempoVida: 0,
-        tiempoVidaMaximo: Math.random() * 400 + 300,
-        velocidadParpadeo: Math.random() * 0.04 + 0.015,
-        faseParpadeo: Math.random() * Math.PI * 2,
-        derivaX: (Math.random() - 0.5) * 0.4,
-        derivaY: (Math.random() - 0.5) * 0.4,
-        velocidadPulso: Math.random() * 0.02 + 0.01,
-        fasePulso: Math.random() * Math.PI * 2,
-      });
-    }
+  // ---- updates de elementos ----
+  _wrap(o, pad = 50) {
+    if (o.x < -pad) o.x = this.width + pad;
+    if (o.x > this.width + pad) o.x = -pad;
+    if (o.y < -pad) o.y = this.height + pad;
+    if (o.y > this.height + pad) o.y = -pad;
+  },
+  updateBokehCircle(c) {
+    c.x += c.speedX;
+    c.y += c.speedY;
+    c.size += c.pulse * c.pulseDirection * 20;
+    if (c.size > (c.isDefined ? 480 : 380) || c.size < (c.isDefined ? 120 : 80))
+      c.pulseDirection *= -1;
+    this._wrap(c, 120);
+    // actualizar color según transición
+    c.color = `rgba(${Math.round(this.colorActual[0])}, ${Math.round(
+      this.colorActual[1]
+    )}, ${Math.round(this.colorActual[2])}, `;
+  },
+  updateDefinedCircle(c) {
+    c.x += c.speedX;
+    c.y += c.speedY;
+    c.size += c.pulse * c.pulseDirection * 15;
+    if (c.size > 220 || c.size < 60) c.pulseDirection *= -1;
+    this._wrap(c, 80);
+    c.color = `rgba(${Math.min(
+      255,
+      Math.round(this.colorActual[0] + 20)
+    )}, ${Math.min(255, Math.round(this.colorActual[1] + 20))}, ${Math.min(
+      255,
+      Math.round(this.colorActual[2] + 20)
+    )}, `;
+  },
+  updateParticle(p) {
+    p.x += p.speedX;
+    p.y += p.speedY;
+    p.opacity += p.twinkle * p.twinkleDirection;
+    if (p.opacity > 1 || p.opacity < 0.2) p.twinkleDirection *= -1;
+    this._wrap(p, 10);
+    p.color = `rgba(${Math.min(
+      255,
+      Math.round(this.colorActual[0] + 90)
+    )}, ${Math.min(255, Math.round(this.colorActual[1] + 75))}, ${Math.min(
+      255,
+      Math.round(this.colorActual[2] + 60)
+    )}, `;
   },
 
-  actualizar() {
-    this.tiempo += 0.016;
-
-    const sinTiempo = Math.sin(this.tiempo);
-    const cosTiempo = Math.cos(this.tiempo * 0.7);
-
-    this.burbujas.forEach((burbuja) => {
-      burbuja.x += burbuja.velocidadBaseX;
-      burbuja.y += burbuja.velocidadBaseY;
-
-      burbuja.fase += burbuja.velocidadOscilacion;
-      const oscilacionX = sinTiempo * burbuja.amplitudOscilacion * 0.01;
-      const oscilacionY = cosTiempo * burbuja.amplitudOscilacion * 0.01;
-      burbuja.x += oscilacionX;
-      burbuja.y += oscilacionY;
-
-      burbuja.fasePulso += burbuja.velocidadPulso;
-      const factorPulso = 1 + Math.sin(burbuja.fasePulso) * 0.1;
-
-      burbuja.radio = utilidades.lerp(
-        burbuja.radio,
-        burbuja.radioObjetivo * factorPulso,
-        0.1
-      );
-      burbuja.opacidad = utilidades.lerp(
-        burbuja.opacidad,
-        burbuja.opacidadObjetivo,
-        0.1
-      );
-
-      if (this.enTransicion) {
-        const factorLerp = 0.02 + Math.random() * 0.03;
-        burbuja.x = utilidades.lerp(burbuja.x, burbuja.xObjetivo, factorLerp);
-        burbuja.y = utilidades.lerp(burbuja.y, burbuja.yObjetivo, factorLerp);
-      }
-
-      if (!this.enTransicion && this.tiempo % 60 < 0.016) {
-        burbuja.velocidadBaseX += (Math.random() - 0.5) * 0.1;
-        burbuja.velocidadBaseY += (Math.random() - 0.5) * 0.1;
-
-        burbuja.velocidadBaseX = Math.max(
-          -0.5,
-          Math.min(0.5, burbuja.velocidadBaseX)
-        );
-        burbuja.velocidadBaseY = Math.max(
-          -0.5,
-          Math.min(0.5, burbuja.velocidadBaseY)
-        );
-      }
-
-      if (burbuja.tipo === "large") {
-        const distanciaMax = burbuja.radio * 2;
-        if (burbuja.x < -distanciaMax) {
-          burbuja.x = this.ancho + distanciaMax;
-        }
-        if (burbuja.x > this.ancho + distanciaMax) {
-          burbuja.x = -distanciaMax;
-        }
-        if (burbuja.y < -distanciaMax) {
-          burbuja.y = this.alto + distanciaMax;
-        }
-        if (burbuja.y > this.alto + distanciaMax) {
-          burbuja.y = -distanciaMax;
-        }
-      } else {
-        const margen = burbuja.radio + 10;
-        if (burbuja.x - margen < 0) {
-          burbuja.x = margen;
-          burbuja.velocidadBaseX = Math.abs(burbuja.velocidadBaseX) * 0.8;
-        }
-        if (burbuja.x + margen > this.ancho) {
-          burbuja.x = this.ancho - margen;
-          burbuja.velocidadBaseX = -Math.abs(burbuja.velocidadBaseX) * 0.8;
-        }
-        if (burbuja.y - margen < 0) {
-          burbuja.y = margen;
-          burbuja.velocidadBaseY = Math.abs(burbuja.velocidadBaseY) * 0.8;
-        }
-        if (burbuja.y + margen > this.alto) {
-          burbuja.y = this.alto - margen;
-          burbuja.velocidadBaseY = -Math.abs(burbuja.velocidadBaseY) * 0.8;
-        }
-      }
-    });
-
-    this.destellos.forEach((destello) => {
-      if (
-        destello.opacidad === 0 &&
-        destello.tiempoVida >= destello.tiempoVidaMaximo
-      )
-        return;
-
-      destello.tiempoVida++;
-      destello.fase += destello.velocidad;
-
-      destello.x += destello.derivaX;
-      destello.y += destello.derivaY;
-
-      destello.faseParpadeo += destello.velocidadParpadeo;
-      const factorParpadeo = 0.7 + 0.3 * Math.sin(destello.faseParpadeo);
-
-      destello.fasePulso += destello.velocidadPulso;
-      const factorPulso = 1 + Math.sin(destello.fasePulso) * 0.2;
-
-      const cicloVida = destello.tiempoVida / destello.tiempoVidaMaximo;
-      if (cicloVida < 0.3) {
-        destello.opacidad = utilidades.lerp(
-          0,
-          destello.opacidadMaxima,
-          cicloVida / 0.3
-        );
-      } else if (cicloVida > 0.7) {
-        destello.opacidad = utilidades.lerp(
-          destello.opacidadMaxima,
-          0,
-          (cicloVida - 0.7) / 0.3
-        );
-      } else {
-        destello.opacidad =
-          destello.opacidadMaxima * factorParpadeo * factorPulso;
-      }
-
-      const margen = destello.tamano + 5;
-      if (destello.x < margen) {
-        destello.x = margen;
-        destello.derivaX = Math.abs(destello.derivaX) * 0.8;
-      }
-      if (destello.x > this.ancho - margen) {
-        destello.x = this.ancho - margen;
-        destello.derivaX = -Math.abs(destello.derivaX) * 0.8;
-      }
-      if (destello.y < margen) {
-        destello.y = margen;
-        destello.derivaY = Math.abs(destello.derivaY) * 0.8;
-      }
-      if (destello.y > this.alto - margen) {
-        destello.y = this.alto - margen;
-        destello.derivaY = -Math.abs(destello.derivaY) * 0.8;
-      }
-
-      if (destello.tiempoVida >= destello.tiempoVidaMaximo) {
-        const zonas = [
-          { x: 0.05, y: 0.05, w: 0.25, h: 0.25 },
-          { x: 0.7, y: 0.05, w: 0.25, h: 0.25 },
-          { x: 0.05, y: 0.7, w: 0.25, h: 0.25 },
-          { x: 0.7, y: 0.7, w: 0.25, h: 0.25 },
-          { x: 0.02, y: 0.3, w: 0.15, h: 0.4 },
-          { x: 0.83, y: 0.3, w: 0.15, h: 0.4 },
-          { x: 0.3, y: 0.02, w: 0.4, h: 0.15 },
-          { x: 0.3, y: 0.83, w: 0.4, h: 0.15 },
-          { x: 0.15, y: 0.15, w: 0.2, h: 0.2 },
-          { x: 0.65, y: 0.15, w: 0.2, h: 0.2 },
-          { x: 0.15, y: 0.65, w: 0.2, h: 0.2 },
-          { x: 0.65, y: 0.65, w: 0.2, h: 0.2 },
-        ];
-
-        const zona = zonas[Math.floor(Math.random() * zonas.length)];
-        destello.x = (zona.x + Math.random() * zona.w) * this.ancho;
-        destello.y = (zona.y + Math.random() * zona.h) * this.alto;
-
-        destello.tiempoVida = 0;
-        destello.tiempoVidaMaximo = Math.random() * 400 + 300;
-        destello.fase = Math.random() * Math.PI * 2;
-        destello.faseParpadeo = Math.random() * Math.PI * 2;
-        destello.fasePulso = Math.random() * Math.PI * 2;
-        destello.derivaX = (Math.random() - 0.5) * 0.4;
-        destello.derivaY = (Math.random() - 0.5) * 0.4;
-        destello.tamano = Math.random() * 4 + 0.5;
-      }
-    });
-
-    this.colorActual = this.colorActual.map((c, i) =>
-      utilidades.lerp(c, this.colorObjetivo[i], 0.1)
+  // ---- draw ----
+  drawBokehCircle(c) {
+    this.ctx.save();
+    const g = this.ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.size / 2);
+    const opF = c.isDefined ? 1.4 : 1.0;
+    g.addColorStop(0, c.color + c.opacity * opF + ")");
+    g.addColorStop(
+      c.isDefined ? 0.4 : 0.3,
+      c.color + c.opacity * (c.isDefined ? 0.8 : 0.6) + ")"
     );
-    this.opacidadFondo = utilidades.lerp(
-      this.opacidadFondo,
-      this.opacidadFondoObjetivo,
-      0.08
+    g.addColorStop(
+      c.isDefined ? 0.7 : 0.6,
+      c.color + c.opacity * (c.isDefined ? 0.3 : 0.2) + ")"
     );
-    this.brilloActual = utilidades.lerp(
-      this.brilloActual,
-      this.brilloObjetivo,
-      0.1
-    );
-
-    const diferenciaColor = this.colorActual.reduce(
-      (suma, c, i) => suma + Math.abs(c - this.colorObjetivo[i]),
-      0
-    );
-    const diferenciaOpacidad = Math.abs(
-      this.opacidadFondo - this.opacidadFondoObjetivo
-    );
-    const diferenciaBrillo = Math.abs(this.brilloActual - this.brilloObjetivo);
-
-    if (
-      this.enTransicion &&
-      diferenciaColor < 5 &&
-      diferenciaOpacidad < 0.01 &&
-      diferenciaBrillo < 1
-    ) {
-      this.enTransicion = false;
-    }
-  },
-
-  dibujar() {
-    this.ctx.clearRect(0, 0, this.ancho, this.alto);
-
-    if (this.opacidadFondo > 0) {
-      const [r, g, b] = this.colorActual.map(Math.round);
-      this.ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${this.opacidadFondo})`;
-      this.ctx.fillRect(0, 0, this.ancho, this.alto);
-    }
-
+    g.addColorStop(1, c.color + "0)");
+    this.ctx.fillStyle = g;
+    this.ctx.filter = c.isDefined ? "blur(2px)" : "blur(8px)";
     this.ctx.globalCompositeOperation = "screen";
-
-    const esMovil = window.innerWidth <= 768;
-    const desenfoqueHabilitado = !esMovil;
-
-    this.burbujas.forEach((burbuja) => {
-      const [r, g, b] = this.colorActual.map(Math.round);
-
-      if (burbuja.tipo === "large") {
-        const gradiente = this.ctx.createRadialGradient(
-          burbuja.x,
-          burbuja.y,
-          0,
-          burbuja.x,
-          burbuja.y,
-          burbuja.radio + this.brilloActual * 0.3
-        );
-
-        gradiente.addColorStop(
-          0,
-          `rgba(${r}, ${g}, ${b}, ${burbuja.opacidad * 0.9})`
-        );
-        gradiente.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
-
-        this.ctx.filter = desenfoqueHabilitado
-          ? `blur(${burbuja.desenfoque}px)`
-          : "none";
-        this.ctx.beginPath();
-        this.ctx.arc(burbuja.x, burbuja.y, burbuja.radio, 0, Math.PI * 2);
-        this.ctx.fillStyle = gradiente;
-        this.ctx.fill();
-
-        const gradienteBrillo = this.ctx.createRadialGradient(
-          burbuja.x,
-          burbuja.y,
-          0,
-          burbuja.x,
-          burbuja.y,
-          burbuja.radio * 0.4
-        );
-        gradienteBrillo.addColorStop(
-          0,
-          `rgba(255, 255, 255, ${burbuja.opacidad * 0.2})`
-        );
-        gradienteBrillo.addColorStop(1, `rgba(255, 255, 255, 0)`);
-
-        this.ctx.beginPath();
-        this.ctx.arc(burbuja.x, burbuja.y, burbuja.radio * 0.4, 0, Math.PI * 2);
-        this.ctx.fillStyle = gradienteBrillo;
-        this.ctx.fill();
-      } else {
-        this.ctx.filter = "none";
-        this.ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${
-          burbuja.opacidad * 0.3
-        })`;
-        this.ctx.beginPath();
-        this.ctx.arc(burbuja.x, burbuja.y, burbuja.radio, 0, Math.PI * 2);
-        this.ctx.fill();
-      }
-    });
-
-    this.ctx.filter = "blur(0.5px)";
-    this.destellos.forEach((destello) => {
-      if (destello.opacidad > 0) {
-        const [r, g, b] = this.colorActual.map(Math.round);
-
-        const variacionColor = 20 + Math.random() * 40;
-        const destelloR = Math.min(255, r + variacionColor);
-        const destelloG = Math.min(255, g + variacionColor);
-        const destelloB = Math.min(255, b + variacionColor);
-
-        const tamanoPulso =
-          destello.tamano * (0.8 + Math.sin(destello.fasePulso) * 0.3);
-
-        this.ctx.fillStyle = `rgba(${destelloR}, ${destelloG}, ${destelloB}, ${destello.opacidad})`;
-        this.ctx.beginPath();
-        this.ctx.arc(destello.x, destello.y, tamanoPulso, 0, Math.PI * 2);
-        this.ctx.fill();
-      }
-    });
-
-    this.ctx.filter = "none";
-    this.ctx.globalCompositeOperation = "source-over";
+    this.ctx.beginPath();
+    this.ctx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
+  },
+  drawDefinedCircle(c) {
+    this.ctx.save();
+    const g = this.ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.size / 2);
+    g.addColorStop(0, c.color + c.opacity * 1.4 + ")");
+    g.addColorStop(0.4, c.color + c.opacity * 0.8 + ")");
+    g.addColorStop(0.7, c.color + c.opacity * 0.3 + ")");
+    g.addColorStop(1, c.color + "0)");
+    this.ctx.fillStyle = g;
+    this.ctx.filter = "blur(1px)";
+    this.ctx.globalCompositeOperation = "screen";
+    this.ctx.beginPath();
+    this.ctx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
+  },
+  drawParticle(p) {
+    this.ctx.save();
+    this.ctx.globalCompositeOperation = "screen";
+    this.ctx.fillStyle = p.color + p.opacity + ")";
+    this.ctx.filter = "blur(0.3px)";
+    this.ctx.beginPath();
+    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
+  },
+  drawVignette() {
+    this.ctx.save();
+    const g = this.ctx.createRadialGradient(
+      this.width / 2,
+      this.height / 2,
+      0,
+      this.width / 2,
+      this.height / 2,
+      Math.max(this.width, this.height) * 0.8
+    );
+    g.addColorStop(0, "rgba(0,0,0,0)");
+    g.addColorStop(0.6, "rgba(0,0,0,0.1)");
+    g.addColorStop(1, "rgba(0,0,0,0.7)");
+    this.ctx.fillStyle = g;
+    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.restore();
   },
 
+  // ---- ciclo ----
+  actualizar() {
+    // transición suave de color
+    this.colorActual = this.colorActual.map((c, i) =>
+      utilidades.lerp(c, this.colorObjetivo[i], 0.02)
+    );
+    this.bokehCircles.forEach((c) => this.updateBokehCircle(c));
+    this.definedCircles.forEach((c) => this.updateDefinedCircle(c));
+    this.particles.forEach((p) => this.updateParticle(p));
+  },
+  dibujar() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.bokehCircles.forEach((c) => this.drawBokehCircle(c));
+    this.definedCircles.forEach((c) => this.drawDefinedCircle(c));
+    this.particles.forEach((p) => this.drawParticle(p));
+    this.drawVignette();
+  },
+  manejarInteraccionMouse() {
+    if (!this.canvas) return;
+    this.canvas.addEventListener(
+      "mousemove",
+      ({ clientX: mouseX, clientY: mouseY }) => {
+        this.bokehCircles.forEach((c) => {
+          const dx = mouseX - c.x,
+            dy = mouseY - c.y,
+            d = Math.hypot(dx, dy);
+          if (d < 200) {
+            const f = (200 - d) / 200;
+            c.speedX += (dx / d) * f * 0.002;
+            c.speedY += (dy / d) * f * 0.002;
+            c.opacity = Math.min(c.opacity + f * 0.05, 0.18);
+          }
+        });
+        this.definedCircles.forEach((c) => {
+          const dx = mouseX - c.x,
+            dy = mouseY - c.y,
+            d = Math.hypot(dx, dy);
+          if (d < 150) {
+            const f = (150 - d) / 150;
+            c.speedX += (dx / d) * f * 0.001;
+            c.speedY += (dy / d) * f * 0.001;
+            c.opacity = Math.min(c.opacity + f * 0.02, 0.12);
+          }
+        });
+        this.particles.forEach((p) => {
+          const dx = mouseX - p.x,
+            dy = mouseY - p.y,
+            d = Math.hypot(dx, dy);
+          if (d < 100) {
+            const f = (100 - d) / 100;
+            p.speedX += (dx / d) * f * 0.01;
+            p.speedY += (dy / d) * f * 0.01;
+            p.opacity = Math.min(p.opacity + f * 0.2, 1);
+          }
+        });
+      }
+    );
+  },
+  _initElementsFrom(idSeccion) {
+    const cfg = config.bokeh[idSeccion] ?? config.bokeh.intro;
+    this.colorActual = [...cfg.color];
+    this.colorObjetivo = [...cfg.color];
+    this.bokehCircles = Array.from({ length: cfg.cantidadBokeh }, () =>
+      this.crearBokehCircle()
+    );
+    this.definedCircles = Array.from({ length: cfg.cantidadDefinidos }, () =>
+      this.crearDefinedCircle()
+    );
+    this.particles = Array.from({ length: cfg.cantidadParticulas }, () =>
+      this.crearParticle()
+    );
+  },
   transicion(idSeccion) {
     const cfg = config.bokeh[idSeccion];
-    if (!cfg) {
-      console.warn(`Configuración bokeh no encontrada para: ${idSeccion}`);
-      return;
-    }
-
-    console.log(`Transición bokeh a: ${idSeccion}`);
-
+    if (!cfg) return;
     this.colorObjetivo = [...cfg.color];
-    this.opacidadFondoObjetivo = cfg.opacidadFondo;
-    this.brilloObjetivo = cfg.brillo;
-    this.enTransicion = true;
-
-    this.burbujas.forEach((burbuja, indice) => {
-      const radioBase =
-        burbuja.tipo === "large" ? cfg.radioGrande : cfg.radioPequeno;
-      const variacionTamano = 0.6 + Math.random() * 0.8;
-      burbuja.radioObjetivo = radioBase * variacionTamano;
-      burbuja.opacidadObjetivo = cfg.opacidad * (0.8 + Math.random() * 0.4);
-
-      if (burbuja.tipo === "large") {
-        const todasPosiciones = [
-          { x: this.ancho * 0.3, y: -radioBase * 0.2 },
-          { x: this.ancho * 0.7, y: -radioBase * 0.2 },
-          { x: this.ancho * 0.5, y: -radioBase * 0.3 },
-          { x: -radioBase * 0.2, y: this.alto * 0.7 },
-          { x: this.ancho * 0.2, y: this.alto * 0.8 },
-          { x: this.ancho + radioBase * 0.2, y: this.alto * 0.3 },
-          { x: this.ancho + radioBase * 0.2, y: this.alto * 0.7 },
-          { x: -radioBase * 0.1, y: -radioBase * 0.1 },
-          { x: this.ancho + radioBase * 0.1, y: -radioBase * 0.1 },
-          { x: this.ancho * 0.1, y: -radioBase * 0.1 },
-          { x: this.ancho * 0.9, y: -radioBase * 0.1 },
-          { x: -radioBase * 0.1, y: this.alto * 0.1 },
-          { x: this.ancho + radioBase * 0.1, y: this.alto * 0.9 },
-        ];
-
-        const posicionesMezcladas = [...todasPosiciones].sort(
-          () => Math.random() - 0.5
-        );
-        const pos = posicionesMezcladas[indice % posicionesMezcladas.length];
-
-        burbuja.xObjetivo = pos.x + (Math.random() - 0.5) * radioBase * 0.8;
-        burbuja.yObjetivo = pos.y + (Math.random() - 0.5) * radioBase * 0.8;
-      } else {
-        const zonas = [
-          { x: 0.05, y: 0.05, w: 0.25, h: 0.25 },
-          { x: 0.7, y: 0.05, w: 0.25, h: 0.25 },
-          { x: 0.05, y: 0.7, w: 0.25, h: 0.25 },
-          { x: 0.7, y: 0.7, w: 0.25, h: 0.25 },
-          { x: 0.02, y: 0.3, w: 0.15, h: 0.4 },
-          { x: 0.83, y: 0.3, w: 0.15, h: 0.4 },
-          { x: 0.3, y: 0.02, w: 0.4, h: 0.15 },
-          { x: 0.3, y: 0.83, w: 0.4, h: 0.15 },
-          { x: 0.15, y: 0.15, w: 0.2, h: 0.2 },
-          { x: 0.65, y: 0.15, w: 0.2, h: 0.2 },
-          { x: 0.15, y: 0.65, w: 0.2, h: 0.2 },
-          { x: 0.65, y: 0.65, w: 0.2, h: 0.2 },
-        ];
-
-        const zona = zonas[Math.floor(Math.random() * zonas.length)];
-        burbuja.xObjetivo = (zona.x + Math.random() * zona.w) * this.ancho;
-        burbuja.yObjetivo = (zona.y + Math.random() * zona.h) * this.alto;
-      }
-
-      burbuja.velocidadBaseX = (Math.random() - 0.5) * 0.5;
-      burbuja.velocidadBaseY = (Math.random() - 0.5) * 0.5;
-      burbuja.velocidadOscilacion = 0.003 + Math.random() * 0.015;
-      burbuja.amplitudOscilacion = 5 + Math.random() * 15;
-      burbuja.velocidadPulso = 0.008 + Math.random() * 0.015;
-    });
+    this.bokehCircles = Array.from({ length: cfg.cantidadBokeh }, () =>
+      this.crearBokehCircle()
+    );
+    this.definedCircles = Array.from({ length: cfg.cantidadDefinidos }, () =>
+      this.crearDefinedCircle()
+    );
+    this.particles = Array.from({ length: cfg.cantidadParticulas }, () =>
+      this.crearParticle()
+    );
   },
-
   animar() {
-    const esMovil = window.innerWidth <= 768;
-    const saltarCuadros = esMovil ? 2 : 1;
-    let conteoCuadros = 0;
-
-    const bucle = () => {
-      conteoCuadros++;
-      if (conteoCuadros % saltarCuadros === 0) {
-        this.actualizar();
-        this.dibujar();
-      }
-      requestAnimationFrame(bucle);
-    };
-    requestAnimationFrame(bucle);
+    this.actualizar();
+    this.dibujar();
+    requestAnimationFrame(() => this.animar());
   },
 };
 
-// Manejador de eventos
+// =============================
+// EVENTOS
+// =============================
 const manejadorEventos = {
   init() {
     document.addEventListener(
       "click",
-      utilidades.debounce(this.manejarClic.bind(this), 300)
+      utilidades.debounce((e) => this.manejarClic(e), 300)
     );
     document.addEventListener(
       "keydown",
-      utilidades.debounce(this.manejarTecla.bind(this), 300)
+      utilidades.debounce((e) => this.manejarTecla(e), 300)
     );
+    bokeh.manejarInteraccionMouse();
   },
-
-  manejarClic(e) {
-    const { target } = e;
-    const seccion = estado.seccionActiva;
+  manejarClic({ target }) {
+    const { seccionActiva: seccion } = estado;
     if (!seccion) return;
 
     if (target.closest(".play-center button")) {
       const playCentro = seccion.querySelector(".play-center");
-      playCentro.style.display = "none";
-      playCentro.classList.remove("visible");
+      if (playCentro) {
+        playCentro.style.display = "none";
+        playCentro.classList.remove("visible");
+      }
       estado.playClickeado = true;
-
       seccion.classList.add("show-content");
-
       manejadorAudio.reproducirFondo().then(() => {
         manejadorAudio.reproducirNarracion(seccion.id);
         manejadorSecciones.mostrarNarrativa(seccion);
@@ -1382,15 +938,13 @@ const manejadorEventos = {
     }
 
     if (target.closest(".send-button")) {
-      const coincidencia = seccion.id.match(/^acertijo(\d+)$/);
-      if (coincidencia)
-        validadorRespuestas.validar(parseInt(coincidencia[1], 10));
+      const [, numero] = seccion.id.match(/^acertijo(\d+)$/) || [];
+      if (numero) validadorRespuestas.validar(+numero);
       return;
     }
 
     if (target.closest(".acciones button")) {
       const accion = target.textContent.toLowerCase().trim();
-
       if (accion.includes("comenzar")) navegacion.irADecision();
       else if (accion.includes("'a'")) navegacion.elegirOpcion("inmediata");
       else if (accion.includes("'b'")) navegacion.elegirOpcion("esperar");
@@ -1403,70 +957,42 @@ const manejadorEventos = {
             : 0;
         if (numero) navegacion.confirmarOpcion(numero, accion);
       } else if (accion === "siguiente") {
-        const coincidencia = seccion.id.match(/^explicacion(\d+)$/);
-        if (coincidencia)
-          navegacion.continuarDesdeExplicacion(parseInt(coincidencia[1], 10));
+        const [, numero] = seccion.id.match(/^explicacion(\d+)$/) || [];
+        if (numero) navegacion.continuarDesdeExplicacion(+numero);
       }
     }
   },
-
-  manejarTecla(e) {
-    if (e.key !== "Enter" || !estado.seccionActiva) return;
-    const coincidencia = estado.seccionActiva.id.match(/^acertijo(\d+)$/);
-    if (coincidencia)
-      validadorRespuestas.validar(parseInt(coincidencia[1], 10));
+  manejarTecla({ key }) {
+    if (key !== "Enter" || !estado.seccionActiva) return;
+    const [, numero] = estado.seccionActiva.id.match(/^acertijo(\d+)$/) || [];
+    if (numero) validadorRespuestas.validar(+numero);
   },
 };
 
-// Inicialización de la aplicación
+// =============================
+// APP
+// =============================
 const app = {
   init() {
-    console.log("Iniciando experiencia navideña...");
-
-    const seccionIntro = referencias.obtener("intro");
-    const canvas = referencias.obtener("bokehCanvas");
-
-    if (!seccionIntro) {
-      console.error("Sección intro no encontrada.");
-      return;
-    }
-
-    if (!canvas) {
-      console.error("Canvas bokeh no encontrado.");
-      return;
-    }
-
+    const seccionIntro = referencias.obtener("intro"),
+      canvas = referencias.obtener("bokehCanvas");
+    if (!seccionIntro || !canvas) return;
     manejadorAudio.init();
     bokeh.init();
     manejadorEventos.init();
-
     estado.seccionActiva = seccionIntro;
     estado.playClickeado = false;
-
-    for (const idSeccion in contenido) {
-      manejadorContenido.render(idSeccion);
-    }
-
+    Object.keys(contenido).forEach((id) => manejadorContenido.render(id));
     manejadorSecciones.mostrar("intro");
+    setTimeout(() => document.body.classList.add("loaded"), 100);
 
-    setTimeout(() => {
-      document.body.classList.add("loaded");
-    }, 100);
-
+    // helper opcional para probar audio desde consola
     window.testAudio = () => {
-      console.log("=== PRUEBA DE AUDIO ===");
-      console.log("Estado actual:", estado);
-      console.log("Audio de fondo:", manejadorAudio.audioFondo);
-      console.log("Volumen de fondo:", manejadorAudio.audioFondo?.volume);
-      console.log("Reproduciendo fondo:", estado.fondoIniciado);
-      manejadorAudio.reproducirFondo().then(() => {
-        manejadorAudio.reproducirNarracion("intro");
-      });
+      manejadorAudio
+        .reproducirFondo()
+        .then(() => manejadorAudio.reproducirNarracion("intro"));
     };
-
-    console.log("Función de prueba disponible: testAudio()");
   },
 };
 
-// Iniciar cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => app.init());
