@@ -21,85 +21,10 @@ const config = {
     volumenNarracion: 0.8,
     duracionFade: 1000,
   },
-  bokeh: {
-    intro: {
-      color: [60, 180, 140],
-      cantidadBokeh: 12,
-      cantidadDefinidos: 6,
-      cantidadParticulas: 20,
-    },
-    decision: {
-      color: [100, 255, 160],
-      cantidadBokeh: 10,
-      cantidadDefinidos: 6,
-      cantidadParticulas: 18,
-    },
-    confirmacion1: {
-      color: [40, 160, 180],
-      cantidadBokeh: 8,
-      cantidadDefinidos: 5,
-      cantidadParticulas: 15,
-    },
-    confirmacion2: {
-      color: [255, 200, 100],
-      cantidadBokeh: 10,
-      cantidadDefinidos: 7,
-      cantidadParticulas: 20,
-    },
-    acertijo1: {
-      color: [255, 100, 255],
-      cantidadBokeh: 9,
-      cantidadDefinidos: 6,
-      cantidadParticulas: 17,
-    },
-    explicacion1: {
-      color: [80, 200, 160],
-      cantidadBokeh: 11,
-      cantidadDefinidos: 8,
-      cantidadParticulas: 22,
-    },
-    acertijo2: {
-      color: [100, 255, 255],
-      cantidadBokeh: 8,
-      cantidadDefinidos: 5,
-      cantidadParticulas: 16,
-    },
-    explicacion2: {
-      color: [120, 240, 255],
-      cantidadBokeh: 12,
-      cantidadDefinidos: 9,
-      cantidadParticulas: 24,
-    },
-    acertijo3: {
-      color: [255, 180, 100],
-      cantidadBokeh: 10,
-      cantidadDefinidos: 7,
-      cantidadParticulas: 19,
-    },
-    explicJon: {
-      color: [240, 255, 120],
-      cantidadBokeh: 13,
-      cantidadDefinidos: 10,
-      cantidadParticulas: 25,
-    },
-    final: {
-      color: [220, 100, 255],
-      cantidadBokeh: 15,
-      cantidadDefinidos: 12,
-      cantidadParticulas: 30,
-    },
-    final2: {
-      color: [100, 255, 200],
-      cantidadBokeh: 14,
-      cantidadDefinidos: 11,
-      cantidadParticulas: 28,
-    },
-  },
 };
 
 // =============================
 // CONTENIDO DE SECCIONES
-// (idéntico al que enviaste)
 // =============================
 const contenido = {
   intro: {
@@ -434,6 +359,480 @@ const manejadorContenido = {
 };
 
 // =============================
+// BOKEH: FONDO ANIMADO MEJORADO CON GRADIENTES LINEALES
+// =============================
+const bokeh = {
+  canvas: null,
+  ctx: null,
+  width: 0,
+  height: 0,
+  items: [],
+
+  // Colores por sección con gradientes
+  configuracionColores: {
+    intro: {
+      fondo: ["#0a0f1a", "#1a0f2a"],
+      colores: [
+        ["#3cb488", "#60b48c"],
+        ["#4cc498", "#70c49c"],
+        ["#2ca478", "#50a47c"],
+      ],
+      cantidad: 60,
+    },
+    decision: {
+      fondo: ["#0f1a0a", "#1a2a0f"],
+      colores: [
+        ["#64ffa0", "#88ffb4"],
+        ["#74ffb0", "#98ffc4"],
+        ["#54ff90", "#78ffa4"],
+      ],
+      cantidad: 55,
+    },
+    confirmacion1: {
+      fondo: ["#0a1a1f", "#0f2a3a"],
+      colores: [
+        ["#28a0b4", "#4cb4c8"],
+        ["#38b0c4", "#5cc4d8"],
+        ["#1890a4", "#3ca4b8"],
+      ],
+      cantidad: 45,
+    },
+    confirmacion2: {
+      fondo: ["#1f1a0a", "#3a2a0f"],
+      colores: [
+        ["#ffc864", "#ffdc88"],
+        ["#ffd874", "#ffec98"],
+        ["#ffb854", "#ffcc78"],
+      ],
+      cantidad: 55,
+    },
+    acertijo1: {
+      fondo: ["#1a0a1f", "#2a0f3a"],
+      colores: [
+        ["#ff64ff", "#ff88ff"],
+        ["#ff74ff", "#ff98ff"],
+        ["#ff54ff", "#ff78ff"],
+      ],
+      cantidad: 50,
+    },
+    explicacion1: {
+      fondo: ["#0a1f16", "#0f3a26"],
+      colores: [
+        ["#50c8a0", "#74dcb4"],
+        ["#60d8b0", "#84ecc4"],
+        ["#40b890", "#64cca4"],
+      ],
+      cantidad: 60,
+    },
+    acertijo2: {
+      fondo: ["#0a1f1f", "#0f3a3a"],
+      colores: [
+        ["#64ffff", "#88ffff"],
+        ["#74ffff", "#98ffff"],
+        ["#54ffff", "#78ffff"],
+      ],
+      cantidad: 45,
+    },
+    explicacion2: {
+      fondo: ["#0a16f0", "#0f26ff"],
+      colores: [
+        ["#78f0ff", "#9cf4ff"],
+        ["#88f4ff", "#acf8ff"],
+        ["#68ecff", "#8cf0ff"],
+      ],
+      cantidad: 65,
+    },
+    acertijo3: {
+      fondo: ["#1f160a", "#3a260f"],
+      colores: [
+        ["#ffb464", "#ffc888"],
+        ["#ffc474", "#ffd898"],
+        ["#ffa454", "#ffb878"],
+      ],
+      cantidad: 50,
+    },
+    explicacion3: {
+      fondo: ["#1f1f0a", "#3a3a0f"],
+      colores: [
+        ["#f0ff78", "#f4ff9c"],
+        ["#f4ff88", "#f8ffac"],
+        ["#ecff68", "#f0ff8c"],
+      ],
+      cantidad: 70,
+    },
+    final: {
+      fondo: ["#1a0a1f", "#3a0f4a"],
+      colores: [
+        ["#dc64ff", "#f088ff"],
+        ["#ec74ff", "#f498ff"],
+        ["#cc54ff", "#e078ff"],
+      ],
+      cantidad: 80,
+    },
+    final2: {
+      fondo: ["#0a1f14", "#0f4a28"],
+      colores: [
+        ["#64ffc8", "#88ffdc"],
+        ["#74ffd8", "#98ffec"],
+        ["#54ffb8", "#78ffcc"],
+      ],
+      cantidad: 75,
+    },
+  },
+
+  // Estado actual de colores para transiciones suaves
+  colorFondoActual: ["#0a0f1a", "#1a0f2a"],
+  colorFondoObjetivo: ["#0a0f1a", "#1a0f2a"],
+  coloresActuales: [
+    ["#3cb488", "#60b48c"],
+    ["#4cc498", "#70c49c"],
+    ["#2ca478", "#50a47c"],
+  ],
+  coloresObjetivo: [
+    ["#3cb488", "#60b48c"],
+    ["#4cc498", "#70c49c"],
+    ["#2ca478", "#50a47c"],
+  ],
+
+  rand(min, max) {
+    return Math.random() * (max - min) + min;
+  },
+
+  init() {
+    this.canvas = referencias.obtener("bokehCanvas");
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext("2d");
+    this.redimensionar();
+
+    window.addEventListener(
+      "resize",
+      utilidades.debounce(() => {
+        this.redimensionar();
+        this.ctx.globalCompositeOperation = "lighter";
+      }, 100)
+    );
+
+    this._crearElementos("intro");
+    this.manejarInteraccionMouse();
+    this.animar();
+  },
+
+  redimensionar() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+  },
+
+  _crearElementos(idSeccion) {
+    const config =
+      this.configuracionColores[idSeccion] || this.configuracionColores.intro;
+    this.items = [];
+
+    // Establecer colores objetivo
+    this.colorFondoObjetivo = [...config.fondo];
+    this.coloresObjetivo = config.colores.map((color) => [...color]);
+
+    // Crear elementos
+    let count = config.cantidad;
+    const blur = [8, 45];
+    const radius = [15, 85];
+
+    while (count--) {
+      const thisRadius = this.rand(radius[0], radius[1]);
+      const thisBlur = this.rand(blur[0], blur[1]);
+      const x = this.rand(-100, this.width + 100);
+      const y = this.rand(-100, this.height + 100);
+
+      const colorIndex = Math.floor(this.rand(0, 299) / 100);
+      const colorSet = config.colores[colorIndex] || config.colores[0];
+
+      const directionX = Math.round(this.rand(-99, 99) / 100);
+      const directionY = Math.round(this.rand(-99, 99) / 100);
+
+      this.items.push({
+        x: x,
+        y: y,
+        blur: thisBlur,
+        radius: thisRadius,
+        initialXDirection: directionX,
+        initialYDirection: directionY,
+        initialBlurDirection: directionX,
+        colorOne: colorSet[0],
+        colorTwo: colorSet[1],
+        targetColorOne: colorSet[0],
+        targetColorTwo: colorSet[1],
+        gradient: [
+          x - thisRadius / 2,
+          y - thisRadius / 2,
+          x + thisRadius,
+          y + thisRadius,
+        ],
+        pulsePhase: Math.random() * Math.PI * 2,
+        originalRadius: thisRadius,
+      });
+    }
+  },
+
+  transicion(idSeccion) {
+    const config = this.configuracionColores[idSeccion];
+    if (!config) return;
+
+    // Actualizar colores objetivo para transición suave
+    this.colorFondoObjetivo = [...config.fondo];
+    this.coloresObjetivo = config.colores.map((color) => [...color]);
+
+    // Ajustar cantidad de elementos
+    const diferencia = config.cantidad - this.items.length;
+
+    if (diferencia > 0) {
+      // Agregar más elementos
+      const blur = [8, 45];
+      const radius = [15, 85];
+
+      for (let i = 0; i < diferencia; i++) {
+        const thisRadius = this.rand(radius[0], radius[1]);
+        const thisBlur = this.rand(blur[0], blur[1]);
+        const x = this.rand(-100, this.width + 100);
+        const y = this.rand(-100, this.height + 100);
+
+        const colorIndex = Math.floor(this.rand(0, 299) / 100);
+        const colorSet = config.colores[colorIndex] || config.colores[0];
+
+        const directionX = Math.round(this.rand(-99, 99) / 100);
+        const directionY = Math.round(this.rand(-99, 99) / 100);
+
+        this.items.push({
+          x: x,
+          y: y,
+          blur: thisBlur,
+          radius: thisRadius,
+          initialXDirection: directionX,
+          initialYDirection: directionY,
+          initialBlurDirection: directionX,
+          colorOne: colorSet[0],
+          colorTwo: colorSet[1],
+          targetColorOne: colorSet[0],
+          targetColorTwo: colorSet[1],
+          gradient: [
+            x - thisRadius / 2,
+            y - thisRadius / 2,
+            x + thisRadius,
+            y + thisRadius,
+          ],
+          pulsePhase: Math.random() * Math.PI * 2,
+          originalRadius: thisRadius,
+        });
+      }
+    } else if (diferencia < 0) {
+      // Remover elementos
+      this.items = this.items.slice(0, config.cantidad);
+    }
+
+    // Actualizar colores objetivo de elementos existentes
+    this.items.forEach((item) => {
+      const colorIndex = Math.floor(Math.random() * config.colores.length);
+      const colorSet = config.colores[colorIndex];
+      item.targetColorOne = colorSet[0];
+      item.targetColorTwo = colorSet[1];
+    });
+  },
+
+  // Función para interpolar colores hex
+  _lerpColor(color1, color2, t) {
+    const r1 = parseInt(color1.slice(1, 3), 16);
+    const g1 = parseInt(color1.slice(3, 5), 16);
+    const b1 = parseInt(color1.slice(5, 7), 16);
+
+    const r2 = parseInt(color2.slice(1, 3), 16);
+    const g2 = parseInt(color2.slice(3, 5), 16);
+    const b2 = parseInt(color2.slice(5, 7), 16);
+
+    const r = Math.round(r1 + (r2 - r1) * t);
+    const g = Math.round(g1 + (g2 - g1) * t);
+    const b = Math.round(b1 + (b2 - b1) * t);
+
+    return `#${r.toString(16).padStart(2, "0")}${g
+      .toString(16)
+      .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  },
+
+  actualizar(timestamp) {
+    const adjX = 1.5;
+    const adjY = 1.5;
+    const adjBlur = 0.8;
+    const transitionSpeed = 0.02;
+
+    // Transición suave de colores de fondo
+    this.colorFondoActual = this.colorFondoActual.map((color, index) =>
+      this._lerpColor(color, this.colorFondoObjetivo[index], transitionSpeed)
+    );
+
+    this.items.forEach((item, index) => {
+      // Transición suave de colores de elementos
+      item.colorOne = this._lerpColor(
+        item.colorOne,
+        item.targetColorOne,
+        transitionSpeed
+      );
+      item.colorTwo = this._lerpColor(
+        item.colorTwo,
+        item.targetColorTwo,
+        transitionSpeed
+      );
+
+      // Movimiento con rebote
+      if (
+        (item.x + item.initialXDirection * adjX >= this.width &&
+          item.initialXDirection !== 0) ||
+        (item.x + item.initialXDirection * adjX <= 0 &&
+          item.initialXDirection !== 0)
+      ) {
+        item.initialXDirection *= -1;
+      }
+      if (
+        (item.y + item.initialYDirection * adjY >= this.height &&
+          item.initialYDirection !== 0) ||
+        (item.y + item.initialYDirection * adjY <= 0 &&
+          item.initialYDirection !== 0)
+      ) {
+        item.initialYDirection *= -1;
+      }
+
+      if (
+        (item.blur + item.initialBlurDirection * adjBlur >= 60 &&
+          item.initialBlurDirection !== 0) ||
+        (item.blur + item.initialBlurDirection * adjBlur <= 8 &&
+          item.initialBlurDirection !== 0)
+      ) {
+        item.initialBlurDirection *= -1;
+      }
+
+      // Actualizar posición
+      item.x += item.initialXDirection * adjX;
+      item.y += item.initialYDirection * adjY;
+      item.blur += item.initialBlurDirection * adjBlur;
+
+      // Efecto de pulsación sutil
+      item.pulsePhase += 0.02;
+      const pulseMultiplier = 1 + Math.sin(item.pulsePhase) * 0.1;
+      item.radius = item.originalRadius * pulseMultiplier;
+
+      // Actualizar gradiente
+      item.gradient = [
+        item.x - item.radius / 2,
+        item.y - item.radius / 2,
+        item.x + item.radius,
+        item.y + item.radius,
+      ];
+    });
+  },
+
+  dibujar() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx.globalCompositeOperation = "lighter";
+
+    // Dibujar fondo con gradiente
+    const grd = this.ctx.createLinearGradient(0, this.height, this.width, 0);
+    grd.addColorStop(0, this.colorFondoActual[0]);
+    grd.addColorStop(1, this.colorFondoActual[1]);
+    this.ctx.fillStyle = grd;
+    this.ctx.fillRect(0, 0, this.width, this.height);
+
+    // Dibujar elementos bokeh
+    this.items.forEach((item) => {
+      this.ctx.beginPath();
+      this.ctx.filter = `blur(${item.blur}px)`;
+
+      const grd = this.ctx.createLinearGradient(
+        item.gradient[0],
+        item.gradient[1],
+        item.gradient[2],
+        item.gradient[3]
+      );
+      grd.addColorStop(0, item.colorOne);
+      grd.addColorStop(1, item.colorTwo);
+
+      this.ctx.fillStyle = grd;
+      this.ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.closePath();
+    });
+
+    // Añadir viñeta sutil
+    this.drawVignette();
+  },
+
+  drawVignette() {
+    this.ctx.save();
+    this.ctx.filter = "none";
+    const g = this.ctx.createRadialGradient(
+      this.width / 2,
+      this.height / 2,
+      0,
+      this.width / 2,
+      this.height / 2,
+      Math.max(this.width, this.height) * 0.7
+    );
+    g.addColorStop(0, "rgba(0,0,0,0)");
+    g.addColorStop(0.7, "rgba(0,0,0,0.1)");
+    g.addColorStop(1, "rgba(0,0,0,0.4)");
+    this.ctx.globalCompositeOperation = "multiply";
+    this.ctx.fillStyle = g;
+    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.restore();
+  },
+
+  manejarInteraccionMouse() {
+    if (!this.canvas) return;
+
+    this.canvas.addEventListener(
+      "mousemove",
+      ({ clientX: mouseX, clientY: mouseY }) => {
+        this.items.forEach((item) => {
+          const dx = mouseX - item.x;
+          const dy = mouseY - item.y;
+          const distance = Math.hypot(dx, dy);
+
+          if (distance < 150) {
+            const force = (150 - distance) / 150;
+
+            // Repulsión suave
+            item.initialXDirection += (dx / distance) * force * 0.01;
+            item.initialYDirection += (dy / distance) * force * 0.01;
+
+            // Limitar velocidad
+            item.initialXDirection = Math.max(
+              -2,
+              Math.min(2, item.initialXDirection)
+            );
+            item.initialYDirection = Math.max(
+              -2,
+              Math.min(2, item.initialYDirection)
+            );
+
+            // Efecto en el blur
+            item.blur = Math.min(item.blur + force * 5, 60);
+
+            // Efecto en el radio
+            item.originalRadius = Math.min(
+              item.originalRadius + force * 10,
+              100
+            );
+          }
+        });
+      }
+    );
+  },
+
+  animar(timestamp) {
+    this.actualizar(timestamp);
+    this.dibujar();
+    requestAnimationFrame((ts) => this.animar(ts));
+  },
+};
+
+// =============================
 // MANEJO DE SECCIONES + FUNDIDO
 // =============================
 const manejadorSecciones = {
@@ -608,294 +1007,6 @@ const navegacion = {
 };
 
 // =============================
-// BOKEH: FONDO ANIMADO
-// =============================
-const bokeh = {
-  canvas: null,
-  ctx: null,
-  width: 0,
-  height: 0,
-  bokehCircles: [],
-  definedCircles: [],
-  particles: [],
-  colorActual: [60, 180, 140],
-  colorObjetivo: [60, 180, 140],
-
-  init() {
-    this.canvas = referencias.obtener("bokehCanvas");
-    if (!this.canvas) return;
-    this.ctx = this.canvas.getContext("2d");
-    this.redimensionar();
-    window.addEventListener(
-      "resize",
-      utilidades.debounce(() => this.redimensionar(), 100)
-    );
-    this._initElementsFrom("intro"); // elementos iniciales
-    this.animar();
-  },
-
-  redimensionar() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
-  },
-
-  // ---- creadores ----
-  crearBokehCircle() {
-    const isDefined = Math.random() < 0.3;
-    return {
-      x: Math.random() * this.width,
-      y: Math.random() * this.height,
-      size: isDefined ? Math.random() * 300 : Math.random() * 100,
-      speedX: (Math.random() - 0.5) * 0.8,
-      speedY: (Math.random() - 0.5) * 0.8,
-      opacity:
-        Math.random() * (isDefined ? 0.5 : 0.5) + (isDefined ? 0.5 : 0.5),
-      pulse: Math.random() * 0.002 + 0.001,
-      pulseDirection: 1,
-      isDefined,
-      color: `rgba(${this.colorActual[0]}, ${this.colorActual[1]}, ${this.colorActual[2]}, `,
-    };
-  },
-  crearDefinedCircle() {
-    return {
-      x: Math.random() * this.width,
-      y: Math.random() * this.height,
-      size: Math.random() * 320,
-      speedX: (Math.random() - 0.5) * 0.04,
-      speedY: (Math.random() - 0.5) * 0.04,
-      opacity: Math.random() * 0.12 + 0.06,
-      pulse: Math.random() * 0.003 + 0.001,
-      pulseDirection: 1,
-      color: `rgba(${Math.min(255, this.colorActual[0] + 20)}, ${Math.min(
-        255,
-        this.colorActual[1] + 20
-      )}, ${Math.min(255, this.colorActual[2] + 20)}, `,
-    };
-  },
-  crearParticle() {
-    return {
-      x: Math.random() * this.width,
-      y: Math.random() * this.height,
-      size: Math.random() * 2 + 1,
-      speedX: (Math.random() - 0.5) * 0.3,
-      speedY: (Math.random() - 0.5) * 0.3,
-      opacity: Math.random() * 0.8 + 0.3,
-      twinkle: Math.random() * 0.03 + 0.015,
-      twinkleDirection: 1,
-      color: `rgba(${Math.min(255, this.colorActual[0] + 90)}, ${Math.min(
-        255,
-        this.colorActual[1] + 75
-      )}, ${Math.min(255, this.colorActual[2] + 60)}, `,
-    };
-  },
-
-  // ---- updates de elementos ----
-  _wrap(o, pad = 50) {
-    if (o.x < -pad) o.x = this.width + pad;
-    if (o.x > this.width + pad) o.x = -pad;
-    if (o.y < -pad) o.y = this.height + pad;
-    if (o.y > this.height + pad) o.y = -pad;
-  },
-  updateBokehCircle(c) {
-    c.x += c.speedX;
-    c.y += c.speedY;
-    c.size += c.pulse * c.pulseDirection * 20;
-    if (c.size > (c.isDefined ? 480 : 380) || c.size < (c.isDefined ? 120 : 80))
-      c.pulseDirection *= -1;
-    this._wrap(c, 120);
-    // actualizar color según transición
-    c.color = `rgba(${Math.round(this.colorActual[0])}, ${Math.round(
-      this.colorActual[1]
-    )}, ${Math.round(this.colorActual[2])}, `;
-  },
-  updateDefinedCircle(c) {
-    c.x += c.speedX;
-    c.y += c.speedY;
-    c.size += c.pulse * c.pulseDirection * 15;
-    if (c.size > 220 || c.size < 60) c.pulseDirection *= -1;
-    this._wrap(c, 80);
-    c.color = `rgba(${Math.min(
-      255,
-      Math.round(this.colorActual[0] + 20)
-    )}, ${Math.min(255, Math.round(this.colorActual[1] + 20))}, ${Math.min(
-      255,
-      Math.round(this.colorActual[2] + 20)
-    )}, `;
-  },
-  updateParticle(p) {
-    p.x += p.speedX;
-    p.y += p.speedY;
-    p.opacity += p.twinkle * p.twinkleDirection;
-    if (p.opacity > 1 || p.opacity < 0.2) p.twinkleDirection *= -1;
-    this._wrap(p, 10);
-    p.color = `rgba(${Math.min(
-      255,
-      Math.round(this.colorActual[0] + 90)
-    )}, ${Math.min(255, Math.round(this.colorActual[1] + 75))}, ${Math.min(
-      255,
-      Math.round(this.colorActual[2] + 60)
-    )}, `;
-  },
-
-  // ---- draw ----
-  drawBokehCircle(c) {
-    this.ctx.save();
-    const g = this.ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.size / 2);
-    const opF = c.isDefined ? 1.4 : 1.0;
-    g.addColorStop(0, c.color + c.opacity * opF + ")");
-    g.addColorStop(
-      c.isDefined ? 0.4 : 0.3,
-      c.color + c.opacity * (c.isDefined ? 0.8 : 0.6) + ")"
-    );
-    g.addColorStop(
-      c.isDefined ? 0.7 : 0.6,
-      c.color + c.opacity * (c.isDefined ? 0.3 : 0.2) + ")"
-    );
-    g.addColorStop(1, c.color + "0)");
-    this.ctx.fillStyle = g;
-    this.ctx.globalCompositeOperation = "screen";
-    this.ctx.beginPath();
-    this.ctx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.restore();
-  },
-  drawDefinedCircle(c) {
-    this.ctx.save();
-    const g = this.ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.size / 2);
-    g.addColorStop(0, c.color + c.opacity * 1.4 + ")");
-    g.addColorStop(0.4, c.color + c.opacity * 0.8 + ")");
-    g.addColorStop(0.7, c.color + c.opacity * 0.3 + ")");
-    g.addColorStop(1, c.color + "0)");
-    this.ctx.fillStyle = g;
-    this.ctx.globalCompositeOperation = "screen";
-    this.ctx.beginPath();
-    this.ctx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.restore();
-  },
-  drawParticle(p) {
-    this.ctx.save();
-    this.ctx.globalCompositeOperation = "screen";
-    this.ctx.fillStyle = p.color + p.opacity + ")";
-    this.ctx.beginPath();
-    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.restore();
-  },
-  drawVignette() {
-    this.ctx.save();
-    const g = this.ctx.createRadialGradient(
-      this.width / 2,
-      this.height / 2,
-      0,
-      this.width / 2,
-      this.height / 2,
-      Math.max(this.width, this.height) * 0.8
-    );
-    g.addColorStop(0, "rgba(0,0,0,0)");
-    g.addColorStop(0.6, "rgba(0,0,0,0.1)");
-    g.addColorStop(1, "rgba(0,0,0,0.7)");
-    this.ctx.fillStyle = g;
-    this.ctx.fillRect(0, 0, this.width, this.height);
-    this.ctx.restore();
-  },
-
-  // ---- ciclo ----
-  actualizar() {
-    // transición suave de color
-    this.colorActual = this.colorActual.map((c, i) =>
-      utilidades.lerp(c, this.colorObjetivo[i], 0.02)
-    );
-    this.bokehCircles.forEach((c) => this.updateBokehCircle(c));
-    this.definedCircles.forEach((c) => this.updateDefinedCircle(c));
-    this.particles.forEach((p) => this.updateParticle(p));
-  },
-  dibujar() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
-    this.bokehCircles.forEach((c) => this.drawBokehCircle(c));
-    this.definedCircles.forEach((c) => this.drawDefinedCircle(c));
-    this.particles.forEach((p) => this.drawParticle(p));
-    this.drawVignette();
-  },
-  manejarInteraccionMouse() {
-    if (!this.canvas) return;
-    this.canvas.addEventListener(
-      "mousemove",
-      ({ clientX: mouseX, clientY: mouseY }) => {
-        this.bokehCircles.forEach((c) => {
-          const dx = mouseX - c.x,
-            dy = mouseY - c.y,
-            d = Math.hypot(dx, dy);
-          if (d < 200) {
-            const f = (200 - d) / 200;
-            c.speedX += (dx / d) * f * 0.002;
-            c.speedY += (dy / d) * f * 0.002;
-            c.opacity = Math.min(c.opacity + f * 0.05, 0.18);
-          }
-        });
-        this.definedCircles.forEach((c) => {
-          const dx = mouseX - c.x,
-            dy = mouseY - c.y,
-            d = Math.hypot(dx, dy);
-          if (d < 150) {
-            const f = (150 - d) / 150;
-            c.speedX += (dx / d) * f * 0.001;
-            c.speedY += (dy / d) * f * 0.001;
-            c.opacity = Math.min(c.opacity + f * 0.02, 0.12);
-          }
-        });
-        this.particles.forEach((p) => {
-          const dx = mouseX - p.x,
-            dy = mouseY - p.y,
-            d = Math.hypot(dx, dy);
-          if (d < 100) {
-            const f = (100 - d) / 100;
-            p.speedX += (dx / d) * f * 0.01;
-            p.speedY += (dy / d) * f * 0.01;
-            p.opacity = Math.min(p.opacity + f * 0.2, 1);
-          }
-        });
-      }
-    );
-  },
-  _initElementsFrom(idSeccion) {
-    const cfg = config.bokeh[idSeccion] ?? config.bokeh.intro;
-    this.colorActual = [...cfg.color];
-    this.colorObjetivo = [...cfg.color];
-    this.bokehCircles = Array.from({ length: cfg.cantidadBokeh }, () =>
-      this.crearBokehCircle()
-    );
-    this.definedCircles = Array.from({ length: cfg.cantidadDefinidos }, () =>
-      this.crearDefinedCircle()
-    );
-    this.particles = Array.from({ length: cfg.cantidadParticulas }, () =>
-      this.crearParticle()
-    );
-  },
-  transicion(idSeccion) {
-    const cfg = config.bokeh[idSeccion];
-    if (!cfg) return;
-    this.colorObjetivo = [...cfg.color];
-    this.bokehCircles = Array.from({ length: cfg.cantidadBokeh }, () =>
-      this.crearBokehCircle()
-    );
-    this.definedCircles = Array.from({ length: cfg.cantidadDefinidos }, () =>
-      this.crearDefinedCircle()
-    );
-    this.particles = Array.from({ length: cfg.cantidadParticulas }, () =>
-      this.crearParticle()
-    );
-  },
-  animar() {
-    this.actualizar();
-    this.dibujar();
-    requestAnimationFrame(() => this.animar());
-  },
-};
-
-// =============================
 // EVENTOS
 // =============================
 const manejadorEventos = {
@@ -908,7 +1019,6 @@ const manejadorEventos = {
       "keydown",
       utilidades.debounce((e) => this.manejarTecla(e), 300)
     );
-    bokeh.manejarInteraccionMouse();
   },
   manejarClic({ target }) {
     const { seccionActiva: seccion } = estado;
