@@ -190,11 +190,11 @@ const utilidades = {
   lerp: (inicio, fin, t) => inicio + (fin - inicio) * t,
   fadeAudio(elementoAudio, volumenInicio, volumenFin, duracion, callback) {
     if (!elementoAudio) return callback?.();
-    const pasos = 30,
-      tiempoPaso = duracion / pasos,
-      cambio = (volumenFin - volumenInicio) / pasos;
-    let volumenActual = volumenInicio,
-      conteo = 0;
+    const pasos = 30;
+    const tiempoPaso = duracion / pasos;
+    const cambio = (volumenFin - volumenInicio) / pasos;
+    let volumenActual = volumenInicio;
+    let conteo = 0;
     const intervalo = setInterval(() => {
       volumenActual = Math.max(0, Math.min(1, volumenActual + cambio));
       elementoAudio.volume = volumenActual;
@@ -333,8 +333,8 @@ const manejadorAudio = {
 // =============================
 const manejadorContenido = {
   render(id) {
-    const seccion = referencias.obtener(id),
-      datos = contenido[id];
+    const seccion = referencias.obtener(id);
+    const datos = contenido[id];
     if (!seccion || !datos) return;
     const titulo = seccion.querySelector(".titulo h1");
     if (titulo) titulo.textContent = datos.titulo || "";
@@ -359,7 +359,7 @@ const manejadorContenido = {
 };
 
 // =============================
-// BOKEH: FONDO ANIMADO MEJORADO CON GRADIENTES LINEALES
+// BOKEH: FONDO ANIMADO MEJORADO CON GRADIENTES LINEALES Y VIÑETA
 // =============================
 const bokeh = {
   canvas: null,
@@ -368,70 +368,77 @@ const bokeh = {
   height: 0,
   items: [],
 
-  // Colores por sección con gradientes
+  // Colores por sección con gradientes - CANTIDADES REDUCIDAS A LA MITAD
   configuracionColores: {
     intro: {
-      fondo: ["#0a0f1a", "#1a0f2a"],
+      fondo: ["#242b3aff", "#60b48c"],
       colores: [
         ["#3cb488", "#60b48c"],
         ["#4cc498", "#70c49c"],
         ["#2ca478", "#50a47c"],
       ],
-      cantidad: 60,
+      cantidad: 15, // Reducido de 30 a 15
+      cantidadDefinidos: 6, // Reducido de 10 a 5
     },
     decision: {
-      fondo: ["#0f1a0a", "#1a2a0f"],
+      fondo: ["#0f1a0a", "#54ff90"],
       colores: [
         ["#64ffa0", "#88ffb4"],
         ["#74ffb0", "#98ffc4"],
         ["#54ff90", "#78ffa4"],
       ],
-      cantidad: 55,
+      cantidad: 14, // Reducido de 28 a 14
+      cantidadDefinidos: 6, // Reducido de 12 a 6
     },
     confirmacion1: {
-      fondo: ["#0a1a1f", "#0f2a3a"],
+      fondo: ["#0a1a1f", "#1890a4"],
       colores: [
         ["#28a0b4", "#4cb4c8"],
         ["#38b0c4", "#5cc4d8"],
         ["#1890a4", "#3ca4b8"],
       ],
-      cantidad: 45,
+      cantidad: 12, // Reducido de 23 a 12 (redondeado)
+      cantidadDefinidos: 4, // Reducido de 8 a 4
     },
     confirmacion2: {
-      fondo: ["#1f1a0a", "#3a2a0f"],
+      fondo: ["#1f1a0a", "#ffb854"],
       colores: [
         ["#ffc864", "#ffdc88"],
         ["#ffd874", "#ffec98"],
         ["#ffb854", "#ffcc78"],
       ],
-      cantidad: 55,
+      cantidad: 14, // Reducido de 28 a 14
+      cantidadDefinidos: 6, // Reducido de 12 a 6
     },
     acertijo1: {
-      fondo: ["#1a0a1f", "#2a0f3a"],
+      fondo: ["#1a0a1f", "#3a005cff"],
       colores: [
         ["#ff64ff", "#ff88ff"],
         ["#ff74ff", "#ff98ff"],
         ["#ff54ff", "#ff78ff"],
       ],
-      cantidad: 50,
+      cantidad: 13, // Reducido de 25 a 13 (redondeado)
+      cantidadDefinidos: 5, // Reducido de 10 a 5
     },
     explicacion1: {
-      fondo: ["#0a1f16", "#0f3a26"],
+      fondo: ["#0a1f16", "#005a30ff"],
       colores: [
         ["#50c8a0", "#74dcb4"],
         ["#60d8b0", "#84ecc4"],
         ["#40b890", "#64cca4"],
       ],
-      cantidad: 60,
+      cantidad: 15, // Reducido de 30 a 15
+      cantidadDefinidos: 8, // Reducido de 15 a 8 (redondeado)
     },
     acertijo2: {
-      fondo: ["#0a1f1f", "#0f3a3a"],
+      fondo: ["#0a1f1f", "#005a5aff"],
       colores: [
         ["#64ffff", "#88ffff"],
         ["#74ffff", "#98ffff"],
         ["#54ffff", "#78ffff"],
       ],
-      cantidad: 45,
+      cantidad: 12, // Reducido de 23 a 12 (redondeado)
+      cantidadDefinidos: 4, // Reducido de 8 a 4
     },
     explicacion2: {
       fondo: ["#0a16f0", "#0f26ff"],
@@ -440,16 +447,18 @@ const bokeh = {
         ["#88f4ff", "#acf8ff"],
         ["#68ecff", "#8cf0ff"],
       ],
-      cantidad: 65,
+      cantidad: 17, // Reducido de 33 a 17 (redondeado)
+      cantidadDefinidos: 8, // Reducido de 15 a 8 (redondeado)
     },
     acertijo3: {
-      fondo: ["#1f160a", "#3a260f"],
+      fondo: ["#1f160a", "#5f3300ff"],
       colores: [
         ["#ffb464", "#ffc888"],
         ["#ffc474", "#ffd898"],
         ["#ffa454", "#ffb878"],
       ],
-      cantidad: 50,
+      cantidad: 13, // Reducido de 25 a 13 (redondeado)
+      cantidadDefinidos: 5, // Reducido de 10 a 5
     },
     explicacion3: {
       fondo: ["#1f1f0a", "#3a3a0f"],
@@ -458,7 +467,8 @@ const bokeh = {
         ["#f4ff88", "#f8ffac"],
         ["#ecff68", "#f0ff8c"],
       ],
-      cantidad: 70,
+      cantidad: 18, // Reducido de 35 a 18 (redondeado)
+      cantidadDefinidos: 9, // Reducido de 18 a 9
     },
     final: {
       fondo: ["#1a0a1f", "#3a0f4a"],
@@ -467,7 +477,8 @@ const bokeh = {
         ["#ec74ff", "#f498ff"],
         ["#cc54ff", "#e078ff"],
       ],
-      cantidad: 80,
+      cantidad: 20, // Reducido de 40 a 20
+      cantidadDefinidos: 10, // Reducido de 20 a 10
     },
     final2: {
       fondo: ["#0a1f14", "#0f4a28"],
@@ -476,7 +487,8 @@ const bokeh = {
         ["#74ffd8", "#98ffec"],
         ["#54ffb8", "#78ffcc"],
       ],
-      cantidad: 75,
+      cantidad: 19, // Reducido de 38 a 19
+      cantidadDefinidos: 9, // Reducido de 18 a 9
     },
   },
 
@@ -533,10 +545,10 @@ const bokeh = {
     this.colorFondoObjetivo = [...config.fondo];
     this.coloresObjetivo = config.colores.map((color) => [...color]);
 
-    // Crear elementos
+    // Crear elementos desenfocados (bokeh)
     let count = config.cantidad;
-    const blur = [8, 45];
-    const radius = [15, 85];
+    const blur = [8, 20];
+    const radius = [15, 200];
 
     while (count--) {
       const thisRadius = this.rand(radius[0], radius[1]);
@@ -570,6 +582,50 @@ const bokeh = {
         ],
         pulsePhase: Math.random() * Math.PI * 2,
         originalRadius: thisRadius,
+        type: "blur", // Tipo de elemento
+        opacity: 0.5,
+      });
+    }
+
+    // Crear elementos definidos (círculos claros) - AHORA SE MUEVEN
+    let countDefinidos = config.cantidadDefinidos || 0;
+    const radiusDefinidos = [8, 75];
+
+    while (countDefinidos--) {
+      const thisRadius = this.rand(radiusDefinidos[0], radiusDefinidos[1]);
+      const x = this.rand(0, this.width);
+      const y = this.rand(0, this.height);
+
+      const colorIndex = Math.floor(this.rand(0, 299) / 100);
+      const colorSet = config.colores[colorIndex] || config.colores[0];
+
+      // CAMBIO IMPORTANTE: Ahora los elementos definidos también se mueven
+      const directionX = Math.round(this.rand(-99, 99) / 100); // Velocidad normal
+      const directionY = Math.round(this.rand(-99, 99) / 100); // Velocidad normal
+
+      this.items.push({
+        x: x,
+        y: y,
+        blur: 0, // Sin desenfoque
+        radius: thisRadius,
+        initialXDirection: directionX,
+        initialYDirection: directionY,
+        initialBlurDirection: 0,
+        colorOne: colorSet[0],
+        colorTwo: colorSet[1],
+        targetColorOne: colorSet[0],
+        targetColorTwo: colorSet[1],
+        gradient: [
+          x - thisRadius / 2,
+          y - thisRadius / 2,
+          x + thisRadius,
+          y + thisRadius,
+        ],
+        pulsePhase: Math.random() * Math.PI * 2,
+        originalRadius: thisRadius,
+        type: "defined", // Tipo de elemento
+        opacity: this.rand(0.15, 0.3), // Transparencia para efecto de profundidad
+        targetOpacity: this.rand(0.15, 0.4),
       });
     }
   },
@@ -582,15 +638,23 @@ const bokeh = {
     this.colorFondoObjetivo = [...config.fondo];
     this.coloresObjetivo = config.colores.map((color) => [...color]);
 
-    // Ajustar cantidad de elementos
-    const diferencia = config.cantidad - this.items.length;
+    // Separar elementos por tipo
+    const elementosBlur = this.items.filter((item) => item.type === "blur");
+    const elementosDefinidos = this.items.filter(
+      (item) => item.type === "defined"
+    );
 
-    if (diferencia > 0) {
-      // Agregar más elementos
+    const cantidadBlurObjetivo = config.cantidad;
+    const cantidadDefinidosObjetivo = config.cantidadDefinidos || 0;
+
+    // Ajustar elementos desenfocados
+    const diferenciaBlur = cantidadBlurObjetivo - elementosBlur.length;
+    if (diferenciaBlur > 0) {
+      // Agregar más elementos desenfocados
       const blur = [8, 45];
       const radius = [15, 85];
 
-      for (let i = 0; i < diferencia; i++) {
+      for (let i = 0; i < diferenciaBlur; i++) {
         const thisRadius = this.rand(radius[0], radius[1]);
         const thisBlur = this.rand(blur[0], blur[1]);
         const x = this.rand(-100, this.width + 100);
@@ -622,11 +686,70 @@ const bokeh = {
           ],
           pulsePhase: Math.random() * Math.PI * 2,
           originalRadius: thisRadius,
+          type: "blur",
+          opacity: 0.5,
         });
       }
-    } else if (diferencia < 0) {
-      // Remover elementos
-      this.items = this.items.slice(0, config.cantidad);
+    } else if (diferenciaBlur < 0) {
+      // Remover elementos desenfocados
+      this.items = this.items.filter(
+        (item) =>
+          item.type !== "blur" ||
+          elementosBlur.indexOf(item) < cantidadBlurObjetivo
+      );
+    }
+
+    // Ajustar elementos definidos
+    const diferenciaDefinidos =
+      cantidadDefinidosObjetivo - elementosDefinidos.length;
+    if (diferenciaDefinidos > 0) {
+      // Agregar más elementos definidos
+      const radiusDefinidos = [8, 25];
+
+      for (let i = 0; i < diferenciaDefinidos; i++) {
+        const thisRadius = this.rand(radiusDefinidos[0], radiusDefinidos[1]);
+        const x = this.rand(0, this.width);
+        const y = this.rand(0, this.height);
+
+        const colorIndex = Math.floor(this.rand(0, 299) / 100);
+        const colorSet = config.colores[colorIndex] || config.colores[0];
+
+        // Los elementos definidos ahora también se mueven
+        const directionX = Math.round(this.rand(-99, 99) / 100);
+        const directionY = Math.round(this.rand(-99, 99) / 100);
+
+        this.items.push({
+          x: x,
+          y: y,
+          blur: 0,
+          radius: thisRadius,
+          initialXDirection: directionX,
+          initialYDirection: directionY,
+          initialBlurDirection: 0,
+          colorOne: colorSet[0],
+          colorTwo: colorSet[1],
+          targetColorOne: colorSet[0],
+          targetColorTwo: colorSet[1],
+          gradient: [
+            x - thisRadius / 2,
+            y - thisRadius / 2,
+            x + thisRadius,
+            y + thisRadius,
+          ],
+          pulsePhase: Math.random() * Math.PI * 2,
+          originalRadius: thisRadius,
+          type: "defined",
+          opacity: this.rand(0.15, 0.4),
+          targetOpacity: this.rand(0.15, 0.4),
+        });
+      }
+    } else if (diferenciaDefinidos < 0) {
+      // Remover elementos definidos
+      this.items = this.items.filter(
+        (item) =>
+          item.type !== "defined" ||
+          elementosDefinidos.indexOf(item) < cantidadDefinidosObjetivo
+      );
     }
 
     // Actualizar colores objetivo de elementos existentes
@@ -635,6 +758,11 @@ const bokeh = {
       const colorSet = config.colores[colorIndex];
       item.targetColorOne = colorSet[0];
       item.targetColorTwo = colorSet[1];
+
+      // Actualizar opacidad objetivo para elementos definidos
+      if (item.type === "defined") {
+        item.targetOpacity = this.rand(0.15, 0.4);
+      }
     });
   },
 
@@ -658,8 +786,8 @@ const bokeh = {
   },
 
   actualizar(timestamp) {
-    const adjX = 1.5;
-    const adjY = 1.5;
+    const adjX = 0.2;
+    const adjY = 0.2;
     const adjBlur = 0.8;
     const transitionSpeed = 0.02;
 
@@ -681,41 +809,61 @@ const bokeh = {
         transitionSpeed
       );
 
+      // Transición suave de opacidad para elementos definidos
+      if (item.type === "defined" && item.targetOpacity !== undefined) {
+        item.opacity = utilidades.lerp(
+          item.opacity || 0.3,
+          item.targetOpacity,
+          transitionSpeed
+        );
+      }
+
+      // CAMBIO IMPORTANTE: Movimiento igual para ambos tipos
+      // Ya no hay diferenciación de velocidad entre tipos
+      const moveSpeedX = adjX;
+      const moveSpeedY = adjY;
+
       // Movimiento con rebote
       if (
-        (item.x + item.initialXDirection * adjX >= this.width &&
+        (item.x + item.initialXDirection * moveSpeedX >= this.width &&
           item.initialXDirection !== 0) ||
-        (item.x + item.initialXDirection * adjX <= 0 &&
+        (item.x + item.initialXDirection * moveSpeedX <= 0 &&
           item.initialXDirection !== 0)
       ) {
         item.initialXDirection *= -1;
       }
       if (
-        (item.y + item.initialYDirection * adjY >= this.height &&
+        (item.y + item.initialYDirection * moveSpeedY >= this.height &&
           item.initialYDirection !== 0) ||
-        (item.y + item.initialYDirection * adjY <= 0 &&
+        (item.y + item.initialYDirection * moveSpeedY <= 0 &&
           item.initialYDirection !== 0)
       ) {
         item.initialYDirection *= -1;
       }
 
-      if (
-        (item.blur + item.initialBlurDirection * adjBlur >= 60 &&
-          item.initialBlurDirection !== 0) ||
-        (item.blur + item.initialBlurDirection * adjBlur <= 8 &&
-          item.initialBlurDirection !== 0)
-      ) {
-        item.initialBlurDirection *= -1;
+      // Solo aplicar blur a elementos desenfocados
+      if (item.type === "blur") {
+        if (
+          (item.blur + item.initialBlurDirection * adjBlur >= 60 &&
+            item.initialBlurDirection !== 0) ||
+          (item.blur + item.initialBlurDirection * adjBlur <= 8 &&
+            item.initialBlurDirection !== 0)
+        ) {
+          item.initialBlurDirection *= -1;
+        }
+        item.blur += item.initialBlurDirection * adjBlur;
       }
 
       // Actualizar posición
-      item.x += item.initialXDirection * adjX;
-      item.y += item.initialYDirection * adjY;
-      item.blur += item.initialBlurDirection * adjBlur;
+      item.x += item.initialXDirection * moveSpeedX;
+      item.y += item.initialYDirection * moveSpeedY;
 
-      // Efecto de pulsación sutil
-      item.pulsePhase += 0.02;
-      const pulseMultiplier = 1 + Math.sin(item.pulsePhase) * 0.1;
+      // Efecto de pulsación sutil (más sutil para elementos definidos)
+      const pulseSpeed = item.type === "defined" ? 0.01 : 0.02;
+      const pulseIntensity = item.type === "defined" ? 0.05 : 0.01;
+
+      item.pulsePhase += pulseSpeed;
+      const pulseMultiplier = 1 + Math.sin(item.pulsePhase) * pulseIntensity;
       item.radius = item.originalRadius * pulseMultiplier;
 
       // Actualizar gradiente
@@ -730,7 +878,6 @@ const bokeh = {
 
   dibujar() {
     this.ctx.clearRect(0, 0, this.width, this.height);
-    this.ctx.globalCompositeOperation = "lighter";
 
     // Dibujar fondo con gradiente
     const grd = this.ctx.createLinearGradient(0, this.height, this.width, 0);
@@ -739,8 +886,15 @@ const bokeh = {
     this.ctx.fillStyle = grd;
     this.ctx.fillRect(0, 0, this.width, this.height);
 
-    // Dibujar elementos bokeh
-    this.items.forEach((item) => {
+    // Separar elementos por tipo para dibujar en capas
+    const elementosBlur = this.items.filter((item) => item.type === "blur");
+    const elementosDefinidos = this.items.filter(
+      (item) => item.type === "defined"
+    );
+
+    // Primero dibujar elementos desenfocados (fondo)
+    this.ctx.globalCompositeOperation = "lighter";
+    elementosBlur.forEach((item) => {
       this.ctx.beginPath();
       this.ctx.filter = `blur(${item.blur}px)`;
 
@@ -759,27 +913,61 @@ const bokeh = {
       this.ctx.closePath();
     });
 
-    // Añadir viñeta sutil
-    this.drawVignette();
+    // Luego dibujar elementos definidos (primer plano)
+    this.ctx.filter = "none"; // Sin filtro para elementos definidos
+    this.ctx.globalCompositeOperation = "normal";
+    elementosDefinidos.forEach((item) => {
+      this.ctx.beginPath();
+
+      const grd = this.ctx.createLinearGradient(
+        item.gradient[0],
+        item.gradient[1],
+        item.gradient[2],
+        item.gradient[3]
+      );
+
+      // Aplicar opacidad a los colores
+      const opacity = item.opacity || 0.3;
+      const color1 = this._addOpacityToHex(item.colorOne, opacity);
+      const color2 = this._addOpacityToHex(item.colorTwo, opacity);
+
+      grd.addColorStop(0, color1);
+      grd.addColorStop(1, color2);
+
+      this.ctx.fillStyle = grd;
+      this.ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.closePath();
+    });
   },
 
+  // Función para agregar opacidad a colores hexadecimales
+  _addOpacityToHex(hex, opacity) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  },
+
+  // NUEVA FUNCIÓN: Viñeta negra mejorada
   drawVignette() {
+    if (!this.ctx || !this.width || !this.height) return;
+
     this.ctx.save();
     this.ctx.filter = "none";
-    const g = this.ctx.createRadialGradient(
-      this.width / 2,
-      this.height / 2,
-      0,
-      this.width / 2,
-      this.height / 2,
-      Math.max(this.width, this.height) * 0.7
-    );
-    g.addColorStop(0, "rgba(0,0,0,0)");
-    g.addColorStop(0.7, "rgba(0,0,0,0.1)");
-    g.addColorStop(1, "rgba(0,0,0,0.4)");
+
+    const centerX = this.width / 2;
+    const centerY = this.height / 2;
+    const maxRadius = Math.max(this.width, this.height) * 0.8;
+
     this.ctx.globalCompositeOperation = "multiply";
-    this.ctx.fillStyle = g;
     this.ctx.fillRect(0, 0, this.width, this.height);
+
+    // Capa tenue segura
+    this.ctx.globalCompositeOperation = "source-over";
+    this.ctx.fillStyle = "rgba(255,255,255,0.05)";
+    this.ctx.fillRect(0, 0, this.width, this.height);
+
     this.ctx.restore();
   },
 
@@ -797,28 +985,43 @@ const bokeh = {
           if (distance < 150) {
             const force = (150 - distance) / 150;
 
-            // Repulsión suave
-            item.initialXDirection += (dx / distance) * force * 0.01;
-            item.initialYDirection += (dy / distance) * force * 0.01;
+            // Repulsión igual para ambos tipos
+            const repulsionStrength = 0.8;
 
-            // Limitar velocidad
+            item.initialXDirection +=
+              (dx / distance) * force * repulsionStrength;
+            item.initialYDirection +=
+              (dy / distance) * force * repulsionStrength;
+
+            // Limitar velocidad igual para ambos tipos
+            const maxSpeed = 0.05;
             item.initialXDirection = Math.max(
-              -2,
-              Math.min(2, item.initialXDirection)
+              -maxSpeed,
+              Math.min(maxSpeed, item.initialXDirection)
             );
             item.initialYDirection = Math.max(
-              -2,
-              Math.min(2, item.initialYDirection)
+              -maxSpeed,
+              Math.min(maxSpeed, item.initialYDirection)
             );
 
-            // Efecto en el blur
-            item.blur = Math.min(item.blur + force * 5, 60);
+            // Efecto en el blur solo para elementos desenfocados
+            if (item.type === "blur") {
+              item.blur = Math.min(item.blur + force * 7, 40);
+            }
 
-            // Efecto en el radio
+            // Efecto en el radio (más sutil para elementos definidos)
+            const radiusEffect =
+              item.type === "defined" ? force * 3 : force * 10;
+            const maxRadius = item.type === "defined" ? 35 : 100;
             item.originalRadius = Math.min(
-              item.originalRadius + force * 10,
-              100
+              item.originalRadius + radiusEffect,
+              maxRadius
             );
+
+            // Efecto en opacidad para elementos definidos
+            if (item.type === "defined") {
+              item.opacity = Math.min((item.opacity || 0.3) + force * 0.1, 0.7);
+            }
           }
         });
       }
@@ -950,15 +1153,14 @@ const validadorRespuestas = {
     paciencia: ["paciencia", "la paciencia", "paciencias"],
   },
   validar(numero) {
-    const input = referencias.obtener(`respuesta${numero}`),
-      error = referencias.obtener(`error${numero}`),
-      datos = contenido[`acertijo${numero}`];
+    const input = referencias.obtener(`respuesta${numero}`);
+    const error = referencias.obtener(`error${numero}`);
+    const datos = contenido[`acertijo${numero}`];
     if (!input || !error || !datos) return;
     const respuesta = utilidades.normalizar(input.value);
-    const esVacio = !respuesta,
-      esCorrecta =
-        !esVacio &&
-        this.respuestasValidas[datos.respuesta]?.includes(respuesta);
+    const esVacio = !respuesta;
+    const esCorrecta =
+      !esVacio && this.respuestasValidas[datos.respuesta]?.includes(respuesta);
     error.classList.remove("show");
     input.classList.remove("input-correct", "input-incorrect", "shake");
     if (esVacio || !esCorrecta) {
@@ -1081,8 +1283,8 @@ const manejadorEventos = {
 // =============================
 const app = {
   init() {
-    const seccionIntro = referencias.obtener("intro"),
-      canvas = referencias.obtener("bokehCanvas");
+    const seccionIntro = referencias.obtener("intro");
+    const canvas = referencias.obtener("bokehCanvas");
     if (!seccionIntro || !canvas) return;
     manejadorAudio.init();
     bokeh.init();

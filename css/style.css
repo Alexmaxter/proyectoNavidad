@@ -32,6 +32,20 @@ body {
   overflow-x: hidden;
 }
 
+/* Sombra interior cuadrada con centro semi-oscuro */
+.vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* No bloquea interacciones */
+  z-index: 1; /* Entre Bokeh (0) y contenido (10+) */
+  background: rgba(0, 0, 0, 0.7); /* Centro semi-oscuro */
+  box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.7),
+    inset 0 0 400px rgba(0, 0, 0, 0.85), inset 0 0 600px rgba(0, 0, 0, 0.95);
+}
+
 .background {
   position: fixed;
   top: 0;
@@ -56,6 +70,7 @@ body {
     );
   background-color: #090a0f;
 }
+
 #fadeOverlay {
   position: fixed;
   inset: 0;
@@ -149,8 +164,8 @@ body {
   font-size: clamp(1.8rem, 5vw, 1rem);
   text-transform: uppercase;
   margin: clamp(1rem, 3vw, 2rem) 0;
-  color: #ffffff;
-  opacity: 50%;
+  color: #525252;
+  opacity: 100%;
   letter-spacing: 0.05em;
 }
 
@@ -161,6 +176,7 @@ body {
   justify-content: center;
   min-height: 300px;
   color: #ffffff;
+  place-items: center;
   padding: clamp(1.5rem, 4vw, 3rem);
   margin: clamp(0.5rem, 2vw, 1rem) 0;
 }
@@ -176,10 +192,8 @@ body {
 }
 
 .narrativa p {
-  font-size: clamp(1.2rem, 3vw, 2rem);
-  line-height: 1.5;
+  font-size: clamp(2rem, 1vw, 1.5rem);
   color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   padding: 0 clamp(0.5rem, 2vw, 1rem);
   max-width: 800px;
   margin-left: auto;
@@ -219,7 +233,7 @@ body {
   background: none;
   border: none;
   color: #ffffff;
-  font-size: clamp(2.5rem, 7vw, 4rem);
+  font-size: clamp(5rem, 15vw, 8rem);
   font-weight: 300;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -231,7 +245,7 @@ body {
 }
 
 #intro .play-center button:hover {
-  color: #ffb366;
+  color: #d54b11;
   text-shadow: 0 0 25px rgba(255, 179, 102, 0.8);
 }
 
@@ -254,27 +268,44 @@ body {
 
 .acciones {
   display: flex;
-  gap: clamp(2rem, 4vw, 4rem);
-  flex-wrap: wrap;
+  align-items: center;
+  flex-wrap: nowrap; /* Evita que se rompan en líneas */
   justify-content: center;
   padding: clamp(1rem, 3vw, 2rem);
+  width: 100%;
 }
 
 .acciones button {
+  position: relative;
   background: none;
   border: none;
-  color: #ff8c42;
+  color: #d54b11;
   font-family: "Verlag-Light";
-  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-size: clamp(2rem, 7vw, 4rem);
   cursor: pointer;
   padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.5rem, 3.5vw, 2.5rem);
-  transition: all 0.3s ease;
+  transition: all 1s ease;
   text-decoration: none;
   margin: clamp(0.5rem, 1vw, 1rem);
 }
 
 .acciones button:hover {
   text-decoration: underline;
+}
+
+/* Separador inclinado entre botones - SOLO cuando hay exactamente 2 botones */
+.acciones button:first-child:nth-last-child(2)::after {
+  content: "";
+  position: absolute;
+  right: calc(-1 * clamp(1.5rem, 3vw, 2.5rem));
+  top: 50%;
+  width: clamp(3px, 0.5vw, 5px);
+  height: clamp(50px, 8vw, 200px);
+  margin: 0px 1rem;
+  background: #d54b11;
+  transform: translateY(-50%) rotate(15deg);
+  opacity: 0.7;
+  transition: opacity 1s ease, box-shadow 0.3s ease;
 }
 
 .replay-button button {
@@ -295,8 +326,8 @@ body {
 .send-button {
   background: none;
   border: none;
-  color: #ffffff;
-  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  color: #d54b11;
+  font-size: clamp(2rem, 4vw, 2rem);
   font-weight: 300;
   cursor: pointer;
   padding: clamp(0.6rem, 1.5vw, 0.9rem) clamp(1rem, 2.5vw, 1.4rem);
@@ -308,6 +339,7 @@ body {
   flex-direction: column;
   gap: 1.5rem;
   width: 100%;
+  text-align: center;
   max-width: 500px;
 }
 
@@ -316,24 +348,26 @@ body {
   gap: 1.5rem;
   width: 100%;
   align-items: center;
+  text-align: center;
 }
 
 .input-group input {
   flex: 1;
   padding: 1rem 0;
   border: none;
-  border-bottom: 2px solid #ffffff;
+  border-bottom: 2px solid #ff8c42;
   background: transparent;
   color: #ffffff;
   font-size: clamp(1.3rem, 3vw, 1.7rem);
   font-weight: 300;
   transition: border-bottom-color 0.3s ease, color 0.3s ease;
   outline: none;
+  text-align: center;
 }
 
 .input-group input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-  font-style: italic;
+  color: transparent !important;
+  text-align: center;
 }
 
 .input-group input:focus {
@@ -344,7 +378,12 @@ body {
 .input-group input.shake {
   animation: shake 0.5s ease-in-out;
 }
-
+.input-group input:-internal-autofill-selected,
+.input-group input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset; /* Fondo transparente */
+  -webkit-text-fill-color: inherit; /* Mantiene el color del texto */
+  transition: background-color 5000s ease-in-out 0s; /* Evita parpadeo al autofill */
+}
 @keyframes shake {
   0%,
   100% {
@@ -366,12 +405,12 @@ body {
 }
 
 .input-group input.input-incorrect {
-  border-bottom-color: #ff6b6b !important;
-  color: #ff6b6b !important;
+  border-bottom-color: #d54b11 !important;
+  color: #d54b11 !important;
 }
 
 .mensaje-error {
-  color: #ff6b6b;
+  color: #d54b11;
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   opacity: 0;
   visibility: hidden;
@@ -400,8 +439,11 @@ body {
     font-size: clamp(2rem, 6vw, 3rem);
   }
 
-  .acciones {
-    gap: clamp(1rem, 2.5vw, 2rem);
+  /* Ajuste del separador en tablet - SOLO con 2 botones */
+  .acciones button:first-child:nth-last-child(2)::after {
+    height: clamp(40px, 6vw, 60px);
+    width: clamp(2px, 0.4vw, 4px);
+    right: calc(-1 * clamp(0.6rem, 1.2vw, 1.2rem));
   }
 }
 
@@ -411,8 +453,24 @@ body {
   }
 
   .acciones {
-    flex-direction: column;
-    gap: 1.5rem;
+    flex-direction: row; /* Mantener botones en línea horizontal */
+    flex-wrap: nowrap;
+    gap: clamp(0.5rem, 2vw, 1rem); /* Reducir espacio entre botones */
+    justify-content: center;
+  }
+
+  /* Mantener la barra inclinada en móvil - SOLO con 2 botones */
+  .acciones button:first-child:nth-last-child(2)::after {
+    content: "";
+    position: absolute;
+    right: calc(-1 * clamp(0.5rem, 1.5vw, 1rem));
+    top: 50%;
+    width: clamp(2px, 0.4vw, 3px);
+    height: clamp(30px, 6vw, 50px);
+    margin: 0;
+    background: #d54b11;
+    transform: translateY(-50%) rotate(15deg);
+    opacity: 0.7;
   }
 
   .input-group > div:first-child {
@@ -425,8 +483,11 @@ body {
   }
 
   .acciones button {
-    font-size: clamp(1.4rem, 3.5vw, 1.8rem);
-    padding: clamp(0.6rem, 1.5vw, 1rem) clamp(1rem, 2.5vw, 1.5rem);
+    font-size: clamp(1.2rem, 3vw, 1.6rem); /* Reducir tamaño de fuente */
+    padding: clamp(0.4rem, 1vw, 0.8rem) clamp(0.6rem, 1.5vw, 1rem); /* Reducir padding */
+    margin: 0; /* Eliminar margen extra */
+    flex-shrink: 1; /* Permitir que se compriman si es necesario */
+    min-width: 0; /* Permitir que se reduzcan más */
   }
 
   .titulo h1 {
