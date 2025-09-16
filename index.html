@@ -16,7 +16,7 @@
     />
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎁</text></svg>"
+      href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='0.9em' font-size='90'&gt;🎁&lt;/text&gt;&lt;/svg&gt;"
     />
 
     <link rel="stylesheet" href="css/style.css" />
@@ -25,7 +25,7 @@
     <div class="vignette"></div>
     <div id="fadeOverlay"></div>
 
-    <!-- El body tendrá opacity: 0 por defecto en CSS y se le añadirá la clase 'loaded' por JS -->
+    <!-- El body tendrÃ¡ opacity: 0 por defecto en CSS y se le aÃ±adirÃ¡ la clase 'loaded' por JS -->
     <div class="background"></div>
     <canvas id="bokehCanvas"></canvas>
     <div class="container">
@@ -192,6 +192,32 @@
           <audio id="audio-final" preload="auto">
             <source src="assets/audio/final1.mp3" type="audio/mpeg" />
           </audio>
+        </div>
+        <!-- Cuenta regresiva agregada aquÃ­ -->
+        <div class="countdown-container">
+          <div class="countdown-title">Tu regalo estará disponible en:</div>
+          <div id="countdown" class="countdown-display">
+            <div class="countdown-unit">
+              <span id="years">0</span>
+              <label>años</label>
+            </div>
+            <div class="countdown-unit">
+              <span id="days">0</span>
+              <label>días</label>
+            </div>
+            <div class="countdown-unit">
+              <span id="hours">0</span>
+              <label>horas</label>
+            </div>
+            <div class="countdown-unit">
+              <span id="minutes">0</span>
+              <label>minutos</label>
+            </div>
+            <div class="countdown-unit">
+              <span id="seconds">0</span>
+              <label>segundos</label>
+            </div>
+          </div>
         </div>
       </div>
       <div id="final2" class="section">

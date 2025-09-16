@@ -4,9 +4,13 @@
   box-sizing: border-box;
 }
 
-html,
-body {
+html {
   height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  height: -webkit-fill-available;
   font-family: "Verlag-Light";
   color: #ffffff;
   position: relative;
@@ -30,6 +34,13 @@ body {
     );
   opacity: 1;
   overflow-x: hidden;
+  overflow-y: auto;
+}
+
+@supports (height: 100dvh) {
+  body {
+    min-height: 100dvh;
+  }
 }
 
 /* Sombra interior cuadrada con centro semi-oscuro */
@@ -44,6 +55,12 @@ body {
   background: rgba(0, 0, 0, 0.7); /* Centro semi-oscuro */
   box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.7),
     inset 0 0 400px rgba(0, 0, 0, 0.85), inset 0 0 600px rgba(0, 0, 0, 0.95);
+}
+
+@supports (height: 100dvh) {
+  .vignette {
+    height: 100dvh;
+  }
 }
 
 .background {
@@ -71,6 +88,12 @@ body {
   background-color: #090a0f;
 }
 
+@supports (height: 100dvh) {
+  .background {
+    height: 100dvh;
+  }
+}
+
 #fadeOverlay {
   position: fixed;
   inset: 0;
@@ -81,6 +104,12 @@ body {
   z-index: 9999;
 }
 
+@supports (height: 100dvh) {
+  #fadeOverlay {
+    height: 100dvh;
+  }
+}
+
 #bokehCanvas {
   display: block;
   width: 100%;
@@ -89,6 +118,12 @@ body {
   top: 0;
   left: 0;
   z-index: 0;
+}
+
+@supports (height: 100dvh) {
+  #bokehCanvas {
+    height: 100dvh;
+  }
 }
 
 @keyframes fadeIn {
@@ -115,10 +150,19 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(1rem, 3vw, 2rem);
   position: relative;
   z-index: 10;
   min-height: 100vh;
+  padding-top: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-top));
+  padding-bottom: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-bottom));
+  padding-left: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-left));
+  padding-right: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-right));
+}
+
+@supports (min-height: 100dvh) {
+  .container {
+    min-height: 100dvh;
+  }
 }
 
 .section {
@@ -164,8 +208,8 @@ body {
   font-size: clamp(1.8rem, 5vw, 1rem);
   text-transform: uppercase;
   margin: clamp(1rem, 3vw, 2rem) 0;
-  color: #525252;
-  opacity: 100%;
+  color: white;
+  opacity: 50%;
   letter-spacing: 0.05em;
 }
 
@@ -210,6 +254,134 @@ body {
   align-items: center;
 }
 
+/* =============================
+   ESTILOS PARA CUENTA REGRESIVA
+   ============================= */
+
+.countdown-container {
+  align-self: center;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  width: 100%;
+  max-width: 700px;
+}
+
+.countdown-title {
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  color: #ffffff;
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  text-align: center;
+  opacity: 0.9;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.countdown-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.8rem, 2vw, 1.5rem);
+  flex-wrap: wrap;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: clamp(60px, 12vw, 90px);
+  padding: clamp(0.8rem, 1.5vw, 1.2rem);
+  transition: all 0.3s ease;
+}
+
+.countdown-unit span {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+  font-family: "Verlag-Book", monospace;
+}
+
+.countdown-unit label {
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  color: #ffffff;
+  opacity: 0.8;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  font-weight: 300;
+}
+
+.countdown-completed {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: #00d4aa;
+  text-align: center;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  background: rgba(0, 212, 170, 0.1);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: 10px;
+  font-weight: bold;
+  text-shadow: 0 2px 8px rgba(0, 212, 170, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* Responsividad mejorada para la cuenta regresiva */
+@media (max-width: 768px) {
+  .countdown-display {
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+  }
+
+  .countdown-unit {
+    min-width: clamp(50px, 10vw, 70px);
+    padding: clamp(0.6rem, 1.2vw, 1rem);
+  }
+
+  .countdown-unit span {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+  }
+
+  .countdown-unit label {
+    font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .countdown-container {
+    margin-top: clamp(1.5rem, 3vw, 2rem);
+    padding: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .countdown-display {
+    gap: clamp(0.3rem, 1vw, 0.8rem);
+  }
+
+  .countdown-unit {
+    min-width: clamp(45px, 8vw, 60px);
+    padding: clamp(0.5rem, 1vw, 0.8rem);
+  }
+
+  .countdown-unit span {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  }
+
+  .countdown-unit label {
+    font-size: clamp(0.5rem, 1vw, 0.7rem);
+  }
+}
+
+/* ============================= */
+
 #intro .play-center {
   position: fixed;
   top: 50%;
@@ -242,6 +414,8 @@ body {
   align-items: center;
   justify-content: center;
   text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  min-width: 44px;
+  min-height: 44px;
 }
 
 #intro .play-center button:hover {
@@ -287,6 +461,8 @@ body {
   transition: all 1s ease;
   text-decoration: none;
   margin: clamp(0.5rem, 1vw, 1rem);
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .acciones button:hover {
@@ -317,6 +493,8 @@ body {
   cursor: pointer;
   padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1rem);
   transition: opacity 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .replay-button button:hover {
@@ -332,6 +510,8 @@ body {
   cursor: pointer;
   padding: clamp(0.6rem, 1.5vw, 0.9rem) clamp(1rem, 2.5vw, 1.4rem);
   transition: opacity 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .input-group {
@@ -357,16 +537,18 @@ body {
   border: none;
   border-bottom: 2px solid #ff8c42;
   background: transparent;
-  color: #ffffff;
+  color: #ffffff; /* texto blanco por defecto */
   font-size: clamp(1.3rem, 3vw, 1.7rem);
   font-weight: 300;
   transition: border-bottom-color 0.3s ease, color 0.3s ease;
   outline: none;
   text-align: center;
+  min-height: 44px;
 }
 
 .input-group input::placeholder {
-  color: transparent !important;
+  color: #ffffff;
+  opacity: 0.6; /* más tenue que el texto real */
   text-align: center;
 }
 
@@ -377,36 +559,32 @@ body {
 
 .input-group input.shake {
   animation: shake 0.5s ease-in-out;
+  color: #ffffff;
 }
+
+/* ✅ Corrección para autofill (Chrome/Safari) */
 .input-group input:-internal-autofill-selected,
 .input-group input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px transparent inset; /* Fondo transparente */
-  -webkit-text-fill-color: inherit; /* Mantiene el color del texto */
-  transition: background-color 5000s ease-in-out 0s; /* Evita parpadeo al autofill */
-}
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  25% {
-    transform: translateX(-5px);
-  }
-
-  75% {
-    transform: translateX(5px);
-  }
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-text-fill-color: #ffffff !important; /* fuerza blanco */
+  transition: background-color 5000s ease-in-out 0s !important;
 }
 
+/* ✅ Colores dinámicos (si se aplican clases) */
 .input-group input.input-correct {
   border-bottom-color: #00d4aa !important;
   color: #00d4aa !important;
+}
+.input-group input.input-correct:-webkit-autofill {
+  -webkit-text-fill-color: #00d4aa !important;
 }
 
 .input-group input.input-incorrect {
   border-bottom-color: #d54b11 !important;
   color: #d54b11 !important;
+}
+.input-group input.input-incorrect:-webkit-autofill {
+  -webkit-text-fill-color: #d54b11 !important;
 }
 
 .mensaje-error {
@@ -428,7 +606,14 @@ body {
 
 @media (max-width: 1024px) {
   .container {
-    padding: clamp(0.75rem, 2vw, 1.5rem);
+    padding-top: calc(clamp(0.75rem, 2vw, 1.5rem) + env(safe-area-inset-top));
+    padding-bottom: calc(
+      clamp(0.75rem, 2vw, 1.5rem) + env(safe-area-inset-bottom)
+    );
+    padding-left: calc(clamp(0.75rem, 2vw, 1.5rem) + env(safe-area-inset-left));
+    padding-right: calc(
+      clamp(0.75rem, 2vw, 1.5rem) + env(safe-area-inset-right)
+    );
   }
 
   .section.active {
@@ -449,7 +634,14 @@ body {
 
 @media (max-width: 768px) {
   .container {
-    padding: clamp(0.5rem, 1.5vw, 1rem);
+    padding-top: calc(clamp(0.5rem, 1.5vw, 1rem) + env(safe-area-inset-top));
+    padding-bottom: calc(
+      clamp(0.5rem, 1.5vw, 1rem) + env(safe-area-inset-bottom)
+    );
+    padding-left: calc(clamp(0.5rem, 1.5vw, 1rem) + env(safe-area-inset-left));
+    padding-right: calc(
+      clamp(0.5rem, 1.5vw, 1rem) + env(safe-area-inset-right)
+    );
   }
 
   .acciones {
@@ -501,7 +693,14 @@ body {
 
 @media (max-width: 480px) {
   .container {
-    padding: clamp(0.25rem, 1vw, 0.5rem);
+    padding-top: calc(clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-top));
+    padding-bottom: calc(
+      clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-bottom)
+    );
+    padding-left: calc(clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-left));
+    padding-right: calc(
+      clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-right)
+    );
   }
 
   .titulo h1 {
