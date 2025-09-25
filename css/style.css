@@ -1,3 +1,6 @@
+/* ============================= */
+/* RESET Y CONFIGURACIÓN BASE */
+/* ============================= */
 * {
   margin: 0;
   padding: 0;
@@ -8,6 +11,9 @@ html {
   height: 100%;
 }
 
+/* ============================= */
+/* BODY Y CONFIGURACIÓN GLOBAL */
+/* ============================= */
 body {
   min-height: 100vh;
   height: -webkit-fill-available;
@@ -16,7 +22,6 @@ body {
   position: relative;
   z-index: 1;
   transition: background-color 1s ease, opacity 0.8s ease;
-  /* Viñeta negra mejorada en los bordes */
   background-image: radial-gradient(
       circle at center,
       transparent 40%,
@@ -43,24 +48,20 @@ body {
   }
 }
 
-/* Sombra interior cuadrada con centro semi-oscuro */
+/* ============================= */
+/* ELEMENTOS DE FONDO */
+/* ============================= */
 .vignette {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* No bloquea interacciones */
-  z-index: 1; /* Entre Bokeh (0) y contenido (10+) */
-  background: rgba(0, 0, 0, 0.7); /* Centro semi-oscuro */
+  pointer-events: none;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.7);
   box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.7),
     inset 0 0 400px rgba(0, 0, 0, 0.85), inset 0 0 600px rgba(0, 0, 0, 0.95);
-}
-
-@supports (height: 100dvh) {
-  .vignette {
-    height: 100dvh;
-  }
 }
 
 .background {
@@ -88,12 +89,6 @@ body {
   background-color: #090a0f;
 }
 
-@supports (height: 100dvh) {
-  .background {
-    height: 100dvh;
-  }
-}
-
 #fadeOverlay {
   position: fixed;
   inset: 0;
@@ -102,12 +97,6 @@ body {
   pointer-events: none;
   transition: opacity 0.4s ease;
   z-index: 9999;
-}
-
-@supports (height: 100dvh) {
-  #fadeOverlay {
-    height: 100dvh;
-  }
 }
 
 #bokehCanvas {
@@ -120,17 +109,23 @@ body {
   z-index: 0;
 }
 
+/* Soporte para viewport dinámico */
 @supports (height: 100dvh) {
+  .vignette,
+  .background,
+  #fadeOverlay,
   #bokehCanvas {
     height: 100dvh;
   }
 }
 
+/* ============================= */
+/* ANIMACIONES */
+/* ============================= */
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -140,12 +135,46 @@ body {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
 }
 
+@keyframes shake {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  40%,
+  60% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* ============================= */
+/* CONTENEDOR PRINCIPAL */
+/* ============================= */
 .container {
   display: flex;
   flex-direction: column;
@@ -165,6 +194,9 @@ body {
   }
 }
 
+/* ============================= */
+/* SECCIONES */
+/* ============================= */
 .section {
   position: absolute;
   top: 0;
@@ -192,7 +224,7 @@ body {
   justify-content: center;
 }
 
-/* Mostrar título y contenido en la intro solo cuando se haya hecho clic en play */
+/* Configuración especial para intro */
 #intro.active .titulo,
 #intro.active .contenido {
   display: none;
@@ -204,6 +236,9 @@ body {
   animation: fadeIn 0.8s ease-out;
 }
 
+/* ============================= */
+/* TÍTULOS */
+/* ============================= */
 .titulo h1 {
   font-size: clamp(1.8rem, 5vw, 1rem);
   text-transform: uppercase;
@@ -213,6 +248,9 @@ body {
   letter-spacing: 0.05em;
 }
 
+/* ============================= */
+/* CONTENIDO Y NARRATIVA */
+/* ============================= */
 .contenido {
   flex: 1;
   display: flex;
@@ -248,16 +286,258 @@ body {
   margin-bottom: 0;
 }
 
+/* ============================= */
+/* CONTROLES */
+/* ============================= */
 .controles {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* =============================
-   ESTILOS PARA CUENTA REGRESIVA
-   ============================= */
+/* Estados de visibilidad para controles */
+.acciones,
+.input-group,
+.replay-button {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s ease-out, visibility 0s linear 0.8s;
+  will-change: opacity, visibility;
+}
 
+.acciones.visible,
+.input-group.visible,
+.replay-button.visible {
+  opacity: 1;
+  visibility: visible;
+  animation: slideInUp 0.8s ease-out;
+}
+
+/* ============================= */
+/* BOTÓN PLAY CENTRAL */
+/* ============================= */
+#intro .play-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+  z-index: 100;
+  display: none;
+}
+
+#intro .play-center.visible {
+  opacity: 1;
+  visibility: visible;
+  display: flex;
+  animation: slideInUp 0.6s ease-out;
+}
+
+#intro .play-center button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: clamp(5rem, 15vw, 8rem);
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  min-width: 44px;
+  min-height: 44px;
+}
+
+#intro .play-center button:hover {
+  color: #d54b11;
+  text-shadow: 0 0 25px rgba(255, 179, 102, 0.8);
+}
+
+/* ============================= */
+/* BOTONES DE ACCIÓN */
+/* ============================= */
+.acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding: clamp(1rem, 3vw, 2rem);
+  width: 100%;
+}
+
+.acciones button {
+  position: relative;
+  background: none;
+  border: none;
+  color: #d54b11;
+  font-family: "Verlag-Light";
+  font-size: clamp(2rem, 7vw, 4rem);
+  cursor: pointer;
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.5rem, 3.5vw, 2.5rem);
+  transition: all 1s ease;
+  text-decoration: none;
+  margin: clamp(0.5rem, 1vw, 1rem);
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.acciones button:hover {
+  text-decoration: underline;
+}
+
+/* Separador inclinado entre botones cuando hay exactamente 2 */
+.acciones button:first-child:nth-last-child(2)::after {
+  content: "";
+  position: absolute;
+  right: calc(-1 * clamp(1.5rem, 3vw, 2.5rem));
+  top: 50%;
+  width: clamp(3px, 0.5vw, 5px);
+  height: clamp(50px, 8vw, 200px);
+  margin: 0px 1rem;
+  background: #d54b11;
+  transform: translateY(-50%) rotate(15deg);
+  opacity: 0.7;
+  transition: opacity 1s ease, box-shadow 0.3s ease;
+}
+
+/* ============================= */
+/* BOTÓN REPETIR */
+/* ============================= */
+.replay-button button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-weight: 300;
+  cursor: pointer;
+  padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1rem);
+  transition: opacity 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.replay-button button:hover {
+  opacity: 1;
+}
+
+/* ============================= */
+/* INPUTS Y FORMULARIOS */
+/* ============================= */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  text-align: center;
+  max-width: 500px;
+}
+
+.input-group > div:first-child {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  align-items: center;
+  text-align: center;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 1rem 0;
+  border: none;
+  border-bottom: 2px solid #ff8c42;
+  background: transparent;
+  color: #ffffff;
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  font-weight: 300;
+  transition: border-bottom-color 0.3s ease, color 0.3s ease;
+  outline: none;
+  text-align: center;
+  min-height: 44px;
+}
+
+.input-group input::placeholder {
+  color: #ffffff;
+  opacity: 0.6;
+  text-align: center;
+}
+
+.input-group input:focus {
+  border-bottom-color: #ffffff;
+  color: #ffffff;
+}
+
+.input-group input.shake {
+  animation: shake 0.5s ease-in-out;
+  color: #ffffff;
+}
+
+/* Corrección para autofill */
+.input-group input:-internal-autofill-selected,
+.input-group input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Estados dinámicos */
+.input-group input.input-correct {
+  border-bottom-color: #00d4aa !important;
+  color: #00d4aa !important;
+}
+
+.input-group input.input-correct:-webkit-autofill {
+  -webkit-text-fill-color: #00d4aa !important;
+}
+
+.input-group input.input-incorrect {
+  border-bottom-color: #d54b11 !important;
+  color: #d54b11 !important;
+}
+
+.input-group input.input-incorrect:-webkit-autofill {
+  -webkit-text-fill-color: #d54b11 !important;
+}
+
+.send-button {
+  background: none;
+  border: none;
+  color: #d54b11;
+  font-size: clamp(2rem, 4vw, 2rem);
+  font-weight: 300;
+  cursor: pointer;
+  padding: clamp(0.6rem, 1.5vw, 0.9rem) clamp(1rem, 2.5vw, 1.4rem);
+  transition: opacity 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ============================= */
+/* MENSAJES DE ERROR */
+/* ============================= */
+.mensaje-error {
+  color: #d54b11;
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+  text-align: center;
+  font-weight: 300;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.mensaje-error.show {
+  opacity: 1;
+  visibility: visible;
+  animation: slideInUp 0.4s ease-out;
+}
+
+/* ============================= */
+/* CUENTA REGRESIVA */
+/* ============================= */
 .countdown-container {
   align-self: center;
   margin-top: clamp(2rem, 4vw, 3rem);
@@ -324,286 +604,11 @@ body {
   animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.9;
-  }
-}
-
-/* Responsividad mejorada para la cuenta regresiva */
-@media (max-width: 768px) {
-  .countdown-display {
-    gap: clamp(0.5rem, 1.5vw, 1rem);
-  }
-
-  .countdown-unit {
-    min-width: clamp(50px, 10vw, 70px);
-    padding: clamp(0.6rem, 1.2vw, 1rem);
-  }
-
-  .countdown-unit span {
-    font-size: clamp(1.4rem, 3vw, 2rem);
-  }
-
-  .countdown-unit label {
-    font-size: clamp(0.6rem, 1.2vw, 0.8rem);
-  }
-}
-
-@media (max-width: 480px) {
-  .countdown-container {
-    margin-top: clamp(1.5rem, 3vw, 2rem);
-    padding: clamp(1rem, 2vw, 1.5rem);
-  }
-
-  .countdown-display {
-    gap: clamp(0.3rem, 1vw, 0.8rem);
-  }
-
-  .countdown-unit {
-    min-width: clamp(45px, 8vw, 60px);
-    padding: clamp(0.5rem, 1vw, 0.8rem);
-  }
-
-  .countdown-unit span {
-    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-  }
-
-  .countdown-unit label {
-    font-size: clamp(0.5rem, 1vw, 0.7rem);
-  }
-}
-
+/* ============================= */
+/* MEDIA QUERIES - RESPONSIVE */
 /* ============================= */
 
-#intro .play-center {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
-  z-index: 100;
-  display: none;
-}
-
-#intro .play-center.visible {
-  opacity: 1;
-  visibility: visible;
-  display: flex;
-  animation: slideInUp 0.6s ease-out;
-}
-
-#intro .play-center button {
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-size: clamp(5rem, 15vw, 8rem);
-  font-weight: 300;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-  min-width: 44px;
-  min-height: 44px;
-}
-
-#intro .play-center button:hover {
-  color: #d54b11;
-  text-shadow: 0 0 25px rgba(255, 179, 102, 0.8);
-}
-
-.acciones,
-.input-group,
-.replay-button {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.8s ease-out, visibility 0s linear 0.8s;
-  will-change: opacity, visibility;
-}
-
-.acciones.visible,
-.input-group.visible,
-.replay-button.visible {
-  opacity: 1;
-  visibility: visible;
-  animation: slideInUp 0.8s ease-out;
-}
-
-.acciones {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap; /* Evita que se rompan en líneas */
-  justify-content: center;
-  padding: clamp(1rem, 3vw, 2rem);
-  width: 100%;
-}
-
-.acciones button {
-  position: relative;
-  background: none;
-  border: none;
-  color: #d54b11;
-  font-family: "Verlag-Light";
-  font-size: clamp(2rem, 7vw, 4rem);
-  cursor: pointer;
-  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.5rem, 3.5vw, 2.5rem);
-  transition: all 1s ease;
-  text-decoration: none;
-  margin: clamp(0.5rem, 1vw, 1rem);
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.acciones button:hover {
-  text-decoration: underline;
-}
-
-/* Separador inclinado entre botones - SOLO cuando hay exactamente 2 botones */
-.acciones button:first-child:nth-last-child(2)::after {
-  content: "";
-  position: absolute;
-  right: calc(-1 * clamp(1.5rem, 3vw, 2.5rem));
-  top: 50%;
-  width: clamp(3px, 0.5vw, 5px);
-  height: clamp(50px, 8vw, 200px);
-  margin: 0px 1rem;
-  background: #d54b11;
-  transform: translateY(-50%) rotate(15deg);
-  opacity: 0.7;
-  transition: opacity 1s ease, box-shadow 0.3s ease;
-}
-
-.replay-button button {
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-size: clamp(1rem, 2.2vw, 1.3rem);
-  font-weight: 300;
-  cursor: pointer;
-  padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1rem);
-  transition: opacity 0.3s ease;
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.replay-button button:hover {
-  opacity: 1;
-}
-
-.send-button {
-  background: none;
-  border: none;
-  color: #d54b11;
-  font-size: clamp(2rem, 4vw, 2rem);
-  font-weight: 300;
-  cursor: pointer;
-  padding: clamp(0.6rem, 1.5vw, 0.9rem) clamp(1rem, 2.5vw, 1.4rem);
-  transition: opacity 0.3s ease;
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-  text-align: center;
-  max-width: 500px;
-}
-
-.input-group > div:first-child {
-  display: flex;
-  gap: 1.5rem;
-  width: 100%;
-  align-items: center;
-  text-align: center;
-}
-
-.input-group input {
-  flex: 1;
-  padding: 1rem 0;
-  border: none;
-  border-bottom: 2px solid #ff8c42;
-  background: transparent;
-  color: #ffffff; /* texto blanco por defecto */
-  font-size: clamp(1.3rem, 3vw, 1.7rem);
-  font-weight: 300;
-  transition: border-bottom-color 0.3s ease, color 0.3s ease;
-  outline: none;
-  text-align: center;
-  min-height: 44px;
-}
-
-.input-group input::placeholder {
-  color: #ffffff;
-  opacity: 0.6; /* más tenue que el texto real */
-  text-align: center;
-}
-
-.input-group input:focus {
-  border-bottom-color: #ffffff;
-  color: #ffffff;
-}
-
-.input-group input.shake {
-  animation: shake 0.5s ease-in-out;
-  color: #ffffff;
-}
-
-/* ✅ Corrección para autofill (Chrome/Safari) */
-.input-group input:-internal-autofill-selected,
-.input-group input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
-  -webkit-text-fill-color: #ffffff !important; /* fuerza blanco */
-  transition: background-color 5000s ease-in-out 0s !important;
-}
-
-/* ✅ Colores dinámicos (si se aplican clases) */
-.input-group input.input-correct {
-  border-bottom-color: #00d4aa !important;
-  color: #00d4aa !important;
-}
-.input-group input.input-correct:-webkit-autofill {
-  -webkit-text-fill-color: #00d4aa !important;
-}
-
-.input-group input.input-incorrect {
-  border-bottom-color: #d54b11 !important;
-  color: #d54b11 !important;
-}
-.input-group input.input-incorrect:-webkit-autofill {
-  -webkit-text-fill-color: #d54b11 !important;
-}
-
-.mensaje-error {
-  color: #d54b11;
-  font-size: clamp(1rem, 2.2vw, 1.2rem);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.4s ease, visibility 0s linear 0.4s;
-  text-align: center;
-  font-weight: 300;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-.mensaje-error.show {
-  opacity: 1;
-  visibility: visible;
-  animation: slideInUp 0.4s ease-out;
-}
-
+/* Tablets */
 @media (max-width: 1024px) {
   .container {
     padding-top: calc(clamp(0.75rem, 2vw, 1.5rem) + env(safe-area-inset-top));
@@ -624,7 +629,6 @@ body {
     font-size: clamp(2rem, 6vw, 3rem);
   }
 
-  /* Ajuste del separador en tablet - SOLO con 2 botones */
   .acciones button:first-child:nth-last-child(2)::after {
     height: clamp(40px, 6vw, 60px);
     width: clamp(2px, 0.4vw, 4px);
@@ -632,6 +636,7 @@ body {
   }
 }
 
+/* Móviles */
 @media (max-width: 768px) {
   .container {
     padding-top: calc(clamp(0.5rem, 1.5vw, 1rem) + env(safe-area-inset-top));
@@ -645,13 +650,12 @@ body {
   }
 
   .acciones {
-    flex-direction: row; /* Mantener botones en línea horizontal */
+    flex-direction: row;
     flex-wrap: nowrap;
-    gap: clamp(0.5rem, 2vw, 1rem); /* Reducir espacio entre botones */
+    gap: clamp(0.5rem, 2vw, 1rem);
     justify-content: center;
   }
 
-  /* Mantener la barra inclinada en móvil - SOLO con 2 botones */
   .acciones button:first-child:nth-last-child(2)::after {
     content: "";
     position: absolute;
@@ -675,11 +679,11 @@ body {
   }
 
   .acciones button {
-    font-size: clamp(1.2rem, 3vw, 1.6rem); /* Reducir tamaño de fuente */
-    padding: clamp(0.4rem, 1vw, 0.8rem) clamp(0.6rem, 1.5vw, 1rem); /* Reducir padding */
-    margin: 0; /* Eliminar margen extra */
-    flex-shrink: 1; /* Permitir que se compriman si es necesario */
-    min-width: 0; /* Permitir que se reduzcan más */
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    padding: clamp(0.4rem, 1vw, 0.8rem) clamp(0.6rem, 1.5vw, 1rem);
+    margin: 0;
+    flex-shrink: 1;
+    min-width: 0;
   }
 
   .titulo h1 {
@@ -689,8 +693,26 @@ body {
   .contenido {
     padding: clamp(0.8rem, 2vw, 1.5rem);
   }
+
+  .countdown-display {
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+  }
+
+  .countdown-unit {
+    min-width: clamp(50px, 10vw, 70px);
+    padding: clamp(0.6rem, 1.2vw, 1rem);
+  }
+
+  .countdown-unit span {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+  }
+
+  .countdown-unit label {
+    font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  }
 }
 
+/* Móviles pequeños */
 @media (max-width: 480px) {
   .container {
     padding-top: calc(clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-top));
@@ -719,5 +741,27 @@ body {
   .acciones button {
     font-size: clamp(1.2rem, 3.2vw, 1.6rem);
     padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
+  }
+
+  .countdown-container {
+    margin-top: clamp(1.5rem, 3vw, 2rem);
+    padding: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .countdown-display {
+    gap: clamp(0.3rem, 1vw, 0.8rem);
+  }
+
+  .countdown-unit {
+    min-width: clamp(45px, 8vw, 60px);
+    padding: clamp(0.5rem, 1vw, 0.8rem);
+  }
+
+  .countdown-unit span {
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  }
+
+  .countdown-unit label {
+    font-size: clamp(0.5rem, 1vw, 0.7rem);
   }
 }

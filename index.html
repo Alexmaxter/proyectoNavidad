@@ -1,11 +1,9 @@
-<!-- MultipleFiles/index.html -->
-
 <!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Experiencia Navideña</title>
+    <title>Regalo</title>
     <link
       href="https://db.onlinewebfonts.com/c/bcd0c9bdcf29c2dd630785c724469553?family=Verlag-Book"
       rel="stylesheet"
@@ -18,20 +16,29 @@
       rel="icon"
       href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='0.9em' font-size='90'&gt;🎁&lt;/text&gt;&lt;/svg&gt;"
     />
-
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <!-- ============================= -->
+    <!-- ELEMENTOS DE FONDO Y OVERLAY -->
+    <!-- ============================= -->
     <div class="vignette"></div>
     <div id="fadeOverlay"></div>
-
-    <!-- El body tendrÃ¡ opacity: 0 por defecto en CSS y se le aÃ±adirÃ¡ la clase 'loaded' por JS -->
     <div class="background"></div>
     <canvas id="bokehCanvas"></canvas>
+
+    <!-- ============================= -->
+    <!-- CONTENEDOR PRINCIPAL -->
+    <!-- ============================= -->
     <div class="container">
+      <!-- Audio de fondo -->
       <audio id="audio-fondo" preload="auto" loop>
         <source src="assets/audio/background.mp3" type="audio/mpeg" />
       </audio>
+
+      <!-- ============================= -->
+      <!-- SECCIÓN: INTRO -->
+      <!-- ============================= -->
       <div id="intro" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -47,6 +54,10 @@
           </audio>
         </div>
       </div>
+
+      <!-- ============================= -->
+      <!-- SECCIÓN: DECISIÓN -->
+      <!-- ============================= -->
       <div id="decision" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -60,6 +71,10 @@
           </audio>
         </div>
       </div>
+
+      <!-- ============================= -->
+      <!-- SECCIONES: CONFIRMACIONES -->
+      <!-- ============================= -->
       <div id="confirmacion1" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -73,6 +88,7 @@
           </audio>
         </div>
       </div>
+
       <div id="confirmacion2" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -86,6 +102,10 @@
           </audio>
         </div>
       </div>
+
+      <!-- ============================= -->
+      <!-- SECCIONES: ACERTIJOS -->
+      <!-- ============================= -->
       <div id="acertijo1" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -105,19 +125,7 @@
           </audio>
         </div>
       </div>
-      <div id="explicacion1" class="section">
-        <div class="titulo"><h1></h1></div>
-        <div class="contenido">
-          <div class="narrativa"></div>
-        </div>
-        <div class="controles">
-          <div class="acciones"></div>
-          <div class="replay-button"></div>
-          <audio id="audio-explicacion1" preload="auto">
-            <source src="assets/audio/explicacion1.mp3" type="audio/mpeg" />
-          </audio>
-        </div>
-      </div>
+
       <div id="acertijo2" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -137,19 +145,7 @@
           </audio>
         </div>
       </div>
-      <div id="explicacion2" class="section">
-        <div class="titulo"><h1></h1></div>
-        <div class="contenido">
-          <div class="narrativa"></div>
-        </div>
-        <div class="controles">
-          <div class="acciones"></div>
-          <div class="replay-button"></div>
-          <audio id="audio-explicacion2" preload="auto">
-            <source src="assets/audio/explicacion2.mp3" type="audio/mpeg" />
-          </audio>
-        </div>
-      </div>
+
       <div id="acertijo3" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -169,6 +165,38 @@
           </audio>
         </div>
       </div>
+
+      <!-- ============================= -->
+      <!-- SECCIONES: EXPLICACIONES -->
+      <!-- ============================= -->
+      <div id="explicacion1" class="section">
+        <div class="titulo"><h1></h1></div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="acciones"></div>
+          <div class="replay-button"></div>
+          <audio id="audio-explicacion1" preload="auto">
+            <source src="assets/audio/explicacion1.mp3" type="audio/mpeg" />
+          </audio>
+        </div>
+      </div>
+
+      <div id="explicacion2" class="section">
+        <div class="titulo"><h1></h1></div>
+        <div class="contenido">
+          <div class="narrativa"></div>
+        </div>
+        <div class="controles">
+          <div class="acciones"></div>
+          <div class="replay-button"></div>
+          <audio id="audio-explicacion2" preload="auto">
+            <source src="assets/audio/explicacion2.mp3" type="audio/mpeg" />
+          </audio>
+        </div>
+      </div>
+
       <div id="explicacion3" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -182,6 +210,10 @@
           </audio>
         </div>
       </div>
+
+      <!-- ============================= -->
+      <!-- SECCIONES: FINALES -->
+      <!-- ============================= -->
       <div id="final" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -193,7 +225,8 @@
             <source src="assets/audio/final1.mp3" type="audio/mpeg" />
           </audio>
         </div>
-        <!-- Cuenta regresiva agregada aquÃ­ -->
+
+        <!-- Cuenta regresiva -->
         <div class="countdown-container">
           <div class="countdown-title">Tu regalo estará disponible en:</div>
           <div id="countdown" class="countdown-display">
@@ -220,6 +253,7 @@
           </div>
         </div>
       </div>
+
       <div id="final2" class="section">
         <div class="titulo"><h1></h1></div>
         <div class="contenido">
@@ -233,6 +267,18 @@
         </div>
       </div>
     </div>
-    <script src="js/script.js"></script>
+
+    <!-- ============================= -->
+    <!-- SCRIPTS MODULARES -->
+    <!-- ============================= -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/bokeh.js"></script>
+    <script src="js/audio-manager.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/content-manager.js"></script>
+    <script src="js/countdown.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>
