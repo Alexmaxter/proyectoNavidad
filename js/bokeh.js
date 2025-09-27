@@ -83,7 +83,7 @@ const Bokeh = {
       fondo: ["#0a1f16", "#005a30ff"],
       colores: [
         ["#78f0ff", "#9cf4ff"],
-        ["#88f4ff", "#acf8ff"],
+        ["#88f4ff", "#acf8ffff"],
         ["#68ecff", "#8cf0ff"],
       ],
       cantidad: 17,
@@ -118,6 +118,13 @@ const Bokeh = {
       ],
       cantidad: 20,
       cantidadDefinidos: 10,
+    },
+    // NUEVO: Fondo completamente negro para finalRegalo
+    finalRegalo: {
+      fondo: ["#000000", "#000000"],
+      colores: [],
+      cantidad: 0,
+      cantidadDefinidos: 0,
     },
     final2: {
       fondo: ["#0a1f14", "#0f4a28"],
@@ -161,6 +168,13 @@ const Bokeh = {
     if (!config) return;
 
     this.colorFondoObjetivo = [...config.fondo];
+
+    // Para finalRegalo, limpiar todos los elementos
+    if (idSeccion === "finalRegalo") {
+      this.items = [];
+      return;
+    }
+
     this._ajustarCantidadElementos(config);
     this._actualizarColoresElementos(config);
 
@@ -176,6 +190,10 @@ const Bokeh = {
       this.configuracionColores[idSeccion] || this.configuracionColores.intro;
     this.items = [];
     this.colorFondoObjetivo = [...config.fondo];
+
+    // No crear elementos para finalRegalo
+    if (idSeccion === "finalRegalo") return;
+
     this._generarElementosBlur(config);
     this._generarElementosDefinidos(config);
   },
@@ -363,13 +381,29 @@ const Bokeh = {
 
   dibujar() {
     this.ctx.clearRect(0, 0, this.width, this.height);
-    const grd = this.ctx.createLinearGradient(0, this.height, this.width, 0);
-    grd.addColorStop(0, this.colorFondoActual[0]);
-    grd.addColorStop(1, this.colorFondoActual[1]);
-    this.ctx.fillStyle = grd;
-    this.ctx.fillRect(0, 0, this.width, this.height);
-    this._dibujarElementosBlur();
-    this._dibujarElementosDefinidos();
+
+    // Dibujar fondo (negro sólido para finalRegalo, gradiente para otros)
+    if (
+      this.colorFondoActual[0] === "#000000" &&
+      this.colorFondoActual[1] === "#000000"
+    ) {
+      // Fondo negro sólido para finalRegalo
+      this.ctx.fillStyle = "#000000";
+      this.ctx.fillRect(0, 0, this.width, this.height);
+    } else {
+      // Gradiente normal para otras secciones
+      const grd = this.ctx.createLinearGradient(0, this.height, this.width, 0);
+      grd.addColorStop(0, this.colorFondoActual[0]);
+      grd.addColorStop(1, this.colorFondoActual[1]);
+      this.ctx.fillStyle = grd;
+      this.ctx.fillRect(0, 0, this.width, this.height);
+    }
+
+    // Solo dibujar elementos si no es finalRegalo
+    if (this.items.length > 0) {
+      this._dibujarElementosBlur();
+      this._dibujarElementosDefinidos();
+    }
   },
 
   _dibujarElementosBlur() {

@@ -93,7 +93,7 @@ const AudioManager = {
     AppState.audioReproduciendo = false;
     if (
       AppState.fondoIniciado &&
-      !["final", "final2"].includes(AppState.seccionActiva?.id)
+      !["final", "final2", "finalRegalo"].includes(AppState.seccionActiva?.id)
     ) {
       this.fadeVolumenFondo(CONFIG.audio.volumenFondoNormal);
     }
@@ -103,7 +103,7 @@ const AudioManager = {
     this.detenerNarraciones();
     if (!AppState.fondoIniciado) await this.reproducirFondo();
 
-    const volumenFondo = ["final", "final2"].includes(id)
+    const volumenFondo = ["final", "final2", "finalRegalo"].includes(id)
       ? CONFIG.audio.volumenFondoMudo
       : CONFIG.audio.volumenFondoBajo;
 
@@ -130,7 +130,7 @@ const AudioManager = {
 
   _finalizarAudio(id) {
     AppState.audioReproduciendo = false;
-    if (!["final", "final2"].includes(id)) {
+    if (!["final", "final2", "finalRegalo"].includes(id)) {
       this.fadeVolumenFondo(CONFIG.audio.volumenFondoNormal);
     }
     SectionManager.mostrarControles(id);

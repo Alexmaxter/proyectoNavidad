@@ -35,7 +35,7 @@ const Validation = {
 
   /**
    * Verifica si una respuesta es correcta según las opciones válidas
-   * @param {string} tipoRespuesta - Tipo de respuesta esperada (constancia, paciencia, confianza)
+   * @param {string} tipoRespuesta - Tipo de respuesta esperada (constancia, paciencia, disciplina)
    * @param {string} respuestaUsuario - Respuesta normalizada del usuario
    * @returns {boolean} - True si la respuesta es correcta
    */
@@ -82,7 +82,7 @@ const Validation = {
     input.classList.add("input-correct");
 
     setTimeout(() => {
-      SectionManager.mostrar(`explicacion${numeroAcertijo}`);
+      Navigation.navigateTo(`explicacion${numeroAcertijo}`);
     }, 800);
   },
 };

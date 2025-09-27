@@ -1,5 +1,5 @@
 // =============================
-// NAVEGACIÓN SIMPLIFICADA
+// NAVEGACIÓN CON HASH ROUTING
 // =============================
 const Navigation = {
   /**
@@ -15,11 +15,26 @@ const Navigation = {
       return;
     }
 
-    // Saltar audio si regresamos a una sección ya visitada
-    const saltarAudio =
-      destino === "decision" && AppState.seccionesVisitadas.has("decision");
+    // Usar hash routing en lugar de navegación de página
+    this.navigateTo(destino);
+  },
 
-    SectionManager.mostrar(destino, saltarAudio);
+  /**
+   * Navega a una sección específica usando hash routing
+   * @param {string} sectionId - ID de la sección destino
+   */
+  navigateTo(sectionId) {
+    if (!CONFIG.textos[sectionId]) {
+      console.warn(`Sección ${sectionId} no existe`);
+      return;
+    }
+
+    // Evitar loops infinitos
+    if (window.location.hash.slice(1) === sectionId) {
+      return;
+    }
+
+    window.location.hash = sectionId;
   },
 
   /**
@@ -94,7 +109,7 @@ const Navigation = {
     const destino = destinos[numeroExplicacion];
 
     if (destino) {
-      SectionManager.mostrar(destino);
+      this.navigateTo(destino);
     }
   },
 };

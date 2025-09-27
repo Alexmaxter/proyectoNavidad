@@ -47,8 +47,11 @@
         <div class="controles">
           <div class="play-center">
             <button type="button">▶</button>
+            <p class="aviso-volumen">🔊 Sube el volumen antes de empezar</p>
           </div>
+
           <div class="acciones"></div>
+
           <audio id="audio-intro" preload="auto">
             <source src="assets/audio/intro.mp3" type="audio/mpeg" />
           </audio>
@@ -220,15 +223,18 @@
           <div class="narrativa"></div>
         </div>
         <div class="controles">
+          <div class="acciones"></div>
           <div class="replay-button"></div>
           <audio id="audio-final" preload="auto">
             <source src="assets/audio/final1.mp3" type="audio/mpeg" />
           </audio>
         </div>
+      </div>
 
+      <div id="finalRegalo" class="section">
         <!-- Cuenta regresiva -->
         <div class="countdown-container">
-          <div class="countdown-title">Tu regalo estará disponible en:</div>
+          <div class="countdown-title"></div>
           <div id="countdown" class="countdown-display">
             <div class="countdown-unit">
               <span id="years">0</span>
@@ -252,6 +258,12 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="controles">
+        <div class="replay-button"></div>
+        <audio id="audio-finalRegalo" preload="auto">
+          <source src="assets/audio/final-regalo.mp3" type="audio/mpeg" />
+        </audio>
       </div>
 
       <div id="final2" class="section">
@@ -280,5 +292,17 @@
     <script src="js/content-manager.js"></script>
     <script src="js/countdown.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/dev-tools.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        try {
+          App.init();
+          DevTools.init(); // Para testing en desarrollo
+        } catch (error) {
+          console.error("Error al inicializar la aplicación:", error);
+        }
+      });
+    </script>
   </body>
 </html>

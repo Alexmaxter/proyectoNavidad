@@ -326,6 +326,12 @@ body {
   transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
   z-index: 100;
   display: none;
+
+  /* NUEVO: apilar botón + aviso debajo */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 #intro .play-center.visible {
@@ -355,6 +361,15 @@ body {
 #intro .play-center button:hover {
   color: #d54b11;
   text-shadow: 0 0 25px rgba(255, 179, 102, 0.8);
+}
+
+/* NUEVO: estilo para el aviso debajo del botón */
+#intro .play-center .aviso-volumen {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  font-weight: 300;
+  animation: fadeIn 1s ease-out 0.3s both;
 }
 
 /* ============================= */
@@ -534,76 +549,6 @@ body {
   visibility: visible;
   animation: slideInUp 0.4s ease-out;
 }
-
-/* ============================= */
-/* CUENTA REGRESIVA */
-/* ============================= */
-.countdown-container {
-  align-self: center;
-  margin-top: clamp(2rem, 4vw, 3rem);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  width: 100%;
-  max-width: 700px;
-}
-
-.countdown-title {
-  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-  color: #ffffff;
-  margin-bottom: clamp(1rem, 2vw, 1.5rem);
-  text-align: center;
-  opacity: 0.9;
-  font-weight: 300;
-  letter-spacing: 0.02em;
-}
-
-.countdown-display {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: clamp(0.8rem, 2vw, 1.5rem);
-  flex-wrap: wrap;
-}
-
-.countdown-unit {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: clamp(60px, 12vw, 90px);
-  padding: clamp(0.8rem, 1.5vw, 1.2rem);
-  transition: all 0.3s ease;
-}
-
-.countdown-unit span {
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
-  font-weight: bold;
-  color: white;
-  line-height: 1;
-  margin-bottom: 0.3rem;
-  font-family: "Verlag-Book", monospace;
-}
-
-.countdown-unit label {
-  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
-  color: #ffffff;
-  opacity: 0.8;
-  text-transform: lowercase;
-  letter-spacing: 0.05em;
-  font-weight: 300;
-}
-
-.countdown-completed {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  color: #00d4aa;
-  text-align: center;
-  padding: clamp(1rem, 2vw, 1.5rem);
-  background: rgba(0, 212, 170, 0.1);
-  border: 1px solid rgba(0, 212, 170, 0.3);
-  border-radius: 10px;
-  font-weight: bold;
-  text-shadow: 0 2px 8px rgba(0, 212, 170, 0.3);
-  animation: pulse 2s infinite;
-}
-
 /* ============================= */
 /* MEDIA QUERIES - RESPONSIVE */
 /* ============================= */
@@ -635,7 +580,199 @@ body {
     right: calc(-1 * clamp(0.6rem, 1.2vw, 1.2rem));
   }
 }
+/* ============================= */
+/* CUENTA REGRESIVA - PANTALLA COMPLETA CON REVELACIÓN */
+/* ============================= */
 
+/* Contenedor principal que ocupa toda la pantalla */
+.countdown-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  padding: clamp(1rem, 3vw, 2rem);
+  box-sizing: border-box;
+}
+
+.countdown-title {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: #ffffff;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+  text-align: center;
+  opacity: 0;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  animation: fadeInTitle 1s ease-out 0.2s both;
+}
+
+@keyframes fadeInTitle {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+.countdown-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  flex-wrap: wrap;
+  max-width: 90vw;
+  perspective: 1000px; /* Para efectos 3D */
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: clamp(70px, 15vw, 120px);
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+
+  /* ESTADO INICIAL OCULTO */
+  opacity: 0;
+  transform: translateY(30px) scale(0.8);
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ESTADO REVELADO */
+.countdown-unit.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.countdown-unit span {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  font-family: "Verlag-Book", monospace;
+  transition: transform 0.15s ease-out;
+}
+
+.countdown-unit label {
+  font-size: clamp(0.8rem, 1.8vw, 1.1rem);
+  color: #ffffff;
+  opacity: 0.8;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  font-weight: 300;
+}
+
+/* ============================= */
+/* ANIMACIONES DE REVELACIÓN */
+/* ============================= */
+
+/* Animación para el pulso de revelación normal */
+@keyframes revealPulse {
+  0% {
+    transform: translateY(30px) scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-5px) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animación dramática ESPECIAL para los años */
+@keyframes dramaticReveal {
+  0% {
+    transform: translateY(50px) scale(0.5) rotateX(-90deg);
+    opacity: 0;
+  }
+  30% {
+    transform: translateY(20px) scale(0.8) rotateX(-30deg);
+    opacity: 0.7;
+  }
+  70% {
+    transform: translateY(-10px) scale(1.15) rotateX(10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1) rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+/* Efecto especial para la unidad de AÑOS */
+.countdown-unit:nth-child(5) {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Brillo que se mueve para los años */
+.countdown-unit:nth-child(5)::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+
+  animation: shimmer 2s infinite;
+  opacity: 0;
+  z-index: -1;
+}
+
+.countdown-completed {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  color: #00d4aa;
+  text-align: center;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  font-weight: bold;
+  animation: pulse 2s infinite;
+  max-width: 90vw;
+}
+
+/* Responsive para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .countdown-display {
+    gap: clamp(0.5rem, 2vw, 1rem);
+  }
+
+  .countdown-unit {
+    min-width: clamp(60px, 18vw, 80px);
+    padding: clamp(0.8rem, 2vw, 1rem);
+  }
+
+  .countdown-unit span {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+
+  .countdown-unit label {
+    font-size: clamp(0.7rem, 2.2vw, 0.9rem);
+  }
+}
+
+/* Para pantallas muy anchas */
+@media (min-width: 1400px) {
+  .countdown-display {
+    gap: 2.5rem;
+  }
+
+  .countdown-unit {
+    min-width: 140px;
+    padding: 2rem;
+  }
+}
 /* Móviles */
 @media (max-width: 768px) {
   .container {
@@ -744,7 +881,6 @@ body {
   }
 
   .countdown-container {
-    margin-top: clamp(1.5rem, 3vw, 2rem);
     padding: clamp(1rem, 2vw, 1.5rem);
   }
 
@@ -764,4 +900,21 @@ body {
   .countdown-unit label {
     font-size: clamp(0.5rem, 1vw, 0.7rem);
   }
+}
+
+/* ============================= */
+/* AVISO DE VOLUMEN */
+/* ============================= */
+.aviso-volumen {
+  margin-top: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: #ffffff;
+  opacity: 0.8;
+  text-align: center;
+  font-weight: 300;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.aviso-volumen span {
+  margin-left: 0.5rem;
 }

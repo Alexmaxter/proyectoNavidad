@@ -45,7 +45,7 @@ const ContentManager = {
         .map((texto) => `<button type="button">${texto}</button>`)
         .join("");
     } else if (datos.boton) {
-      // Un solo botón (intro)
+      // Un solo botón (intro, final)
       acciones.innerHTML = `<button type="button">${datos.boton}</button>`;
     } else if (id.startsWith("explicacion")) {
       // Botón siguiente para explicaciones
@@ -92,7 +92,17 @@ const SectionManager = {
     DOM.getAll(".section").forEach((s) => s.classList.remove("active"));
     document.body.style.backgroundColor =
       id === "intro" ? "#090a0f" : "#1a1a1a";
-    Bokeh.transicion(id);
+
+    // Asegurar que la transición del bokeh funcione correctamente
+    setTimeout(() => {
+      Bokeh.transicion(id);
+    }, 100);
+
+    // Limpiar temporizador previo si existe
+    if (AppState.temporizadorBotonFinal) {
+      clearTimeout(AppState.temporizadorBotonFinal);
+      AppState.temporizadorBotonFinal = null;
+    }
   },
 
   /**
@@ -107,7 +117,7 @@ const SectionManager = {
     seccion.classList.add("active");
     AppState.seccionActiva = seccion;
 
-    if (id === "final") {
+    if (id === "finalRegalo") {
       Countdown.init();
     } else {
       Countdown.destruir();
@@ -140,7 +150,7 @@ const SectionManager = {
       this._iniciarSeccionConAudio(seccion, id);
     }
 
-    if (["final", "final2"].includes(id)) {
+    if (["final2", "finalRegalo"].includes(id)) {
       AudioManager.detenerFondo();
     }
   },
@@ -186,9 +196,30 @@ const SectionManager = {
       setTimeout(() => {
         AudioManager.reproducirNarracion(id);
         this._mostrarNarrativa(seccion);
+
+        // NUEVA LÓGICA: Si es la sección final, programar aparición del botón durante la narración
+        if (id === "final") {
+          this._programarBotonFinalDuranteAudio(seccion);
+        }
       }, 100)
     );
     AppState.seccionesVisitadas.add(id);
+  },
+
+  /**
+   * Programa la aparición del botón "Mostrar regalo" durante el audio (a los 125 segundos)
+   * @param {HTMLElement} seccion - Sección del final
+   */
+  _programarBotonFinalDuranteAudio(seccion) {
+    const tiempoAparicion = 125000; // 125 segundos en milisegundos
+
+    AppState.temporizadorBotonFinal = setTimeout(() => {
+      const acciones = seccion.querySelector(".acciones");
+      if (acciones && AppState.seccionActiva?.id === "final") {
+        acciones.classList.add("visible");
+        console.log("Botón 'Mostrar regalo' activado después de 125 segundos");
+      }
+    }, tiempoAparicion);
   },
 
   /**
@@ -232,7 +263,12 @@ const SectionManager = {
         replayButton.classList.add("visible");
       }
 
-      seccion.querySelector(".acciones")?.classList.add("visible");
+      // Para la sección final, NO mostrar automáticamente las acciones
+      // ya que se muestran durante el audio con el temporizador
+      if (id !== "final") {
+        seccion.querySelector(".acciones")?.classList.add("visible");
+      }
+
       seccion.querySelector(".input-group")?.classList.add("visible");
     }, 500);
   },

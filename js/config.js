@@ -66,6 +66,12 @@ const CONFIG = {
       narrativa:
         "Y aquí estamos… al final del cuento…<br>…o tal vez, al principio de otro.<br><br>¿Recordás aquella pequeña bola de nieve del principio?<br><br>Ahora mirala: una avalancha gloriosa que baja rugiendo por la montaña del tiempo.<br>Creció… porque vos elegiste el camino difícil.<br><br>El herrero… te enseñó constancia.<br>El campesino… paciencia.<br>Y el navegante… disciplina.<br><br>Lo que acabás de experimentar… tiene un nombre en el mundo real: interés compuesto.<br>Igual que la bola de nieve que giró sin parar, el dinero también crece sobre sí mismo… cuando se le da tiempo.<br><br>Quinientos mil pesos te esperan, Valentino.<br>Y junto a ellos… una bola de nieve de cerámica: frágil, hermosa… solo tuya.<br><br>No es un simple adorno.<br>Es el testigo de tu decisión… y la llave de tu tesoro.<br><br>Mientras esa bola de nieve permanezca intacta… tu regalo seguirá creciendo en silencio, como lo hizo tu avalancha.<br>Pero… si algún día se quiebra… ese crecimiento se detendrá para siempre.<br><br>Escuchá bien: el futuro de tu regalo depende de cómo la cuides.<br><br>¿Tendrás la constancia del herrero, para mantenerla intacta?<br>¿Tendrás la paciencia del campesino, para esperar sin apuro y confiar en lo desconocido?<br>¿Tendrás la disciplina del navegante, para seguir las reglas que permitirán que tu tesoro crezca sin interrupciones?<br><br>Para qué todo eso, te estarás preguntando…<br>Para que, el 15 de diciembre de 2027, cuando cumplas dieciocho años, algo extraordinario suceda con esa bola de nieve.<br><br>La aventura real… apenas acaba de comenzar.",
       fechaCuentaRegresiva: new Date(2027, 11, 15), // 15 de diciembre de 2027
+      boton: "Mostrar regalo",
+      // Tiempo en milisegundos para mostrar el botón (10 segundos)
+      tiempoMostrarBoton: 5000,
+    },
+    finalRegalo: {
+      fechaCuentaRegresiva: new Date(2027, 11, 15), // 15 de diciembre de 2027
     },
     final2: {
       titulo: "Final",
@@ -120,30 +126,34 @@ const CONFIG = {
   },
 
   // Rutas de navegación por sección y posición de botón
+  // En CONFIG.navegacion, cambiar las rutas:
   navegacion: {
     intro: {
-      0: "decision", // Primer (único) botón va a decisión
+      0: "decision", // Quitar .html
     },
     decision: {
-      0: "confirmacion1", // Primer botón (Camino Rápido)
-      1: "acertijo1", // Segundo botón (Camino Paciente)
+      0: "confirmacion1", // Quitar .html
+      1: "acertijo1", // Quitar .html
     },
     confirmacion1: {
-      0: "confirmacion2", // Primer botón (Sí, quiero mi regalo)
-      1: "decision", // Segundo botón (No, quiero seguir)
+      0: "confirmacion2",
+      1: "decision",
     },
     confirmacion2: {
-      0: "final2", // Primer botón (Sí, estoy seguro)
-      1: "decision", // Segundo botón (No, quiero volver)
+      0: "final2",
+      1: "decision",
     },
     explicacion1: {
-      0: "acertijo2", // Botón siguiente
+      0: "acertijo2",
     },
     explicacion2: {
-      0: "acertijo3", // Botón siguiente
+      0: "acertijo3",
     },
     explicacion3: {
-      0: "final", // Botón siguiente
+      0: "final",
+    },
+    final: {
+      0: "finalRegalo",
     },
   },
 };
@@ -156,4 +166,6 @@ const AppState = {
   playClickeado: false,
   seccionesVisitadas: new Set(),
   audioReproduciendo: false,
+  // Nuevo estado para el temporizador del botón
+  temporizadorBotonFinal: null,
 };
