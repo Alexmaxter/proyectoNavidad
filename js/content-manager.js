@@ -1,5 +1,5 @@
 // =============================
-// MANEJADOR DE CONTENIDO - ACTUALIZADO
+// MANEJADOR DE CONTENIDO - ACTUALIZADO Y ARREGLADO
 // =============================
 const ContentManager = {
   /**
@@ -65,7 +65,7 @@ const ContentManager = {
 };
 
 // =============================
-// MANEJADOR DE SECCIONES - ACTUALIZADO
+// MANEJADOR DE SECCIONES - ACTUALIZADO Y ARREGLADO
 // =============================
 const SectionManager = {
   /**
@@ -74,6 +74,8 @@ const SectionManager = {
    * @param {boolean} saltarAudio - Si saltar la reproducción de audio
    */
   async mostrar(id, saltarAudio = false) {
+    console.log(`Mostrando sección: ${id}, saltarAudio: ${saltarAudio}`);
+
     // Guardar sección anterior para manejo de transiciones de audio
     const seccionAnterior = AppState.seccionActiva?.id;
     AppState.seccionAnterior = seccionAnterior;
@@ -125,7 +127,10 @@ const SectionManager = {
    */
   _activarSeccion(id, saltarAudio) {
     const seccion = DOM.get(id);
-    if (!seccion) return;
+    if (!seccion) {
+      console.error(`Sección ${id} no encontrada en el DOM`);
+      return;
+    }
 
     ContentManager.render(id);
     this._ocultarControles(seccion);
@@ -155,12 +160,14 @@ const SectionManager = {
    * Maneja la lógica específica de inicio de cada sección
    */
   _manejarInicioSeccion(id, seccion, saltarAudio) {
+    console.log(`Manejando inicio de sección: ${id}`);
+
     if (id === "intro" && !AppState.playClickeado) {
       this._mostrarBotonPlay(seccion);
     } else if (id === "intro" && AppState.playClickeado) {
       this._iniciarIntroCompleta(seccion, id);
     } else if (id === "final") {
-      // Lógica especial para la sección final con video
+      // ARREGLADO: Lógica especial para la sección final con video
       this._iniciarSeccionFinalConVideo(seccion, id, saltarAudio);
     } else if (saltarAudio || AppState.seccionesVisitadas.has(id)) {
       this._mostrarSeccionDirecta(seccion, id);
@@ -173,9 +180,8 @@ const SectionManager = {
       this._manejarSeccionFinal(id);
     }
 
-    // Para finalRegalo, reproducir audio inmediatamente después del manejo final
+    // ARREGLADO: Para finalRegalo, reproducir audio inmediatamente después del manejo final
     if (id === "finalRegalo") {
-      // Pequeño delay para asegurar que el countdown se inicialice y el silencio se aplique
       setTimeout(() => {
         AudioManager.reproducirNarracion("finalRegalo");
       }, 200);
@@ -196,49 +202,85 @@ const SectionManager = {
   },
 
   /**
-   * Inicializa la sección final con video - MODIFICADO
+   * ARREGLADO: Inicializa la sección final con video
    */
   _iniciarSeccionFinalConVideo(seccion, id, saltarAudio) {
     console.log("Iniciando sección final con video...");
 
+    // ARREGLADO: Verificar que la sección final tiene la estructura correcta
+    const videoContainer = seccion.querySelector(".video-container");
+    const video = DOM.get("final-video");
+
+    if (!videoContainer || !video) {
+      console.error(
+        "Estructura de video no encontrada, navegando a finalRegalo"
+      );
+      setTimeout(() => {
+        Navigation.navigateTo("finalRegalo");
+      }, 1000);
+      return;
+    }
+
+    // ARREGLADO: Asegurar que el contenedor de video es visible
+    videoContainer.style.display = "block";
+    videoContainer.style.opacity = "1";
+
     // Reproducir video automáticamente después de un breve delay
     setTimeout(() => {
       this._reproducirVideoFinal(id);
-    }, 500);
+    }, 800); // Aumentado el delay para asegurar que todo esté listo
 
     AppState.seccionesVisitadas.add(id);
   },
 
   /**
-   * Reproduce el video de la sección final - MODIFICADO PARA TRANSICIÓN AUTOMÁTICA
+   * ARREGLADO: Reproduce el video de la sección final
    */
   _reproducirVideoFinal(id) {
     const video = DOM.get("final-video");
     const playOverlay = DOM.get("video-play-overlay");
 
     if (!video) {
-      console.warn(
+      console.error(
         "Video final no encontrado, navegando a finalRegalo directamente"
       );
-      // MODIFICADO: Si no hay video, ir directamente a finalRegalo
       Navigation.navigateTo("finalRegalo");
       return;
     }
 
     console.log("Preparando video final...");
 
+    // ARREGLADO: Verificar que el video tiene una fuente válida
+    const source = video.querySelector("source");
+    if (!source || !source.src) {
+      console.error("Fuente de video no encontrada");
+      Navigation.navigateTo("finalRegalo");
+      return;
+    }
+
     // Configurar video
     video.currentTime = 0;
     video.volume = CONFIG.audio.volumenNarracion;
     video.muted = false;
 
+    // ARREGLADO: Asegurar que el video es visible
+    video.style.width = "100%";
+    video.style.height = "100%";
+    video.style.objectFit = "cover";
+
     // Ocultar overlay inmediatamente si existe
     if (playOverlay) {
       playOverlay.classList.add("hidden");
+      playOverlay.style.display = "none";
     }
 
-    // MODIFICADO: Configurar eventos del video para transición automática
+    // ARREGLADO: Configurar eventos del video para transición automática
     const finalizarVideo = () => this._finalizarVideoYNavegar();
+
+    // Limpiar eventos previos
+    video.onended = null;
+    video.onerror = null;
+    video.onloadeddata = null;
 
     video.onended = finalizarVideo;
     video.onerror = (e) => {
@@ -246,44 +288,72 @@ const SectionManager = {
       finalizarVideo();
     };
 
-    // Intentar reproducción automática inmediatamente
-    video
-      .play()
-      .then(() => {
-        console.log("Video reproduciendo automáticamente");
-        AppState.audioReproduciendo = true;
-        AppState.audioActual = video;
+    // ARREGLADO: Manejar carga del video
+    video.onloadeddata = () => {
+      console.log("Video cargado correctamente");
+    };
 
-        // Iniciar audio navideño paralelamente al video
-        setTimeout(() => {
-          AudioManager.iniciarAudioNavidadConVideo();
-        }, 500);
+    // ARREGLADO: Intentar reproducción con mejor manejo de errores
+    const intentarReproduccion = () => {
+      return video
+        .play()
+        .then(() => {
+          console.log("Video reproduciendo automáticamente");
+          AppState.audioReproduciendo = true;
+          AppState.audioActual = video;
 
-        // ELIMINADO: Ya no programamos aparición del botón durante el video
-        // this._programarBotonFinalDuranteVideo(id);
-      })
-      .catch((error) => {
-        console.warn("Reproducción automática bloqueada:", error);
+          // Iniciar audio navideño paralelamente al video
+          setTimeout(() => {
+            AudioManager.iniciarAudioNavidadConVideo();
+          }, 500);
+        })
+        .catch((error) => {
+          console.warn("Reproducción automática bloqueada:", error);
+          this._mostrarControlManualVideo(video, playOverlay);
+        });
+    };
 
-        // Si falla la reproducción automática, mostrar overlay para click manual
-        if (playOverlay) {
-          playOverlay.classList.remove("hidden");
-          playOverlay.onclick = () => {
-            this._iniciarReproduccionManual(video, playOverlay);
-          };
+    // ARREGLADO: Verificar si el video está listo para reproducir
+    if (video.readyState >= 3) {
+      // HAVE_FUTURE_DATA o mayor
+      intentarReproduccion();
+    } else {
+      video.addEventListener("canplay", intentarReproduccion, { once: true });
+
+      // ARREGLADO: Timeout de seguridad si el video no carga
+      setTimeout(() => {
+        if (video.readyState < 3) {
+          console.error("Timeout: Video no se cargó correctamente");
+          finalizarVideo();
         }
-
-        // También permitir click en el video
-        video.onclick = () => {
-          if (video.paused) {
-            this._iniciarReproduccionManual(video, playOverlay);
-          }
-        };
-      });
+      }, 10000); // 10 segundos timeout
+    }
   },
 
   /**
-   * Maneja la reproducción manual cuando falla la automática - MODIFICADO
+   * ARREGLADO: Muestra controles manuales si falla la reproducción automática
+   */
+  _mostrarControlManualVideo(video, playOverlay) {
+    console.log("Mostrando controles manuales para el video");
+
+    if (playOverlay) {
+      playOverlay.classList.remove("hidden");
+      playOverlay.style.display = "flex";
+      playOverlay.onclick = () => {
+        this._iniciarReproduccionManual(video, playOverlay);
+      };
+    }
+
+    // También permitir click en el video
+    video.onclick = () => {
+      if (video.paused) {
+        this._iniciarReproduccionManual(video, playOverlay);
+      }
+    };
+  },
+
+  /**
+   * Maneja la reproducción manual cuando falla la automática
    */
   _iniciarReproduccionManual(video, playOverlay) {
     video
@@ -295,15 +365,13 @@ const SectionManager = {
 
         if (playOverlay) {
           playOverlay.classList.add("hidden");
+          playOverlay.style.display = "none";
         }
 
         // Iniciar audio navideño también en reproducción manual
         setTimeout(() => {
           AudioManager.iniciarAudioNavidadConVideo();
         }, 500);
-
-        // ELIMINADO: Ya no programamos aparición del botón
-        // this._programarBotonFinalDuranteVideo(id);
       })
       .catch((error) => {
         console.error("Error al iniciar video manualmente:", error);
@@ -312,18 +380,22 @@ const SectionManager = {
   },
 
   /**
-   * NUEVO: Finaliza la reproducción del video y navega automáticamente a finalRegalo
+   * Finaliza la reproducción del video y navega automáticamente a finalRegalo
    */
   _finalizarVideoYNavegar() {
+    console.log("Finalizando video y navegando a finalRegalo");
+
     AppState.audioReproduciendo = false;
     AppState.audioActual = null;
 
-    console.log("Video finalizado, navegando automáticamente a finalRegalo");
+    // ARREGLADO: Detener audio navideño antes de navegar
+    AudioManager.detenerFondoNavidad();
 
-    // Navegar directamente a finalRegalo sin mostrar controles
+    // Navegar directamente a finalRegalo
     setTimeout(() => {
+      console.log("Navegando a finalRegalo...");
       Navigation.navigateTo("finalRegalo");
-    }, 1000); // Pequeño delay para suavizar la transición
+    }, 1000);
   },
 
   /**
@@ -406,14 +478,14 @@ const SectionManager = {
   },
 
   /**
-   * Muestra los controles después de finalizar el audio/video - MODIFICADO
+   * ARREGLADO: Muestra los controles después de finalizar el audio/video
    * @param {string} id - ID de la sección
    */
   mostrarControles(id) {
     const { seccionActiva: seccion } = AppState;
     if (!seccion || seccion.id !== id) return;
 
-    // MODIFICADO: No mostrar controles para las secciones finales
+    // ARREGLADO: No mostrar controles para las secciones finales
     if (id === "final" || id === "finalRegalo") {
       console.log(`Saltando mostrar controles para sección final: ${id}`);
       return;
