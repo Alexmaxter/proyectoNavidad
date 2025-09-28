@@ -49,8 +49,47 @@ body {
 }
 
 /* ============================= */
-/* ELEMENTOS DE FONDO */
+/* ELEMENTOS DE FONDO - Z-INDEX REORGANIZADO */
 /* ============================= */
+
+/* Canvas bokeh - Más atrás (fondo) */
+#bokehCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+
+/* Fondo adicional - Debe estar DEBAJO del bokeh */
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: radial-gradient(
+      circle at 50% 50%,
+      rgba(9, 10, 15, 0) 0%,
+      rgba(0, 0, 0, 0.1) 30%,
+      rgba(0, 0, 0, 0.3) 60%,
+      rgba(0, 0, 0, 0.5) 100%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      transparent 20%,
+      rgba(0, 0, 0, 0.1) 40%,
+      rgba(0, 0, 0, 0.3) 70%,
+      rgba(0, 0, 0, 0.5) 90%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  background-color: #090a0f;
+}
+
+/* Viñeta - Por encima del fondo pero debajo del contenido */
 .vignette {
   position: fixed;
   top: 0;
@@ -58,37 +97,13 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 1;
+  z-index: 15;
   background: rgba(0, 0, 0, 0.7);
   box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.7),
     inset 0 0 400px rgba(0, 0, 0, 0.85), inset 0 0 600px rgba(0, 0, 0, 0.95);
 }
 
-.background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background: radial-gradient(
-      circle at 50% 50%,
-      rgba(9, 10, 15, 0) 0%,
-      rgba(0, 0, 0, 0.3) 30%,
-      rgba(0, 0, 0, 0.7) 60%,
-      rgba(0, 0, 0, 0.9) 100%
-    ),
-    radial-gradient(
-      ellipse at 50% 50%,
-      transparent 20%,
-      rgba(0, 0, 0, 0.2) 40%,
-      rgba(0, 0, 0, 0.6) 70%,
-      rgba(0, 0, 0, 0.85) 90%,
-      rgba(0, 0, 0, 0.95) 100%
-    );
-  background-color: #090a0f;
-}
-
+/* Overlay de transición - Por encima de todo */
 #fadeOverlay {
   position: fixed;
   inset: 0;
@@ -97,16 +112,6 @@ body {
   pointer-events: none;
   transition: opacity 0.4s ease;
   z-index: 9999;
-}
-
-#bokehCanvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 0;
 }
 
 /* Soporte para viewport dinámico */
@@ -180,7 +185,7 @@ body {
   flex-direction: column;
   align-items: center;
   position: relative;
-  z-index: 10;
+  z-index: 20;
   min-height: 100vh;
   padding-top: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-top));
   padding-bottom: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-bottom));
@@ -206,7 +211,7 @@ body {
   text-align: center;
   visibility: hidden;
   opacity: 0;
-  z-index: 20;
+  z-index: 30;
   transition: opacity 0.8s ease-out, visibility 0s linear 0.8s;
   transform: translateX(-50%);
   display: none;
@@ -217,6 +222,7 @@ body {
   position: relative;
   left: auto;
   flex-direction: column;
+  place-self: center;
   visibility: visible;
   opacity: 1;
   animation: fadeIn 0.8s ease-out;
@@ -234,6 +240,44 @@ body {
 #intro.active.show-content .contenido {
   display: block;
   animation: fadeIn 0.8s ease-out;
+}
+
+/* Configuración especial para final */
+#final.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: none;
+  height: 100vh;
+}
+
+#final.active .contenido {
+  width: 100%;
+  min-height: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#final.active video {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  display: block;
+}
+
+#final.active .controles {
+  position: absolute;
+  bottom: calc(clamp(1rem, 3vw, 2rem) + env(safe-area-inset-bottom));
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 /* ============================= */
@@ -326,8 +370,6 @@ body {
   transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
   z-index: 100;
   display: none;
-
-  /* NUEVO: apilar botón + aviso debajo */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -363,7 +405,6 @@ body {
   text-shadow: 0 0 25px rgba(255, 179, 102, 0.8);
 }
 
-/* NUEVO: estilo para el aviso debajo del botón */
 #intro .play-center .aviso-volumen {
   font-size: clamp(0.8rem, 2vw, 1rem);
   color: rgba(255, 255, 255, 0.7);
@@ -549,6 +590,148 @@ body {
   visibility: visible;
   animation: slideInUp 0.4s ease-out;
 }
+
+/* =============================
+   COUNTDOWN CSS COMPLETO - Z-INDEX CORREGIDO
+   ============================= */
+
+/* Contenedor principal del countdown - Debajo de la viñeta */
+#countdown {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  z-index: 10;
+  width: auto;
+  height: auto;
+}
+
+/* Contenedor de todas las unidades */
+.countdown-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Cada unidad individual (años, días, horas, etc.) */
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(30px) scale(0.8);
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Estado cuando la unidad está siendo revelada */
+.countdown-unit.revealing {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Estado cuando la unidad ya fue revelada */
+.countdown-unit.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Los números del countdown */
+#years,
+#days,
+#hours,
+#minutes,
+#seconds {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  margin-bottom: 0.5rem;
+  min-width: 120px;
+  text-align: center;
+  transition: transform 0.15s ease-out;
+}
+
+/* Etiquetas de texto (años, días, horas, etc.) */
+.countdown-unit .label {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+/* Efecto especial para años cuando se revelan */
+.countdown-unit.years-special-effect {
+  animation: specialYearsEffect 2s ease-out;
+}
+
+/* Animación especial para la revelación de años */
+@keyframes specialYearsEffect {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.05);
+    filter: brightness(1.3) drop-shadow(0 0 30px rgba(255, 255, 255, 0.8));
+  }
+  50% {
+    transform: scale(1.1);
+    filter: brightness(1.5) drop-shadow(0 0 40px rgba(255, 255, 255, 1));
+  }
+  75% {
+    transform: scale(1.05);
+    filter: brightness(1.3) drop-shadow(0 0 30px rgba(255, 255, 255, 0.8));
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Mensaje cuando el countdown termina */
+.countdown-completed {
+  text-align: center;
+  font-size: 2rem;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  animation: completedPulse 2s infinite;
+}
+
+@keyframes completedPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* ============================= */
+/* AVISO DE VOLUMEN */
+/* ============================= */
+.aviso-volumen {
+  margin-top: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: #ffffff;
+  opacity: 0.8;
+  text-align: center;
+  font-weight: 300;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.aviso-volumen span {
+  margin-left: 0.5rem;
+}
+
 /* ============================= */
 /* MEDIA QUERIES - RESPONSIVE */
 /* ============================= */
@@ -579,200 +762,46 @@ body {
     width: clamp(2px, 0.4vw, 4px);
     right: calc(-1 * clamp(0.6rem, 1.2vw, 1.2rem));
   }
-}
-/* ============================= */
-/* CUENTA REGRESIVA - PANTALLA COMPLETA CON REVELACIÓN */
-/* ============================= */
 
-/* Contenedor principal que ocupa toda la pantalla */
-.countdown-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-  padding: clamp(1rem, 3vw, 2rem);
-  box-sizing: border-box;
-}
-
-.countdown-title {
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  color: #ffffff;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
-  text-align: center;
-  opacity: 0;
-  font-weight: 300;
-  letter-spacing: 0.02em;
-  animation: fadeInTitle 1s ease-out 0.2s both;
-}
-
-@keyframes fadeInTitle {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
+  #final.active video {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
   }
-  to {
-    opacity: 0.9;
-    transform: translateY(0);
+
+  #final.active .controles {
+    position: relative;
+    bottom: auto;
+    width: 100%;
+    padding: clamp(0.3rem, 0.8vw, 0.5rem);
   }
 }
 
-.countdown-display {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: clamp(1rem, 3vw, 2rem);
-  flex-wrap: wrap;
-  max-width: 90vw;
-  perspective: 1000px; /* Para efectos 3D */
-}
-
-.countdown-unit {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: clamp(70px, 15vw, 120px);
-  padding: clamp(1rem, 2vw, 1.5rem);
-  border-radius: 15px;
-  backdrop-filter: blur(10px);
-
-  /* ESTADO INICIAL OCULTO */
-  opacity: 0;
-  transform: translateY(30px) scale(0.8);
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* ESTADO REVELADO */
-.countdown-unit.revealed {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.countdown-unit span {
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  font-weight: bold;
-  color: white;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-  font-family: "Verlag-Book", monospace;
-  transition: transform 0.15s ease-out;
-}
-
-.countdown-unit label {
-  font-size: clamp(0.8rem, 1.8vw, 1.1rem);
-  color: #ffffff;
-  opacity: 0.8;
-  text-transform: lowercase;
-  letter-spacing: 0.05em;
-  font-weight: 300;
-}
-
-/* ============================= */
-/* ANIMACIONES DE REVELACIÓN */
-/* ============================= */
-
-/* Animación para el pulso de revelación normal */
-@keyframes revealPulse {
-  0% {
-    transform: translateY(30px) scale(0.8);
-    opacity: 0;
-  }
-  60% {
-    transform: translateY(-5px) scale(1.05);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-/* Animación dramática ESPECIAL para los años */
-@keyframes dramaticReveal {
-  0% {
-    transform: translateY(50px) scale(0.5) rotateX(-90deg);
-    opacity: 0;
-  }
-  30% {
-    transform: translateY(20px) scale(0.8) rotateX(-30deg);
-    opacity: 0.7;
-  }
-  70% {
-    transform: translateY(-10px) scale(1.15) rotateX(10deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(0) scale(1) rotateX(0deg);
-    opacity: 1;
-  }
-}
-
-/* Efecto especial para la unidad de AÑOS */
-.countdown-unit:nth-child(5) {
+#final.active .controles {
   position: relative;
-  overflow: hidden;
+  bottom: auto;
+  width: 100%;
+  padding: clamp(0.5rem, 1vw, 1rem);
 }
 
-/* Brillo que se mueve para los años */
-.countdown-unit:nth-child(5)::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-
-  animation: shimmer 2s infinite;
-  opacity: 0;
-  z-index: -1;
+#years,
+#days,
+#hours,
+#minutes,
+#seconds {
+  font-size: 3rem;
+  min-width: 100px;
 }
 
-.countdown-completed {
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
-  color: #00d4aa;
-  text-align: center;
-  padding: clamp(1.5rem, 3vw, 2rem);
-  font-weight: bold;
-  animation: pulse 2s infinite;
-  max-width: 90vw;
+.countdown-container {
+  gap: 1.2rem;
 }
 
-/* Responsive para pantallas muy pequeñas */
-@media (max-width: 480px) {
-  .countdown-display {
-    gap: clamp(0.5rem, 2vw, 1rem);
-  }
-
-  .countdown-unit {
-    min-width: clamp(60px, 18vw, 80px);
-    padding: clamp(0.8rem, 2vw, 1rem);
-  }
-
-  .countdown-unit span {
-    font-size: clamp(2rem, 8vw, 3rem);
-  }
-
-  .countdown-unit label {
-    font-size: clamp(0.7rem, 2.2vw, 0.9rem);
-  }
+.countdown-unit .label {
+  font-size: 0.9rem;
+  letter-spacing: 1.5px;
 }
 
-/* Para pantallas muy anchas */
-@media (min-width: 1400px) {
-  .countdown-display {
-    gap: 2.5rem;
-  }
-
-  .countdown-unit {
-    min-width: 140px;
-    padding: 2rem;
-  }
-}
 /* Móviles */
 @media (max-width: 768px) {
   .container {
@@ -831,21 +860,35 @@ body {
     padding: clamp(0.8rem, 2vw, 1.5rem);
   }
 
-  .countdown-display {
-    gap: clamp(0.5rem, 1.5vw, 1rem);
+  #years,
+  #days,
+  #hours,
+  #minutes,
+  #seconds {
+    font-size: 3rem;
+    min-width: 100px;
   }
 
-  .countdown-unit {
-    min-width: clamp(50px, 10vw, 70px);
-    padding: clamp(0.6rem, 1.2vw, 1rem);
+  .countdown-container {
+    gap: 1.2rem;
   }
 
-  .countdown-unit span {
-    font-size: clamp(1.4rem, 3vw, 2rem);
+  .countdown-unit .label {
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
   }
 
-  .countdown-unit label {
-    font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  #final.active video {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  #final.active .controles {
+    position: relative;
+    bottom: auto;
+    width: 100%;
+    padding: clamp(0.5rem, 1vw, 1rem);
   }
 }
 
@@ -880,41 +923,30 @@ body {
     padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
   }
 
+  #years,
+  #days,
+  #hours,
+  #minutes,
+  #seconds {
+    font-size: 2.5rem;
+    min-width: 80px;
+  }
+
   .countdown-container {
-    padding: clamp(1rem, 2vw, 1.5rem);
+    gap: 1rem;
   }
 
-  .countdown-display {
-    gap: clamp(0.3rem, 1vw, 0.8rem);
+  .countdown-unit .label {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
   }
 
-  .countdown-unit {
-    min-width: clamp(45px, 8vw, 60px);
-    padding: clamp(0.5rem, 1vw, 0.8rem);
+  .countdown-completed {
+    font-size: 1.5rem;
   }
 
-  .countdown-unit span {
-    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  #final.active video {
+    width: 100%;
+    height: auto;
   }
-
-  .countdown-unit label {
-    font-size: clamp(0.5rem, 1vw, 0.7rem);
-  }
-}
-
-/* ============================= */
-/* AVISO DE VOLUMEN */
-/* ============================= */
-.aviso-volumen {
-  margin-top: 1rem;
-  font-size: clamp(0.9rem, 2vw, 1.2rem);
-  color: #ffffff;
-  opacity: 0.8;
-  text-align: center;
-  font-weight: 300;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-.aviso-volumen span {
-  margin-left: 0.5rem;
 }

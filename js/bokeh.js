@@ -1,6 +1,3 @@
-// =============================
-// BOKEH (FONDO ANIMADO CON POSICIONES DINÁMICAS)
-// =============================
 const Bokeh = {
   canvas: null,
   ctx: null,
@@ -110,16 +107,11 @@ const Bokeh = {
       cantidadDefinidos: 9,
     },
     final: {
-      fondo: ["#1a0a1f", "#3a0f4a"],
-      colores: [
-        ["#dc64ff", "#f088ff"],
-        ["#ec74ff", "#f498ff"],
-        ["#cc54ff", "#e078ff"],
-      ],
-      cantidad: 20,
-      cantidadDefinidos: 10,
+      fondo: ["#000000", "#000000"], // Changed to solid black
+      colores: [],
+      cantidad: 0,
+      cantidadDefinidos: 0,
     },
-    // NUEVO: Fondo completamente negro para finalRegalo
     finalRegalo: {
       fondo: ["#000000", "#000000"],
       colores: [],
@@ -169,8 +161,8 @@ const Bokeh = {
 
     this.colorFondoObjetivo = [...config.fondo];
 
-    // Para finalRegalo, limpiar todos los elementos
-    if (idSeccion === "finalRegalo") {
+    // Para final y finalRegalo, limpiar todos los elementos
+    if (idSeccion === "final" || idSeccion === "finalRegalo") {
       this.items = [];
       return;
     }
@@ -191,8 +183,8 @@ const Bokeh = {
     this.items = [];
     this.colorFondoObjetivo = [...config.fondo];
 
-    // No crear elementos para finalRegalo
-    if (idSeccion === "finalRegalo") return;
+    // No crear elementos para final o finalRegalo
+    if (idSeccion === "final" || idSeccion === "finalRegalo") return;
 
     this._generarElementosBlur(config);
     this._generarElementosDefinidos(config);
@@ -382,12 +374,12 @@ const Bokeh = {
   dibujar() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // Dibujar fondo (negro sólido para finalRegalo, gradiente para otros)
+    // Dibujar fondo (negro sólido para final y finalRegalo, gradiente para otros)
     if (
       this.colorFondoActual[0] === "#000000" &&
       this.colorFondoActual[1] === "#000000"
     ) {
-      // Fondo negro sólido para finalRegalo
+      // Fondo negro sólido
       this.ctx.fillStyle = "#000000";
       this.ctx.fillRect(0, 0, this.width, this.height);
     } else {
@@ -399,7 +391,7 @@ const Bokeh = {
       this.ctx.fillRect(0, 0, this.width, this.height);
     }
 
-    // Solo dibujar elementos si no es finalRegalo
+    // Solo dibujar elementos si no es final o finalRegalo
     if (this.items.length > 0) {
       this._dibujarElementosBlur();
       this._dibujarElementosDefinidos();

@@ -1,5 +1,5 @@
 // =============================
-// CONFIGURACIÓN DE CONTENIDO
+// CONFIGURACIÓN DE CONTENIDO - ACTUALIZADA
 // =============================
 const CONFIG = {
   // Textos de la experiencia
@@ -13,7 +13,7 @@ const CONFIG = {
     decision: {
       titulo: "La Gran Decisión",
       narrativa:
-        "Y aquí, en este preciso momento, el destino se bifurca como las ramas de un árbol retorcido.<br><br>El aire cambia. El viento trae dos voces distintas.<br><br>A tu izquierda, el primer sendero brilla como el oro bajo el sol. '¡Tómalo ahora!', grita. 'Tu regalo ya es tuyo. ¿Para qué esperar? El futuro es incierto. Disfruta hoy.' Podés ver, incluso, un cofre abierto que deja escapar destellos de luz. Es tentador. Muy tentador.<br><br>A tu derecha, el segundo sendero se pierde en la niebla. No hay cofres, ni promesas fáciles. Solo una voz más suave que susurra: 'Sigue rodando… Si confías, tu bola de nieve crecerá más de lo que imaginas.'<br><br>Uno de los caminos te ofrece la gratificación inmediata. El otro, la paciencia de los sabios.<br><br>Y vos, Valentino… ¿qué tipo de viajero querés ser?<br><br>Recuerda: una vez que des un paso, no habrá retorno.",
+        "Y aquí, en este preciso momento, el destino se bifurca como las ramas de un árbol retorcido.<br><br>El aire cambia. El viento trae dos voces distintas.<br><br>A tu izquierda, el primer sendero brilla como el oro bajo el sol. '¡Tómalo ahora!', grita. 'Tu regalo ya es tuyo. ¿Para qué esperar? El futuro es incierto. Disfruta hoy.' Podés ver, incluso, un cofre abierto que deja escapar destellos de luz. Es tentador. Muy tentador.<br><br>A tu derecha, el segundo sendero se pierde en la niebla. No hay cofres, ni promesas fáciles. Solo una voz más suave que susurra: 'Sigue rodando… Si confiás, tu bola de nieve crecerá más de lo que imaginas.'<br><br>Uno de los caminos te ofrece la gratificación inmediata. El otro, la paciencia de los sabios.<br><br>Y vos, Valentino… ¿qué tipo de viajero querés ser?<br><br>Recuerda: una vez que des un paso, no habrá retorno.",
       botones: ["Camino Rápido", "Camino Paciente"],
     },
     confirmacion1: {
@@ -61,27 +61,24 @@ const CONFIG = {
         "¡Perfecto! La disciplina: seguir el rumbo elegido aunque aparezcan desvíos y tentaciones.<br><br>Como él, vos también diste pasos hacia lo desconocido manteniendo tu rumbo.<br><br>La bola de nieve ahora es una avalancha, porque tuviste la disciplina para llegar hasta aquí.",
       boton: "Siguiente",
     },
+    // SECCIÓN FINAL LIMPIA - SIN TÍTULO NI NARRATIVA
     final: {
-      titulo: "El Final... o el Principio",
-      narrativa:
-        "Y aquí estamos… al final del cuento…<br>…o tal vez, al principio de otro.<br><br>¿Recordás aquella pequeña bola de nieve del principio?<br><br>Ahora mirala: una avalancha gloriosa que baja rugiendo por la montaña del tiempo.<br>Creció… porque vos elegiste el camino difícil.<br><br>El herrero… te enseñó constancia.<br>El campesino… paciencia.<br>Y el navegante… disciplina.<br><br>Lo que acabás de experimentar… tiene un nombre en el mundo real: interés compuesto.<br>Igual que la bola de nieve que giró sin parar, el dinero también crece sobre sí mismo… cuando se le da tiempo.<br><br>Quinientos mil pesos te esperan, Valentino.<br>Y junto a ellos… una bola de nieve de cerámica: frágil, hermosa… solo tuya.<br><br>No es un simple adorno.<br>Es el testigo de tu decisión… y la llave de tu tesoro.<br><br>Mientras esa bola de nieve permanezca intacta… tu regalo seguirá creciendo en silencio, como lo hizo tu avalancha.<br>Pero… si algún día se quiebra… ese crecimiento se detendrá para siempre.<br><br>Escuchá bien: el futuro de tu regalo depende de cómo la cuides.<br><br>¿Tendrás la constancia del herrero, para mantenerla intacta?<br>¿Tendrás la paciencia del campesino, para esperar sin apuro y confiar en lo desconocido?<br>¿Tendrás la disciplina del navegante, para seguir las reglas que permitirán que tu tesoro crezca sin interrupciones?<br><br>Para qué todo eso, te estarás preguntando…<br>Para que, el 15 de diciembre de 2027, cuando cumplas dieciocho años, algo extraordinario suceda con esa bola de nieve.<br><br>La aventura real… apenas acaba de comenzar.",
-      fechaCuentaRegresiva: new Date(2027, 11, 15), // 15 de diciembre de 2027
+      // Eliminado título y narrativa completamente
+      fechaCuentaRegresiva: new Date(2027, 11, 15), // 15 de diciembre de 2027 (Mes 11 es Diciembre)
       boton: "Mostrar regalo",
-      // Tiempo en milisegundos para mostrar el botón (10 segundos)
-      tiempoMostrarBoton: 5000,
+      tiempoMostrarBoton: 125000, // 125 segundos = 2 minutos y 5 segundos
     },
     finalRegalo: {
-      fechaCuentaRegresiva: new Date(2027, 11, 15), // 15 de diciembre de 2027
+      fechaCuentaRegresiva: new Date(2027, 11, 15), // 15 de diciembre de 2027 (Mes 11 es Diciembre)
     },
     final2: {
       titulo: "Final",
       narrativa:
         "Y así, la pequeña bola de nieve abrió sus secretos antes de tiempo. Cincuenta mil pesos brillan en tus manos como monedas de hada.<br><br>Es tuyo, Valentino. Una elección válida, un tesoro inmediato. La aventura pudo ser más larga, sí, pero no todos los caminos llevan a la misma montaña. Algunos terminan pronto, y aun así dejan luz en las manos.",
     },
-    // Texto de la carta física (para referencia)
     cartaFisica: {
       texto:
-        "No todos los regalos vienen con papel brillante y moños grandes. Algunos llegan despacio, sin hacer ruido. Como una bola de nieve que empieza a rodar: parece pequeña, pero está destinada a crecer.\n\nCada vuelta la hace más fuerte, cada pausa le da más poder. Este sobre, Valentino, guarda algo que nunca te han contado.\n\nDentro hay una tarjeta con un código QR. Escaneala y verás comenzar una aventura que va a sorprenderte.",
+        "No todos los regalos vienen con papel brillante y moños grandes. Algunos llegan despacio, sin hacer ruido. Como una bola de nieve que empieza a rodar: parece pequeña, pero está destinada a crecer.\n\nCada vuelta la hace más fuerte, cada pausa le da más poder. Este sobre, Valentino, guarda algo que nunca te han contado.\n\nDentro hay una tarjeta con un código QR. Escanéala y verás comenzar una aventura que va a sorprenderte.",
     },
   },
 
@@ -113,27 +110,41 @@ const CONFIG = {
   respuestasValidas: {
     constancia: ["constancia", "la constancia", "mi constancia", "constante"],
     paciencia: ["paciencia", "la paciencia", "paciencias"],
-    disciplina: ["disciplina", "la disciplina"], // Nueva respuesta para el tercer acertijo
+    disciplina: ["disciplina", "la disciplina"],
   },
 
-  // Configuración de audio
+  // CONFIGURACIÓN DE AUDIO MEJORADA - ACTUALIZADA
   audio: {
+    // Volúmenes del audio de fondo principal
     volumenFondoNormal: 0.3,
-    volumenFondoBajo: 0.05,
+    volumenFondoBajo: 0.08, // MODIFICADO: Durante narraciones normales
     volumenFondoMudo: 0,
+
+    // Volúmenes del audio de fondo final (específico para secciones finales)
+    volumenFondoFinalNormal: 0.25,
+    volumenFondoFinalBajo: 0.05,
+
+    // NUEVO: Volúmenes del audio navideño (durante el video)
+    volumenFondoNavidadBajo: 0.08, // Volumen bajo durante el video
+
+    // Volumen de narraciones
     volumenNarracion: 0.8,
-    duracionFade: 1000,
+
+    // Duraciones de fade mejoradas
+    duracionFade: 1500, // Fade durante transiciones normales
+    duracionFadeIn: 2000, // Fade in inicial más suave
+    duracionFadeOut: 1200, // Fade out más rápido
+    duracionFadeRapido: 800, // NUEVO: Para cambios rápidos durante narraciones
   },
 
-  // Rutas de navegación por sección y posición de botón
-  // En CONFIG.navegacion, cambiar las rutas:
+  // Rutas de navegación (sin cambios)
   navegacion: {
     intro: {
-      0: "decision", // Quitar .html
+      0: "decision",
     },
     decision: {
-      0: "confirmacion1", // Quitar .html
-      1: "acertijo1", // Quitar .html
+      0: "confirmacion1",
+      1: "acertijo1",
     },
     confirmacion1: {
       0: "confirmacion2",
@@ -158,14 +169,16 @@ const CONFIG = {
   },
 };
 
-// Estado global de la aplicación
+// ESTADO GLOBAL ACTUALIZADO
 const AppState = {
   fondoIniciado: false,
+  fondoFinalIniciado: false, // Estado del audio de fondo final
+  fondoNavidadIniciado: false, // NUEVO: Estado del audio navideño
   seccionActiva: null,
-  audioActual: null,
+  audioActual: null, // Puede ser un audio de narración o el video final
   playClickeado: false,
   seccionesVisitadas: new Set(),
-  audioReproduciendo: false,
-  // Nuevo estado para el temporizador del botón
+  audioReproduciendo: false, // Indica si hay una narración o video reproduciéndose
   temporizadorBotonFinal: null,
+  seccionAnterior: null, // Para tracking de transiciones
 };

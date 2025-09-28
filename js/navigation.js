@@ -34,6 +34,11 @@ const Navigation = {
       return;
     }
 
+    // Nuevo: Asegurar inicio de fondo final si navegamos a "final" (e.g., desde explicación3)
+    if (sectionId === "final") {
+      AudioManager.reproducirFondoFinal(); // Inicia musicafinal.mp3 explícitamente
+    }
+
     window.location.hash = sectionId;
   },
 

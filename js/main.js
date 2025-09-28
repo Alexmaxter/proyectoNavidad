@@ -88,9 +88,10 @@ const App = {
 
     setTimeout(() => document.body.classList.add("loaded"), 100);
 
-    // Función de prueba para desarrollo
+    // Función de prueba para desarrollo - SOLO PARA TESTING
     if (typeof window !== "undefined") {
       window.testAudio = () => {
+        console.log("Testing audio - iniciando manualmente");
         AudioManager.reproducirFondo().then(() =>
           AudioManager.reproducirNarracion("intro")
         );
@@ -102,9 +103,9 @@ const App = {
    * Inicializa todos los componentes necesarios
    */
   _inicializarComponentes() {
-    AudioManager.init();
+    AudioManager.init(); // IMPORTANTE: init() NO debe iniciar audio automáticamente
     Bokeh.init();
-    EventManager.init(); // AGREGAR ESTA LÍNEA QUE FALTABA
+    EventManager.init();
   },
 
   /**
@@ -112,14 +113,18 @@ const App = {
    */
   _configurarEstadoInicial() {
     AppState.seccionActiva = DOM.get("intro");
-    AppState.playClickeado = false;
+    AppState.playClickeado = false; // IMPORTANTE: false al inicio
+    AppState.fondoIniciado = false; // IMPORTANTE: false al inicio
+    AppState.fondoFinalIniciado = false;
   },
 
   /**
-   * Renderiza el contenido inicial de todas las secciones
+   * Renderiza el contenido inicial de todas las secciones (menos la final)
    */
   _renderizarContenidoInicial() {
     Object.keys(CONFIG.textos).forEach((id) => {
+      // Evitamos renderizar las secciones especiales que no tienen estructura normal
+      if (id === "final" || id === "finalRegalo") return;
       ContentManager.render(id);
     });
   },
@@ -129,9 +134,9 @@ const App = {
    */
   _mostrarSeccionInicial() {
     // Si hay hash en la URL, HashRouter.handleRoute() se encargará
-    // Si no hay hash, mostrar intro
+    // Si no hay hash, mostrar intro SIN AUDIO
     if (!window.location.hash) {
-      SectionManager.mostrar("intro");
+      SectionManager.mostrar("intro", true); // true = saltar audio
     }
   },
 };
@@ -193,6 +198,11 @@ class HashRouter {
    * @returns {boolean}
    */
   static _shouldSkipAudio(section) {
+    // Para intro: solo reproducir audio si ya se presionó play
+    if (section === "intro" && !AppState.playClickeado) {
+      return true; // Saltar audio hasta que se presione play
+    }
+
     // Saltar audio si regresamos a una sección ya visitada
     if (AppState.seccionesVisitadas.has(section)) {
       return true;

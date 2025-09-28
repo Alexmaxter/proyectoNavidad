@@ -1,5 +1,5 @@
 // =============================
-// MANEJADOR DE CONTENIDO
+// MANEJADOR DE CONTENIDO - ACTUALIZADO
 // =============================
 const ContentManager = {
   /**
@@ -10,6 +10,12 @@ const ContentManager = {
     const seccion = DOM.get(id);
     const datos = CONFIG.textos[id];
     if (!seccion || !datos) return;
+
+    // Las secciones especiales como "final" y "finalRegalo" no necesitan renderizado estándar
+    if (id === "final" || id === "finalRegalo") {
+      console.log(`Saltando renderizado estándar para sección especial: ${id}`);
+      return;
+    }
 
     this._renderTitulo(seccion, datos);
     this._renderNarrativa(seccion, datos);
@@ -59,19 +65,28 @@ const ContentManager = {
 };
 
 // =============================
-// MANEJADOR DE SECCIONES
+// MANEJADOR DE SECCIONES - ACTUALIZADO
 // =============================
 const SectionManager = {
   /**
-   * Muestra una sección específica con transiciones
+   * Muestra una sección específica con transiciones mejoradas
    * @param {string} id - ID de la sección
    * @param {boolean} saltarAudio - Si saltar la reproducción de audio
    */
   async mostrar(id, saltarAudio = false) {
+    // Guardar sección anterior para manejo de transiciones de audio
+    const seccionAnterior = AppState.seccionActiva?.id;
+    AppState.seccionAnterior = seccionAnterior;
+
     await this._transicionEntrada();
     this._prepararSeccion(id);
     this._activarSeccion(id, saltarAudio);
     await this._transicionSalida();
+
+    // Manejar transición de audio después de mostrar la sección
+    if (seccionAnterior && seccionAnterior !== id) {
+      AudioManager.manejarTransicionSeccion(seccionAnterior, id);
+    }
   },
 
   /**
@@ -81,7 +96,7 @@ const SectionManager = {
     const fadeOverlay = DOM.get("fadeOverlay");
     if (fadeOverlay) fadeOverlay.style.opacity = "1";
 
-    AudioManager.detenerNarraciones();
+    AudioManager.detenerNarraciones(); // Asegura que cualquier narración se detenga al iniciar una transición
     await new Promise((r) => setTimeout(r, 400));
   },
 
@@ -144,15 +159,171 @@ const SectionManager = {
       this._mostrarBotonPlay(seccion);
     } else if (id === "intro" && AppState.playClickeado) {
       this._iniciarIntroCompleta(seccion, id);
+    } else if (id === "final") {
+      // Lógica especial para la sección final con video
+      this._iniciarSeccionFinalConVideo(seccion, id, saltarAudio);
     } else if (saltarAudio || AppState.seccionesVisitadas.has(id)) {
       this._mostrarSeccionDirecta(seccion, id);
     } else {
       this._iniciarSeccionConAudio(seccion, id);
     }
 
+    // Manejo especial para secciones finales
     if (["final2", "finalRegalo"].includes(id)) {
-      AudioManager.detenerFondo();
+      this._manejarSeccionFinal(id);
     }
+
+    // Para finalRegalo, reproducir audio inmediatamente después del manejo final
+    if (id === "finalRegalo") {
+      // Pequeño delay para asegurar que el countdown se inicialice y el silencio se aplique
+      setTimeout(() => {
+        AudioManager.reproducirNarracion("finalRegalo");
+      }, 200);
+    }
+  },
+
+  /**
+   * Maneja el comportamiento específico de las secciones finales
+   */
+  _manejarSeccionFinal(id) {
+    if (id === "final2") {
+      // Para final2, detener todos los audios de fondo
+      AudioManager.detenerTodosLosAudios();
+    } else if (id === "finalRegalo") {
+      // Para finalRegalo, mantener silencio completo
+      AudioManager.detenerTodosLosAudios();
+    }
+  },
+
+  /**
+   * Inicializa la sección final con video - MODIFICADO
+   */
+  _iniciarSeccionFinalConVideo(seccion, id, saltarAudio) {
+    console.log("Iniciando sección final con video...");
+
+    // Reproducir video automáticamente después de un breve delay
+    setTimeout(() => {
+      this._reproducirVideoFinal(id);
+    }, 500);
+
+    AppState.seccionesVisitadas.add(id);
+  },
+
+  /**
+   * Reproduce el video de la sección final - MODIFICADO PARA TRANSICIÓN AUTOMÁTICA
+   */
+  _reproducirVideoFinal(id) {
+    const video = DOM.get("final-video");
+    const playOverlay = DOM.get("video-play-overlay");
+
+    if (!video) {
+      console.warn(
+        "Video final no encontrado, navegando a finalRegalo directamente"
+      );
+      // MODIFICADO: Si no hay video, ir directamente a finalRegalo
+      Navigation.navigateTo("finalRegalo");
+      return;
+    }
+
+    console.log("Preparando video final...");
+
+    // Configurar video
+    video.currentTime = 0;
+    video.volume = CONFIG.audio.volumenNarracion;
+    video.muted = false;
+
+    // Ocultar overlay inmediatamente si existe
+    if (playOverlay) {
+      playOverlay.classList.add("hidden");
+    }
+
+    // MODIFICADO: Configurar eventos del video para transición automática
+    const finalizarVideo = () => this._finalizarVideoYNavegar();
+
+    video.onended = finalizarVideo;
+    video.onerror = (e) => {
+      console.error("Error en el video:", e);
+      finalizarVideo();
+    };
+
+    // Intentar reproducción automática inmediatamente
+    video
+      .play()
+      .then(() => {
+        console.log("Video reproduciendo automáticamente");
+        AppState.audioReproduciendo = true;
+        AppState.audioActual = video;
+
+        // Iniciar audio navideño paralelamente al video
+        setTimeout(() => {
+          AudioManager.iniciarAudioNavidadConVideo();
+        }, 500);
+
+        // ELIMINADO: Ya no programamos aparición del botón durante el video
+        // this._programarBotonFinalDuranteVideo(id);
+      })
+      .catch((error) => {
+        console.warn("Reproducción automática bloqueada:", error);
+
+        // Si falla la reproducción automática, mostrar overlay para click manual
+        if (playOverlay) {
+          playOverlay.classList.remove("hidden");
+          playOverlay.onclick = () => {
+            this._iniciarReproduccionManual(video, playOverlay);
+          };
+        }
+
+        // También permitir click en el video
+        video.onclick = () => {
+          if (video.paused) {
+            this._iniciarReproduccionManual(video, playOverlay);
+          }
+        };
+      });
+  },
+
+  /**
+   * Maneja la reproducción manual cuando falla la automática - MODIFICADO
+   */
+  _iniciarReproduccionManual(video, playOverlay) {
+    video
+      .play()
+      .then(() => {
+        console.log("Video iniciado manualmente");
+        AppState.audioReproduciendo = true;
+        AppState.audioActual = video;
+
+        if (playOverlay) {
+          playOverlay.classList.add("hidden");
+        }
+
+        // Iniciar audio navideño también en reproducción manual
+        setTimeout(() => {
+          AudioManager.iniciarAudioNavidadConVideo();
+        }, 500);
+
+        // ELIMINADO: Ya no programamos aparición del botón
+        // this._programarBotonFinalDuranteVideo(id);
+      })
+      .catch((error) => {
+        console.error("Error al iniciar video manualmente:", error);
+        this._finalizarVideoYNavegar();
+      });
+  },
+
+  /**
+   * NUEVO: Finaliza la reproducción del video y navega automáticamente a finalRegalo
+   */
+  _finalizarVideoYNavegar() {
+    AppState.audioReproduciendo = false;
+    AppState.audioActual = null;
+
+    console.log("Video finalizado, navegando automáticamente a finalRegalo");
+
+    // Navegar directamente a finalRegalo sin mostrar controles
+    setTimeout(() => {
+      Navigation.navigateTo("finalRegalo");
+    }, 1000); // Pequeño delay para suavizar la transición
   },
 
   /**
@@ -192,34 +363,20 @@ const SectionManager = {
    * Inicia la sección con audio
    */
   _iniciarSeccionConAudio(seccion, id) {
-    AudioManager.reproducirFondo().then(() =>
+    // Determinar si necesitamos audio de fondo especial
+    const esSeccionFinal = ["final", "finalRegalo"].includes(id);
+
+    const iniciarAudio = esSeccionFinal
+      ? AudioManager.reproducirFondoFinal()
+      : AudioManager.reproducirFondo();
+
+    iniciarAudio.then(() =>
       setTimeout(() => {
         AudioManager.reproducirNarracion(id);
         this._mostrarNarrativa(seccion);
-
-        // NUEVA LÓGICA: Si es la sección final, programar aparición del botón durante la narración
-        if (id === "final") {
-          this._programarBotonFinalDuranteAudio(seccion);
-        }
       }, 100)
     );
     AppState.seccionesVisitadas.add(id);
-  },
-
-  /**
-   * Programa la aparición del botón "Mostrar regalo" durante el audio (a los 125 segundos)
-   * @param {HTMLElement} seccion - Sección del final
-   */
-  _programarBotonFinalDuranteAudio(seccion) {
-    const tiempoAparicion = 125000; // 125 segundos en milisegundos
-
-    AppState.temporizadorBotonFinal = setTimeout(() => {
-      const acciones = seccion.querySelector(".acciones");
-      if (acciones && AppState.seccionActiva?.id === "final") {
-        acciones.classList.add("visible");
-        console.log("Botón 'Mostrar regalo' activado después de 125 segundos");
-      }
-    }, tiempoAparicion);
   },
 
   /**
@@ -249,12 +406,18 @@ const SectionManager = {
   },
 
   /**
-   * Muestra los controles después de finalizar el audio
+   * Muestra los controles después de finalizar el audio/video - MODIFICADO
    * @param {string} id - ID de la sección
    */
   mostrarControles(id) {
     const { seccionActiva: seccion } = AppState;
     if (!seccion || seccion.id !== id) return;
+
+    // MODIFICADO: No mostrar controles para las secciones finales
+    if (id === "final" || id === "finalRegalo") {
+      console.log(`Saltando mostrar controles para sección final: ${id}`);
+      return;
+    }
 
     setTimeout(() => {
       const replayButton = seccion.querySelector(".replay-button");
@@ -263,12 +426,7 @@ const SectionManager = {
         replayButton.classList.add("visible");
       }
 
-      // Para la sección final, NO mostrar automáticamente las acciones
-      // ya que se muestran durante el audio con el temporizador
-      if (id !== "final") {
-        seccion.querySelector(".acciones")?.classList.add("visible");
-      }
-
+      seccion.querySelector(".acciones")?.classList.add("visible");
       seccion.querySelector(".input-group")?.classList.add("visible");
     }, 500);
   },

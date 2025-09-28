@@ -134,6 +134,26 @@ const Countdown = {
   },
 
   /**
+   * Aplica efecto especial cuando se revelan los años
+   * @param {HTMLElement} contenedor - Contenedor del elemento años
+   */
+  aplicarEfectoEspecialAnos(contenedor) {
+    // Efecto de brillo y escala especial para los años
+    contenedor.style.animation = "specialYearsEffect 2s ease-out";
+
+    // Agregar clase especial para efectos CSS adicionales si existen
+    contenedor.classList.add("years-special-effect");
+
+    // Remover el efecto después de la animación
+    setTimeout(() => {
+      contenedor.style.animation = "";
+      contenedor.classList.remove("years-special-effect");
+    }, 2000);
+
+    console.log("Efecto especial aplicado a los años");
+  },
+
+  /**
    * Actualiza una unidad específica con su valor actual
    * @param {string} id - ID de la unidad a actualizar
    */
