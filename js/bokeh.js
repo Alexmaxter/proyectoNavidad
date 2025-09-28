@@ -112,7 +112,7 @@ const Bokeh = {
       cantidad: 0,
       cantidadDefinidos: 0,
     },
-    finalRegalo: {
+    countdown: {
       fondo: ["#000000", "#000000"],
       colores: [],
       cantidad: 0,
@@ -161,8 +161,8 @@ const Bokeh = {
 
     this.colorFondoObjetivo = [...config.fondo];
 
-    // Para final y finalRegalo, limpiar todos los elementos
-    if (idSeccion === "final" || idSeccion === "finalRegalo") {
+    // Para final y countdown, limpiar todos los elementos
+    if (idSeccion === "final" || idSeccion === "countdown") {
       this.items = [];
       return;
     }
@@ -183,8 +183,8 @@ const Bokeh = {
     this.items = [];
     this.colorFondoObjetivo = [...config.fondo];
 
-    // No crear elementos para final o finalRegalo
-    if (idSeccion === "final" || idSeccion === "finalRegalo") return;
+    // No crear elementos para final o countdown
+    if (idSeccion === "final" || idSeccion === "countdown") return;
 
     this._generarElementosBlur(config);
     this._generarElementosDefinidos(config);
@@ -374,7 +374,7 @@ const Bokeh = {
   dibujar() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // Dibujar fondo (negro sólido para final y finalRegalo, gradiente para otros)
+    // Dibujar fondo (negro sólido para final y countdown, gradiente para otros)
     if (
       this.colorFondoActual[0] === "#000000" &&
       this.colorFondoActual[1] === "#000000"
@@ -391,7 +391,7 @@ const Bokeh = {
       this.ctx.fillRect(0, 0, this.width, this.height);
     }
 
-    // Solo dibujar elementos si no es final o finalRegalo
+    // Solo dibujar elementos si no es final o countdown
     if (this.items.length > 0) {
       this._dibujarElementosBlur();
       this._dibujarElementosDefinidos();

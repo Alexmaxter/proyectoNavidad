@@ -68,7 +68,7 @@ const CONFIG = {
       boton: "Mostrar regalo",
       tiempoMostrarBoton: 125000, // 125 segundos = 2 minutos y 5 segundos
     },
-    finalRegalo: {
+    countdown: {
       fechaCuentaRegresiva: new Date(2027, 11, 15), // 15 de diciembre de 2027 (Mes 11 es Diciembre)
     },
     final2: {
@@ -125,7 +125,7 @@ const CONFIG = {
     volumenFondoFinalBajo: 0.05,
 
     // NUEVO: Volúmenes del audio navideño (durante el video)
-    volumenFondoNavidadBajo: 0.08, // Volumen bajo durante el video
+    volumenbackground_videoBajo: 0.08, // Volumen bajo durante el video
 
     // Volumen de narraciones
     volumenNarracion: 0.8,
@@ -164,7 +164,7 @@ const CONFIG = {
       0: "final",
     },
     final: {
-      0: "finalRegalo",
+      0: "countdown",
     },
   },
 };
@@ -173,7 +173,7 @@ const CONFIG = {
 const AppState = {
   fondoIniciado: false,
   fondoFinalIniciado: false, // Estado del audio de fondo final
-  fondoNavidadIniciado: false, // NUEVO: Estado del audio navideño
+  background_videoIniciado: false, // NUEVO: Estado del audio navideño
   seccionActiva: null,
   audioActual: null, // Puede ser un audio de narración o el video final
   playClickeado: false,

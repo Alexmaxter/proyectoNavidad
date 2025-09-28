@@ -11,8 +11,8 @@ const ContentManager = {
     const datos = CONFIG.textos[id];
     if (!seccion || !datos) return;
 
-    // Las secciones especiales como "final" y "finalRegalo" no necesitan renderizado estándar
-    if (id === "final" || id === "finalRegalo") {
+    // Las secciones especiales como "final" y "countdown" no necesitan renderizado estándar
+    if (id === "final" || id === "countdown") {
       console.log(`Saltando renderizado estándar para sección especial: ${id}`);
       return;
     }
@@ -137,7 +137,7 @@ const SectionManager = {
     seccion.classList.add("active");
     AppState.seccionActiva = seccion;
 
-    if (id === "finalRegalo") {
+    if (id === "countdown") {
       Countdown.init();
     } else {
       Countdown.destruir();
@@ -176,14 +176,14 @@ const SectionManager = {
     }
 
     // Manejo especial para secciones finales
-    if (["final2", "finalRegalo"].includes(id)) {
+    if (["final2", "countdown"].includes(id)) {
       this._manejarSeccionFinal(id);
     }
 
-    // ARREGLADO: Para finalRegalo, reproducir audio inmediatamente después del manejo final
-    if (id === "finalRegalo") {
+    // ARREGLADO: Para countdown, reproducir audio inmediatamente después del manejo final
+    if (id === "countdown") {
       setTimeout(() => {
-        AudioManager.reproducirNarracion("finalRegalo");
+        AudioManager.reproducirNarracion("countdown");
       }, 200);
     }
   },
@@ -195,8 +195,8 @@ const SectionManager = {
     if (id === "final2") {
       // Para final2, detener todos los audios de fondo
       AudioManager.detenerTodosLosAudios();
-    } else if (id === "finalRegalo") {
-      // Para finalRegalo, mantener silencio completo
+    } else if (id === "countdown") {
+      // Para countdown, mantener silencio completo
       AudioManager.detenerTodosLosAudios();
     }
   },
@@ -212,11 +212,9 @@ const SectionManager = {
     const video = DOM.get("final-video");
 
     if (!videoContainer || !video) {
-      console.error(
-        "Estructura de video no encontrada, navegando a finalRegalo"
-      );
+      console.error("Estructura de video no encontrada, navegando a countdown");
       setTimeout(() => {
-        Navigation.navigateTo("finalRegalo");
+        Navigation.navigateTo("countdown");
       }, 1000);
       return;
     }
@@ -242,9 +240,9 @@ const SectionManager = {
 
     if (!video) {
       console.error(
-        "Video final no encontrado, navegando a finalRegalo directamente"
+        "Video final no encontrado, navegando a countdown directamente"
       );
-      Navigation.navigateTo("finalRegalo");
+      Navigation.navigateTo("countdown");
       return;
     }
 
@@ -254,7 +252,7 @@ const SectionManager = {
     const source = video.querySelector("source");
     if (!source || !source.src) {
       console.error("Fuente de video no encontrada");
-      Navigation.navigateTo("finalRegalo");
+      Navigation.navigateTo("countdown");
       return;
     }
 
@@ -380,21 +378,21 @@ const SectionManager = {
   },
 
   /**
-   * Finaliza la reproducción del video y navega automáticamente a finalRegalo
+   * Finaliza la reproducción del video y navega automáticamente a countdown
    */
   _finalizarVideoYNavegar() {
-    console.log("Finalizando video y navegando a finalRegalo");
+    console.log("Finalizando video y navegando a countdown");
 
     AppState.audioReproduciendo = false;
     AppState.audioActual = null;
 
     // ARREGLADO: Detener audio navideño antes de navegar
-    AudioManager.detenerFondoNavidad();
+    AudioManager.detenerbackground_video();
 
-    // Navegar directamente a finalRegalo
+    // Navegar directamente a countdown
     setTimeout(() => {
-      console.log("Navegando a finalRegalo...");
-      Navigation.navigateTo("finalRegalo");
+      console.log("Navegando a countdown...");
+      Navigation.navigateTo("countdown");
     }, 1000);
   },
 
@@ -436,7 +434,7 @@ const SectionManager = {
    */
   _iniciarSeccionConAudio(seccion, id) {
     // Determinar si necesitamos audio de fondo especial
-    const esSeccionFinal = ["final", "finalRegalo"].includes(id);
+    const esSeccionFinal = ["final", "countdown"].includes(id);
 
     const iniciarAudio = esSeccionFinal
       ? AudioManager.reproducirFondoFinal()
@@ -486,7 +484,7 @@ const SectionManager = {
     if (!seccion || seccion.id !== id) return;
 
     // ARREGLADO: No mostrar controles para las secciones finales
-    if (id === "final" || id === "finalRegalo") {
+    if (id === "final" || id === "countdown") {
       console.log(`Saltando mostrar controles para sección final: ${id}`);
       return;
     }

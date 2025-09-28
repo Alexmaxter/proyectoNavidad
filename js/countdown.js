@@ -11,7 +11,7 @@ const Countdown = {
    * Inicializa la cuenta regresiva con una fecha objetivo
    * @param {Date} fechaObjetivo - Fecha objetivo para la cuenta regresiva
    */
-  init(fechaObjetivo = CONFIG.textos.finalRegalo.fechaCuentaRegresiva) {
+  init(fechaObjetivo = CONFIG.textos.countdown.fechaCuentaRegresiva) {
     this.fechaObjetivo = fechaObjetivo;
     this.initialized = false;
 

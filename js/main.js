@@ -124,7 +124,7 @@ const App = {
   _renderizarContenidoInicial() {
     Object.keys(CONFIG.textos).forEach((id) => {
       // Evitamos renderizar las secciones especiales que no tienen estructura normal
-      if (id === "final" || id === "finalRegalo") return;
+      if (id === "final" || id === "countdown") return;
       ContentManager.render(id);
     });
   },

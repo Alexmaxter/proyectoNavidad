@@ -154,16 +154,16 @@ const Navigation = {
 
         if (!seccionFinal) {
           console.error("Sección final no encontrada en DOM");
-          // Fallback a finalRegalo si final no existe
-          this.navigateTo("finalRegalo");
+          // Fallback a countdown si final no existe
+          this.navigateTo("countdown");
           return;
         }
 
         if (!video) {
           console.warn(
-            "Video no encontrado, navegando directamente a finalRegalo"
+            "Video no encontrado, navegando directamente a countdown"
           );
-          this.navigateTo("finalRegalo");
+          this.navigateTo("countdown");
           return;
         }
 
