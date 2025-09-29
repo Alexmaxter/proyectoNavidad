@@ -428,7 +428,7 @@ const Navigation = {
    * Navegación desde explicaciones con validaciones mejoradas
    */
   continuarDesdeExplicacion(numeroExplicacion) {
-    console.log(`Continuando desde explicacion${numeroExplicacion}`);
+    console.log(`=== CONTINUANDO DESDE EXPLICACION${numeroExplicacion} ===`);
 
     const destinos = { 1: "acertijo2", 2: "acertijo3", 3: "final" };
     const destino = destinos[numeroExplicacion];
@@ -440,26 +440,75 @@ const Navigation = {
       return false;
     }
 
-    // Validaciones especiales para sección final
+    // CASO ESPECIAL: explicacion3 -> final (video)
     if (numeroExplicacion === 3 && destino === "final") {
+      console.log("=== NAVEGACIÓN CRÍTICA: EXPLICACION3 -> FINAL (VIDEO) ===");
+
+      // Verificar elementos del DOM
       const seccionFinal = DOM.get("final");
+      const videoContainer = seccionFinal?.querySelector(".video-container");
       const video = DOM.get("final-video");
 
+      console.log("Verificación de elementos:");
+      console.log("- Sección final:", !!seccionFinal);
+      console.log("- Video container:", !!videoContainer);
+      console.log("- Video element:", !!video);
+
       if (!seccionFinal) {
-        console.error(
-          "Sección final no encontrada en DOM, navegando a countdown"
-        );
+        console.error("❌ Sección final no encontrada en DOM");
+        console.log("Fallback: Navegando directamente a countdown");
         return this.navigateTo("countdown");
       }
 
       if (!video) {
-        console.warn("Video no encontrado, navegando directamente a countdown");
+        console.warn("⚠️ Video no encontrado");
+        console.log("Verificando estructura de la sección final...");
+        console.log(
+          "HTML de sección final:",
+          seccionFinal.innerHTML.substring(0, 200) + "..."
+        );
+        console.log("Fallback: Navegando directamente a countdown");
         return this.navigateTo("countdown");
       }
+
+      if (!videoContainer) {
+        console.warn("⚠️ Container de video no encontrado");
+        console.log("Fallback: Navegando directamente a countdown");
+        return this.navigateTo("countdown");
+      }
+
+      // Verificar que el video tiene fuente
+      const videoSource = video.querySelector("source");
+      if (!videoSource || !videoSource.src) {
+        console.warn("⚠️ Video no tiene fuente válida");
+        console.log("Source encontrada:", !!videoSource);
+        console.log("Src del video:", videoSource?.src || "No src");
+        console.log("Fallback: Navegando directamente a countdown");
+        return this.navigateTo("countdown");
+      }
+
+      console.log("✅ Todos los elementos verificados, navegando a final");
+      console.log("Video src:", videoSource.src);
     }
 
     console.log(`Navegando de explicacion${numeroExplicacion} a ${destino}`);
-    return this.navigateTo(destino);
+
+    // Realizar la navegación
+    return this.navigateTo(destino)
+      .then(() => {
+        console.log(`✅ Navegación exitosa a ${destino}`);
+        return true;
+      })
+      .catch((error) => {
+        console.error(`❌ Error navegando a ${destino}:`, error);
+
+        // Si falla la navegación a final, ir a countdown
+        if (destino === "final") {
+          console.log("Fallback final: Navegando a countdown debido a error");
+          return this.navigateTo("countdown");
+        }
+        return false;
+      });
   },
 
   /**

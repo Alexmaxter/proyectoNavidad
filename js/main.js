@@ -359,9 +359,44 @@ const App = {
       },
 
       continuarDesdeExplicacion: (num) => {
+        console.log(`=== NAVEGACIÓN BÁSICA DESDE EXPLICACION${num} ===`);
+
         const destinos = { 1: "acertijo2", 2: "acertijo3", 3: "final" };
         const destino = destinos[num];
-        if (destino) this.navigateTo(destino);
+
+        if (!destino) {
+          console.error(`No hay destino para explicacion${num}`);
+          return;
+        }
+
+        // CASO ESPECIAL: explicacion3 debe ir a final (video), NO a countdown
+        if (num === 3 && destino === "final") {
+          console.log("=== CASO ESPECIAL: EXPLICACION3 -> FINAL (VIDEO) ===");
+
+          // Verificar que la sección final existe
+          const seccionFinal = document.getElementById("final");
+          const video = document.getElementById("final-video");
+
+          if (!seccionFinal) {
+            console.error(
+              "❌ Sección final no encontrada, navegando a countdown"
+            );
+            this.navigateTo("countdown");
+            return;
+          }
+
+          if (!video) {
+            console.warn(
+              "⚠️ Video no encontrado, pero intentando navegar a final de todas formas"
+            );
+            // Aún así navegar a final, quizás el video se cargue dinámicamente
+          }
+
+          console.log("✅ Navegando a sección final para mostrar video");
+        }
+
+        console.log(`Navegación básica: explicacion${num} -> ${destino}`);
+        this.navigateTo(destino);
       },
 
       _manejarBotonPlay: (seccion) => {
