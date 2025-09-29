@@ -456,7 +456,7 @@ const Navigation = {
     console.log("=== NAVEGACIÓN A SECCIÓN DE VIDEO ===");
 
     const seccionFinal = DOM.get("final");
-    const video = DOM.get("final-video");
+    const video = DOM.get("Final");
 
     // Verificación básica
     if (!seccionFinal) {

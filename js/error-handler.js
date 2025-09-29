@@ -112,7 +112,7 @@ const ErrorHandler = {
   _manejarErrorVideo(elemento) {
     console.log("Aplicando fallback para video fallido");
 
-    if (elemento.id === "final-video") {
+    if (elemento.id === "Final") {
       // Si el video final falla, navegar directamente a countdown
       console.warn("Video final no disponible, saltando a countdown");
       setTimeout(() => {
@@ -181,7 +181,7 @@ const ErrorHandler = {
     const recursosCriticos = [
       { id: "bokehCanvas", tipo: "canvas", nombre: "Canvas de efectos" },
       { id: "audio-fondo", tipo: "audio", nombre: "Audio de fondo" },
-      { id: "final-video", tipo: "video", nombre: "Video final" },
+      { id: "Final", tipo: "video", nombre: "Video final" },
     ];
 
     recursosCriticos.forEach(({ id, tipo, nombre }) => {

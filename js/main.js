@@ -375,7 +375,7 @@ const App = {
 
           // Verificar que la sección final existe
           const seccionFinal = document.getElementById("final");
-          const video = document.getElementById("final-video");
+          const video = document.getElementById("Final");
 
           if (!seccionFinal) {
             console.error(

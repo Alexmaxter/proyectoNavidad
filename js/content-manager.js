@@ -209,7 +209,7 @@ const SectionManager = {
 
     // ARREGLADO: Verificar que la sección final tiene la estructura correcta
     const videoContainer = seccion.querySelector(".video-container");
-    const video = DOM.get("final-video");
+    const video = DOM.get("Final");
 
     if (!videoContainer || !video) {
       console.error("Estructura de video no encontrada, navegando a countdown");
@@ -235,7 +235,7 @@ const SectionManager = {
    * ARREGLADO: Reproduce el video de la sección final
    */
   _reproducirVideoFinal(id) {
-    const video = DOM.get("final-video");
+    const video = DOM.get("Final");
     const playOverlay = DOM.get("video-play-overlay");
 
     if (!video) {

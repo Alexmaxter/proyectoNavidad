@@ -66,7 +66,7 @@ const DiagnosticoGitHub = {
     const seccionFinal = document.getElementById("final");
     if (seccionFinal) {
       const videoContainer = seccionFinal.querySelector(".video-container");
-      const video = document.getElementById("final-video");
+      const video = document.getElementById("Final");
       const videoSource = video?.querySelector("source");
 
       console.log("🎬 Elementos de video:");
@@ -134,7 +134,7 @@ const DiagnosticoGitHub = {
     });
 
     // Verificar video
-    const video = document.getElementById("final-video");
+    const video = document.getElementById("Final");
     if (video) {
       console.log("🎬 Estado del video:");
       console.log("- readyState:", video.readyState);
@@ -175,7 +175,7 @@ const DiagnosticoGitHub = {
   verificarVideo() {
     console.log("🎥 Verificación específica del video...");
 
-    const video = document.getElementById("final-video");
+    const video = document.getElementById("Final");
     if (!video) {
       console.log("❌ Video no encontrado en DOM");
       return;
@@ -242,7 +242,7 @@ const DiagnosticoGitHub = {
     `;
 
     const seccionFinal = document.getElementById("final");
-    const video = document.getElementById("final-video");
+    const video = document.getElementById("Final");
     const videoSource = video?.querySelector("source");
     const navegacionOK =
       typeof Navigation !== "undefined" &&
@@ -295,7 +295,7 @@ const DiagnosticoGitHub = {
   probarVideo() {
     console.log("=== PRUEBA DE VIDEO ===");
 
-    const video = document.getElementById("final-video");
+    const video = document.getElementById("Final");
     if (!video) {
       console.log("❌ Video no encontrado");
       return;
