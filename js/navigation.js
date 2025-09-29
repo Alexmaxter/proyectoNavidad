@@ -425,7 +425,7 @@ const Navigation = {
   },
 
   /**
-   * Navegación desde explicaciones con validaciones mejoradas
+   * ARREGLADO: Navegación desde explicaciones con mejor manejo de video
    */
   continuarDesdeExplicacion(numeroExplicacion) {
     console.log(`=== CONTINUANDO DESDE EXPLICACION${numeroExplicacion} ===`);
@@ -442,73 +442,76 @@ const Navigation = {
 
     // CASO ESPECIAL: explicacion3 -> final (video)
     if (numeroExplicacion === 3 && destino === "final") {
-      console.log("=== NAVEGACIÓN CRÍTICA: EXPLICACION3 -> FINAL (VIDEO) ===");
-
-      // Verificar elementos del DOM
-      const seccionFinal = DOM.get("final");
-      const videoContainer = seccionFinal?.querySelector(".video-container");
-      const video = DOM.get("final-video");
-
-      console.log("Verificación de elementos:");
-      console.log("- Sección final:", !!seccionFinal);
-      console.log("- Video container:", !!videoContainer);
-      console.log("- Video element:", !!video);
-
-      if (!seccionFinal) {
-        console.error("❌ Sección final no encontrada en DOM");
-        console.log("Fallback: Navegando directamente a countdown");
-        return this.navigateTo("countdown");
-      }
-
-      if (!video) {
-        console.warn("⚠️ Video no encontrado");
-        console.log("Verificando estructura de la sección final...");
-        console.log(
-          "HTML de sección final:",
-          seccionFinal.innerHTML.substring(0, 200) + "..."
-        );
-        console.log("Fallback: Navegando directamente a countdown");
-        return this.navigateTo("countdown");
-      }
-
-      if (!videoContainer) {
-        console.warn("⚠️ Container de video no encontrado");
-        console.log("Fallback: Navegando directamente a countdown");
-        return this.navigateTo("countdown");
-      }
-
-      // Verificar que el video tiene fuente
-      const videoSource = video.querySelector("source");
-      if (!videoSource || !videoSource.src) {
-        console.warn("⚠️ Video no tiene fuente válida");
-        console.log("Source encontrada:", !!videoSource);
-        console.log("Src del video:", videoSource?.src || "No src");
-        console.log("Fallback: Navegando directamente a countdown");
-        return this.navigateTo("countdown");
-      }
-
-      console.log("✅ Todos los elementos verificados, navegando a final");
-      console.log("Video src:", videoSource.src);
+      return this._navegarASeccionVideo();
     }
 
     console.log(`Navegando de explicacion${numeroExplicacion} a ${destino}`);
+    return this.navigateTo(destino);
+  },
 
-    // Realizar la navegación
-    return this.navigateTo(destino)
-      .then(() => {
-        console.log(`✅ Navegación exitosa a ${destino}`);
-        return true;
-      })
-      .catch((error) => {
-        console.error(`❌ Error navegando a ${destino}:`, error);
+  /**
+   * NUEVO: Maneja la navegación específica a la sección de video
+   */
+  _navegarASeccionVideo() {
+    console.log("=== NAVEGACIÓN A SECCIÓN DE VIDEO ===");
 
-        // Si falla la navegación a final, ir a countdown
-        if (destino === "final") {
-          console.log("Fallback final: Navegando a countdown debido a error");
-          return this.navigateTo("countdown");
-        }
-        return false;
-      });
+    const seccionFinal = DOM.get("final");
+    const video = DOM.get("final-video");
+
+    // Verificación básica
+    if (!seccionFinal) {
+      console.error("❌ Sección final no existe, saltando a countdown");
+      return this.navigateTo("countdown");
+    }
+
+    // Si el video no existe O si hay problemas cargándolo, saltar directamente
+    if (!video) {
+      console.warn("⚠️ Video no encontrado, saltando directamente a countdown");
+      return this.navigateTo("countdown");
+    }
+
+    // Verificar si el video tiene una fuente válida
+    const videoSource = video.querySelector("source");
+    if (!videoSource || !videoSource.src) {
+      console.warn("⚠️ Video sin fuente válida, saltando a countdown");
+      return this.navigateTo("countdown");
+    }
+
+    // Verificar si el archivo existe haciendo un pre-check
+    console.log("Verificando disponibilidad del video...");
+    console.log("Video src:", videoSource.src);
+
+    // Intentar pre-cargar el video con timeout
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        console.warn("⏱️ Timeout verificando video, navegando a countdown");
+        this.navigateTo("countdown").then(resolve);
+      }, 3000); // 3 segundos de timeout
+
+      // Intentar cargar metadata del video
+      const handleCanPlay = () => {
+        clearTimeout(timeout);
+        console.log("✅ Video verificado, navegando a sección final");
+        video.removeEventListener("canplay", handleCanPlay);
+        video.removeEventListener("error", handleError);
+        this.navigateTo("final").then(resolve);
+      };
+
+      const handleError = (e) => {
+        clearTimeout(timeout);
+        console.error("❌ Error cargando video:", e);
+        video.removeEventListener("canplay", handleCanPlay);
+        video.removeEventListener("error", handleError);
+        console.log("Navegando a countdown debido a error de video");
+        this.navigateTo("countdown").then(resolve);
+      };
+
+      video.addEventListener("canplay", handleCanPlay, { once: true });
+      video.addEventListener("error", handleError, { once: true });
+
+      // Forzar carga del video
+      video.load();
+    });
   },
 
   /**
