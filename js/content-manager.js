@@ -215,6 +215,7 @@ const SectionManager = {
       console.error("Estructura de video no encontrada, navegando a countdown");
       setTimeout(() => {
         Navigation.navigateTo("countdown");
+        console.info("No carga...");
       }, 60000);
       return;
     }
