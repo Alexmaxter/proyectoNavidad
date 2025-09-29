@@ -179,7 +179,6 @@ const ErrorHandler = {
 
   _verificarRecursosCriticos() {
     const recursosCriticos = [
-      { id: "bokehCanvas", tipo: "canvas", nombre: "Canvas de efectos" },
       { id: "audio-fondo", tipo: "audio", nombre: "Audio de fondo" },
       { id: "Final", tipo: "video", nombre: "Video final" },
     ];
@@ -204,16 +203,6 @@ const ErrorHandler = {
 
   _aplicarFallbackRecurso(id, tipo, nombre) {
     switch (tipo) {
-      case "canvas":
-        // Crear canvas de reemplazo
-        const canvas = document.createElement("canvas");
-        canvas.id = id;
-        canvas.style.cssText =
-          "position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;";
-        document.body.appendChild(canvas);
-        console.log(`Canvas de fallback creado: ${id}`);
-        break;
-
       case "audio":
         // Crear elemento de audio vacío
         const audio = document.createElement("audio");
@@ -379,12 +368,7 @@ const ErrorHandler = {
 
   _simplificarInterfaz() {
     // Remover elementos complejos que podrían causar problemas
-    const elementosProblematicos = [
-      "#bokehCanvas",
-      ".vignette",
-      "audio",
-      "video",
-    ];
+    const elementosProblematicos = [".vignette", "audio", "video"];
 
     elementosProblematicos.forEach((selector) => {
       document.querySelectorAll(selector).forEach((elemento) => {

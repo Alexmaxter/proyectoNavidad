@@ -7,7 +7,7 @@ const CONFIG = {
     intro: {
       titulo: "¡Bienvenido Valentino!",
       narrativa:
-        "Ahhhh, lo hiciste. Empujaste la bola de nieve. Y ahora ya está rodando.<br><br>¡Mírala! Tan pequeña… Pero las apariencias engañan, ¿no es cierto? Cada vuelta la alimenta, cada segundo la fortalece. Es como si tuviera hambre… hambre de tiempo.<br><br>Esta no es una aventura de correr como loco, Valentino. No. Esta es una aventura de paciencia, de descubrir qué sucede cuando dejás que el tiempo haga su magia.<br><br>La bola de nieve rueda montaña abajo y ya duplicó su tamaño. Prepárate para lo que viene.",
+        "Ahhhh, lo hiciste.<br><br>Empujaste la bola de nieve. Y ahora ya está rodando.<br><br>¡Mírala! Tan pequeña… Pero las apariencias engañan, ¿no es cierto? Cada vuelta la alimenta, cada segundo la fortalece.<br><br>Es como si tuviera hambre… hambre de tiempo.<br><br>Esta no es una aventura de correr como loco, Valentino. No. Esta es una aventura de paciencia, de descubrir qué sucede cuando dejás que el tiempo haga su magia.<br><br>La bola de nieve rueda montaña abajo y ya duplicó su tamaño.<br>Prepárate para lo que viene.",
       boton: "Comenzar",
     },
     decision: {
@@ -36,7 +36,7 @@ const CONFIG = {
     },
     explicacion1: {
       narrativa:
-        "¡Exacto! La constancia no es repetir por costumbre, sino mantener el esfuerzo hasta que lo invisible se vuelve visible. Cada golpe suma, aunque al principio no se note.<br><br>La bola de nieve toma esta primera lección y crece más grande.",
+        "¡Exacto!<br><br>La constancia no es repetir por costumbre, sino mantener el esfuerzo hasta que lo invisible se vuelve visible.<br>Cada golpe suma, aunque al principio no se note.",
       boton: "Siguiente",
     },
     acertijo2: {
@@ -47,7 +47,7 @@ const CONFIG = {
     },
     explicacion2: {
       narrativa:
-        "¡Sí! La paciencia: saber esperar con confianza, incluso cuando todavía no ves frutos.<br><br>Como el campesino, vos también aprendiste que lo valioso a veces necesita tiempo y calma, no prisa.<br><br>La bola de nieve crece con esta nueva lección.",
+        "¡Sí!<br><br>La paciencia: saber esperar con confianza, incluso cuando todavía no ves frutos.",
       boton: "Siguiente",
     },
     acertijo3: {
@@ -58,7 +58,7 @@ const CONFIG = {
     },
     explicacion3: {
       narrativa:
-        "¡Perfecto! La disciplina: seguir el rumbo elegido aunque aparezcan desvíos y tentaciones.<br><br>Como él, vos también diste pasos hacia lo desconocido manteniendo tu rumbo.<br><br>La bola de nieve ahora es una avalancha, porque tuviste la disciplina para llegar hasta aquí.",
+        "¡Perfecto!<br><br>La disciplina: seguir el rumbo elegido aunque aparezcan desvíos y tentaciones.",
       boton: "Siguiente",
     },
     // SECCIÓN FINAL LIMPIA - SIN TÍTULO NI NARRATIVA

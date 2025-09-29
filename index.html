@@ -44,8 +44,6 @@
     <!-- Background and overlay layers -->
     <div class="vignette"></div>
     <div id="fadeOverlay"></div>
-    <div class="background"></div>
-    <canvas id="bokehCanvas"></canvas>
 
     <!-- Global audio elements -->
     <audio id="audio-fondo" preload="auto" loop>
@@ -265,10 +263,6 @@
         </video>
         <div id="video-play-overlay"></div>
       </div>
-      <div class="controles">
-        <div class="acciones"></div>
-        <div class="replay-button"></div>
-      </div>
       <!-- Audio navideño que se reproduce durante el video -->
       <audio id="audio-fondo-navidad" preload="auto" loop>
         <source src="assets/audio/background_video.mp3" type="audio/mpeg" />
@@ -335,11 +329,9 @@
     <!-- JavaScript modules -->
 
     <!-- AGREGAR esta línea ANTES de los otros scripts -->
+    <script src="js/script.js"></script>
     <script src="js/error-handler.js"></script>
     <!-- Después de todos tus otros scripts, agregar TEMPORALMENTE -->
-    <script src="js/diagnostico-debug.js"></script>
-    <!-- Scripts existentes (mantener el orden) -->
-    <script src="js/bokeh.js"></script>
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/audio-manager.js"></script>

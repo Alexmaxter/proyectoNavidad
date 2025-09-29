@@ -1,6 +1,3 @@
-// =============================
-// MANEJADOR DE CONTENIDO - ACTUALIZADO Y ARREGLADO
-// =============================
 const ContentManager = {
   /**
    * Renderiza el contenido de una sección específica
@@ -64,9 +61,6 @@ const ContentManager = {
   },
 };
 
-// =============================
-// MANEJADOR DE SECCIONES - ACTUALIZADO Y ARREGLADO
-// =============================
 const SectionManager = {
   /**
    * Muestra una sección específica con transiciones mejoradas
@@ -109,11 +103,6 @@ const SectionManager = {
     DOM.getAll(".section").forEach((s) => s.classList.remove("active"));
     document.body.style.backgroundColor =
       id === "intro" ? "#090a0f" : "#1a1a1a";
-
-    // Asegurar que la transición del bokeh funcione correctamente
-    setTimeout(() => {
-      Bokeh.transicion(id);
-    }, 100);
 
     // Limpiar temporizador previo si existe
     if (AppState.temporizadorBotonFinal) {
@@ -167,7 +156,7 @@ const SectionManager = {
     } else if (id === "intro" && AppState.playClickeado) {
       this._iniciarIntroCompleta(seccion, id);
     } else if (id === "final") {
-      // ARREGLADO: Lógica especial para la sección final con video
+      // Lógica especial para la sección final con video
       this._iniciarSeccionFinalConVideo(seccion, id, saltarAudio);
     } else if (saltarAudio || AppState.seccionesVisitadas.has(id)) {
       this._mostrarSeccionDirecta(seccion, id);
@@ -180,7 +169,7 @@ const SectionManager = {
       this._manejarSeccionFinal(id);
     }
 
-    // ARREGLADO: Para countdown, reproducir audio inmediatamente después del manejo final
+    // Para countdown, reproducir audio inmediatamente después del manejo final
     if (id === "countdown") {
       setTimeout(() => {
         AudioManager.reproducirNarracion("countdown");
@@ -202,12 +191,12 @@ const SectionManager = {
   },
 
   /**
-   * ARREGLADO: Inicializa la sección final con video
+   * Inicializa la sección final con video
    */
   _iniciarSeccionFinalConVideo(seccion, id, saltarAudio) {
     console.log("Iniciando sección final con video...");
 
-    // ARREGLADO: Verificar que la sección final tiene la estructura correcta
+    // Verificar que la sección final tiene la estructura correcta
     const videoContainer = seccion.querySelector(".video-container");
     const video = DOM.get("Final");
 
@@ -220,7 +209,7 @@ const SectionManager = {
       return;
     }
 
-    // ARREGLADO: Asegurar que el contenedor de video es visible
+    // Asegurar que el contenedor de video es visible
     videoContainer.style.display = "block";
     videoContainer.style.opacity = "1";
 
@@ -233,7 +222,7 @@ const SectionManager = {
   },
 
   /**
-   * ARREGLADO: Reproduce el video de la sección final
+   * Reproduce el video de la sección final
    */
   _reproducirVideoFinal(id) {
     const video = DOM.get("Final");
@@ -249,7 +238,7 @@ const SectionManager = {
 
     console.log("Preparando video final...");
 
-    // ARREGLADO: Verificar que el video tiene una fuente válida
+    // Verificar que el video tiene una fuente válida
     const source = video.querySelector("source");
     if (!source || !source.src) {
       console.error("Fuente de video no encontrada");
@@ -262,7 +251,7 @@ const SectionManager = {
     video.volume = CONFIG.audio.volumenNarracion;
     video.muted = false;
 
-    // ARREGLADO: Asegurar que el video es visible
+    // Asegurar que el video es visible
     video.style.width = "100%";
     video.style.height = "100%";
     video.style.objectFit = "cover";
@@ -273,7 +262,7 @@ const SectionManager = {
       playOverlay.style.display = "none";
     }
 
-    // ARREGLADO: Configurar eventos del video para transición automática
+    // Configurar eventos del video para transición automática
     const finalizarVideo = () => this._finalizarVideoYNavegar();
 
     // Limpiar eventos previos
@@ -287,12 +276,12 @@ const SectionManager = {
       finalizarVideo();
     };
 
-    // ARREGLADO: Manejar carga del video
+    // Manejar carga del video
     video.onloadeddata = () => {
       console.log("Video cargado correctamente");
     };
 
-    // ARREGLADO: Intentar reproducción con mejor manejo de errores
+    // Intentar reproducción con mejor manejo de errores
     const intentarReproduccion = () => {
       return video
         .play()
@@ -329,7 +318,7 @@ const SectionManager = {
   },
 
   /**
-   * ARREGLADO: Muestra controles manuales si falla la reproducción automática
+   * Muestra controles manuales si falla la reproducción automática
    */
   _mostrarControlManualVideo(video, playOverlay) {
     console.log("Mostrando controles manuales para el video");
@@ -386,7 +375,7 @@ const SectionManager = {
     AppState.audioReproduciendo = false;
     AppState.audioActual = null;
 
-    // ARREGLADO: Detener audio navideño antes de navegar
+    // Detener audio navideño antes de navegar
     AudioManager.detenerbackground_video();
 
     // Navegar directamente a countdown
@@ -476,16 +465,24 @@ const SectionManager = {
   },
 
   /**
-   * ARREGLADO: Muestra los controles después de finalizar el audio/video
+   * Muestra los controles después de finalizar el audio/video
    * @param {string} id - ID de la sección
    */
   mostrarControles(id) {
     const { seccionActiva: seccion } = AppState;
     if (!seccion || seccion.id !== id) return;
 
-    // ARREGLADO: No mostrar controles para las secciones finales
+    // No mostrar controles para la sección final
     if (id === "final" || id === "countdown") {
-      console.log(`Saltando mostrar controles para sección final: ${id}`);
+      console.log(`No se muestran controles para la sección: ${id}`);
+      // Asegurar que los elementos de control no sean visibles
+      const controles = seccion.querySelectorAll(
+        ".acciones, .input-group, .replay-button"
+      );
+      controles.forEach((control) => {
+        control.classList.remove("visible");
+        control.style.display = "none";
+      });
       return;
     }
 

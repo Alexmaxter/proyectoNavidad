@@ -623,9 +623,8 @@ const App = {
   init() {
     try {
       const seccionIntro = DOM.get("intro");
-      const canvas = DOM.get("bokehCanvas");
 
-      if (!seccionIntro || !canvas) {
+      if (!seccionIntro) {
         throw new Error("Elementos esenciales no encontrados en el DOM");
       }
 
@@ -660,7 +659,6 @@ const App = {
   _inicializarComponentes() {
     console.log("Inicializando componentes...");
     AudioManager.init();
-    Bokeh.init();
     EventManager.init();
   },
 

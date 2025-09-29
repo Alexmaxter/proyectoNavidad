@@ -187,9 +187,8 @@ const App = {
 
       // Verificar elementos esenciales
       const seccionIntro = DOM.get("intro");
-      const canvas = DOM.get("bokehCanvas");
 
-      if (!seccionIntro || !canvas) {
+      if (!seccionIntro) {
         throw new Error("Elementos esenciales no encontrados en el DOM");
       }
 
@@ -226,14 +225,6 @@ const App = {
         console.log("✓ AudioManager inicializado");
       } else {
         console.warn("AudioManager no disponible");
-      }
-
-      // Bokeh - con manejo de errores
-      if (window.Bokeh) {
-        Bokeh.init();
-        console.log("✓ Bokeh inicializado");
-      } else {
-        console.warn("Bokeh no disponible");
       }
 
       // EventManager
@@ -520,7 +511,6 @@ const App = {
       hashURL: window.location.hash,
       audioDisponible: !!window.AudioManager,
       navegacionDisponible: !!window.Navigation,
-      bokehDisponible: !!window.Bokeh,
     };
 
     console.log("📊 Estado inicial de la aplicación:", estado);
@@ -577,12 +567,10 @@ const App = {
     document.body.insertAdjacentHTML("beforeend", errorHTML);
 
     // Ocultar el contenido principal
-    document
-      .querySelectorAll(".section, #bokehCanvas, .vignette")
-      .forEach((el) => {
-        if (el && el.id !== "error-fatal") {
-          el.style.display = "none";
-        }
-      });
+    document.querySelectorAll(".section, .vignette").forEach((el) => {
+      if (el && el.id !== "error-fatal") {
+        el.style.display = "none";
+      }
+    });
   },
 };
