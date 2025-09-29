@@ -312,20 +312,19 @@ const SectionManager = {
         });
     };
 
-    // ARREGLADO: Verificar si el video está listo para reproducir
+    // Verificar si el video está listo para reproducir
     if (video.readyState >= 3) {
       // HAVE_FUTURE_DATA o mayor
       intentarReproduccion();
     } else {
+      // Esperar el evento 'canplay' sin timeout
       video.addEventListener("canplay", intentarReproduccion, { once: true });
 
-      // ARREGLADO: Timeout de seguridad si el video no carga
-      setTimeout(() => {
-        if (video.readyState < 3) {
-          console.error("Timeout: Video no se cargó correctamente");
-          finalizarVideo();
-        }
-      }, 10000); // 10 segundos timeout
+      // Opcional: Mostrar un mensaje si el video no carga después de mucho tiempo
+      video.addEventListener("error", () => {
+        console.error("Error al cargar el video");
+        this._mostrarControlManualVideo(video, playOverlay); // Mostrar controles manuales en caso de error
+      });
     }
   },
 
