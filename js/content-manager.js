@@ -289,11 +289,6 @@ const SectionManager = {
           console.log("Video reproduciendo automáticamente");
           AppState.audioReproduciendo = true;
           AppState.audioActual = video;
-
-          // Iniciar audio navideño paralelamente al video
-          setTimeout(() => {
-            AudioManager.iniciarAudioNavidadConVideo();
-          }, 500);
         })
         .catch((error) => {
           console.warn("Reproducción automática bloqueada:", error);
@@ -354,11 +349,6 @@ const SectionManager = {
           playOverlay.classList.add("hidden");
           playOverlay.style.display = "none";
         }
-
-        // Iniciar audio navideño también en reproducción manual
-        setTimeout(() => {
-          AudioManager.iniciarAudioNavidadConVideo();
-        }, 500);
       })
       .catch((error) => {
         console.error("Error al iniciar video manualmente:", error);
@@ -374,9 +364,6 @@ const SectionManager = {
 
     AppState.audioReproduciendo = false;
     AppState.audioActual = null;
-
-    // Detener audio navideño antes de navegar
-    AudioManager.detenerbackground_video();
 
     // Navegar directamente a countdown
     setTimeout(() => {

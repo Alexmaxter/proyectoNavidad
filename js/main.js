@@ -246,7 +246,6 @@ const App = {
     AppState.playClickeado = false;
     AppState.fondoIniciado = false;
     AppState.fondoFinalIniciado = false;
-    AppState.background_videoIniciado = false;
     AppState.seccionesVisitadas = new Set();
     AppState.audioReproduciendo = false;
     AppState.audioActual = null;

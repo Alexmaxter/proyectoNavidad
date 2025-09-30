@@ -124,9 +124,6 @@ const CONFIG = {
     volumenFondoFinalNormal: 0.25,
     volumenFondoFinalBajo: 0.05,
 
-    // NUEVO: Volúmenes del audio navideño (durante el video)
-    volumenbackground_videoBajo: 0.08, // Volumen bajo durante el video
-
     // Volumen de narraciones
     volumenNarracion: 0.8,
 
@@ -173,7 +170,6 @@ const CONFIG = {
 const AppState = {
   fondoIniciado: false,
   fondoFinalIniciado: false, // Estado del audio de fondo final
-  background_videoIniciado: false, // NUEVO: Estado del audio navideño
   seccionActiva: null,
   audioActual: null, // Puede ser un audio de narración o el video final
   playClickeado: false,

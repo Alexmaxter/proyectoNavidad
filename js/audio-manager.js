@@ -4,19 +4,15 @@
 const AudioManager = {
   audioFondo: null,
   audioFondoFinal: null,
-  audiobackground_video: null,
   audiosNarracion: null,
 
   init() {
     this.audioFondo = DOM.get("audio-fondo");
     this.audioFondoFinal = DOM.get("audio-fondo-final");
-    this.audiobackground_video = DOM.get("audio-fondo-navidad");
 
     // Recopila todos los audios que no sean de fondo
     this.audiosNarracion = [
-      ...DOM.getAll(
-        "audio:not(#audio-fondo):not(#audio-fondo-final):not(#audio-fondo-navidad)"
-      ),
+      ...DOM.getAll("audio:not(#audio-fondo):not(#audio-fondo-final)"),
     ];
 
     if (this.audioFondo) {
@@ -24,9 +20,6 @@ const AudioManager = {
     }
     if (this.audioFondoFinal) {
       this.audioFondoFinal.volume = 0;
-    }
-    if (this.audiobackground_video) {
-      this.audiobackground_video.volume = 0;
     }
   },
 
@@ -55,7 +48,6 @@ const AudioManager = {
 
     try {
       await this._detenerAudioFondoPrincipal();
-      await this._detenerAudiobackground_video();
 
       this.audioFondoFinal.volume = 0;
       await this.audioFondoFinal.play();
@@ -70,30 +62,6 @@ const AudioManager = {
       );
     } catch (error) {
       console.warn("Error al iniciar audio de fondo final:", error);
-    }
-  },
-
-  async reproducirbackground_video() {
-    if (!this.audiobackground_video || AppState.background_videoIniciado)
-      return;
-
-    try {
-      await this._detenerAudioFondoPrincipal();
-      await this._detenerAudioFondoFinal();
-
-      this.audiobackground_video.volume = 0;
-      await this.audiobackground_video.play();
-      AppState.background_videoIniciado = true;
-      console.log("Audio de fondo navideño iniciado correctamente");
-
-      this._fadeAudio(
-        this.audiobackground_video,
-        0,
-        CONFIG.audio.volumenbackground_videoBajo,
-        CONFIG.audio.duracionFadeIn
-      );
-    } catch (error) {
-      console.warn("Error al iniciar audio de fondo navideño:", error);
     }
   },
 
@@ -135,26 +103,6 @@ const AudioManager = {
     });
   },
 
-  async _detenerAudiobackground_video() {
-    if (!this.audiobackground_video || !AppState.background_videoIniciado)
-      return;
-
-    return new Promise((resolve) => {
-      this._fadeAudio(
-        this.audiobackground_video,
-        this.audiobackground_video.volume,
-        0,
-        CONFIG.audio.duracionFadeOut,
-        () => {
-          this.audiobackground_video.pause();
-          this.audiobackground_video.currentTime = 0;
-          AppState.background_videoIniciado = false;
-          resolve();
-        }
-      );
-    });
-  },
-
   detenerFondo() {
     this._detenerAudioFondoPrincipal();
   },
@@ -163,16 +111,11 @@ const AudioManager = {
     this._detenerAudioFondoFinal();
   },
 
-  detenerbackground_video() {
-    this._detenerAudiobackground_video();
-  },
-
   detenerTodosLosAudios() {
     console.log("=== DETENIENDO TODOS LOS AUDIOS ===");
     this.detenerNarraciones();
     this.detenerFondo();
     this.detenerFondoFinal();
-    this.detenerbackground_video();
   },
 
   saltarSeccion() {
@@ -198,14 +141,10 @@ const AudioManager = {
 
   fadeVolumenFondo(volumenObjetivo, seccionId = null) {
     const esSeccionFinal = this._esSeccionConAudioFinalEspecifico(seccionId);
-    const esSeccionVideo = seccionId === "final";
 
     let audioActivo, estadoActivo;
 
-    if (esSeccionVideo && AppState.background_videoIniciado) {
-      audioActivo = this.audiobackground_video;
-      estadoActivo = AppState.background_videoIniciado;
-    } else if (esSeccionFinal) {
+    if (esSeccionFinal) {
       audioActivo = this.audioFondoFinal;
       estadoActivo = AppState.fondoFinalIniciado;
     } else {
@@ -217,9 +156,7 @@ const AudioManager = {
 
     if (!estadoActivo) {
       let metodoIniciar;
-      if (esSeccionVideo) {
-        metodoIniciar = () => this.reproducirbackground_video();
-      } else if (esSeccionFinal) {
+      if (esSeccionFinal) {
         metodoIniciar = () => this.reproducirFondoFinal();
       } else {
         metodoIniciar = () => this.reproducirFondo();
@@ -324,8 +261,6 @@ const AudioManager = {
       return this.audioFondoFinal;
     } else if (AppState.fondoIniciado) {
       return this.audioFondo;
-    } else if (AppState.background_videoIniciado) {
-      return this.audiobackground_video;
     }
 
     return null;
@@ -361,9 +296,6 @@ const AudioManager = {
 
   _obtenerVolumenNormalParaSeccion(id) {
     if (this._esSeccionConAudioFinalEspecifico(id)) {
-      if (AppState.background_videoIniciado) {
-        return CONFIG.audio.volumenbackground_videoBajo;
-      }
       return CONFIG.audio.volumenFondoFinalNormal;
     }
     return CONFIG.audio.volumenFondoNormal;
@@ -442,10 +374,5 @@ const AudioManager = {
       this.detenerTodosLosAudios();
       this.reproducirFondo();
     }
-  },
-
-  iniciarAudioNavidadConVideo() {
-    console.log("Iniciando audio navideño para el video...");
-    this.reproducirbackground_video();
   },
 };
