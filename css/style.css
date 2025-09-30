@@ -19,6 +19,7 @@ body {
   height: -webkit-fill-available;
   font-family: "Verlag-Light";
   color: #ffffff;
+  background-color: black;
   position: relative;
   z-index: 1;
   transition: background-image 0.8s ease, background-color 1s ease,
@@ -586,6 +587,7 @@ body {
 
 /* Contenedor principal del countdown */
 #countdown {
+  font-family: "Verlag-light";
   position: fixed;
   top: 50%;
   left: 50%;
@@ -595,6 +597,7 @@ body {
   align-items: center;
   gap: 2rem;
   z-index: 100;
+  background-color: black;
   width: auto;
   height: auto;
 }
@@ -638,7 +641,6 @@ body {
   font-size: 4rem;
   font-weight: bold;
   color: #ffffff;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
   margin-bottom: 0.5rem;
   min-width: 120px;
   text-align: center;
@@ -946,7 +948,7 @@ body {
   #hours,
   #minutes,
   #seconds {
-    font-size: 2.5rem;
+    font-size: 4rem;
     min-width: 80px;
   }
 
