@@ -83,14 +83,14 @@ body {
     inset 0 0 400px rgba(0, 0, 0, 0.85), inset 0 0 600px rgba(0, 0, 0, 0.95);
 }
 
-/* Overlay de transición */
+/* Overlay de transición - MODIFICADO para transición completamente negra */
 #fadeOverlay {
   position: fixed;
   inset: 0;
   background: #000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.8s ease;
   z-index: 9999;
 }
 
@@ -401,6 +401,15 @@ body {
   text-align: center;
   font-weight: 300;
   animation: fadeIn 1s ease-out 0.3s both;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+#intro .play-center .aviso-volumen .fullscreen-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+  opacity: 0.8;
 }
 
 /* ============================= */
@@ -728,6 +737,54 @@ body {
   width: 100%;
   height: 100vh;
   position: relative;
+  background: #000;
+}
+
+/* Ocultar controles del video completamente */
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Ocultar controles nativos del video */
+.video-container video::-webkit-media-controls {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.video-container video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+.video-container video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+.video-container video::-webkit-media-controls-play-button {
+  display: none !important;
+}
+
+.video-container video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
+/* Firefox */
+.video-container video::-moz-media-controls {
+  display: none !important;
+}
+
+/* IE/Edge */
+.video-container video::-ms-media-controls {
+  display: none !important;
+}
+
+/* Asegurar que el cursor esté oculto sobre el video */
+.video-container video {
+  cursor: none !important;
+  pointer-events: auto;
 }
 
 #video-play-overlay {
@@ -744,6 +801,12 @@ body {
   justify-content: center;
   cursor: pointer;
   z-index: 50;
+  transition: opacity 0.3s ease;
+}
+
+#video-play-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 #video-play-overlay::before {
@@ -795,31 +858,24 @@ body {
     width: 100%;
     padding: clamp(0.3rem, 0.8vw, 0.5rem);
   }
-}
 
-#final.active .controles {
-  position: relative;
-  bottom: auto;
-  width: 100%;
-  padding: clamp(0.5rem, 1vw, 1rem);
-}
+  #years,
+  #days,
+  #hours,
+  #minutes,
+  #seconds {
+    font-size: 3rem;
+    min-width: 100px;
+  }
 
-#years,
-#days,
-#hours,
-#minutes,
-#seconds {
-  font-size: 3rem;
-  min-width: 100px;
-}
+  .countdown-container {
+    gap: 1.2rem;
+  }
 
-.countdown-container {
-  gap: 1.2rem;
-}
-
-.countdown-unit .label {
-  font-size: 0.9rem;
-  letter-spacing: 1.5px;
+  .countdown-unit .label {
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+  }
 }
 
 /* Móviles */

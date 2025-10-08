@@ -38,6 +38,32 @@
 
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Estilos críticos inline para evitar FOUC -->
+    <style>
+      /* Ocultar contenido hasta que la app esté cargada */
+      body:not(.loaded) .section {
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+
+      body:not(.loaded) .vignette {
+        opacity: 0 !important;
+      }
+
+      /* Mostrar gradualmente cuando esté listo */
+      body.loaded .section {
+        transition: opacity 0.5s ease-in;
+      }
+
+      body.loaded .vignette {
+        transition: opacity 0.5s ease-in;
+      }
+    </style>
+
+    <!-- Preload critical images -->
+    <link rel="preload" as="image" href="./assets/img/intro-bg.png" />
+    <link rel="preload" as="image" href="./assets/img/decision-bg.png" />
   </head>
 
   <body>
@@ -63,9 +89,7 @@
           <button type="button"><pre>▶</pre></button>
           <p class="aviso-volumen">🔊 Sube el volumen antes de empezar</p>
         </div>
-
         <div class="acciones"></div>
-
         <audio id="audio-intro" preload="auto">
           <source src="assets/audio/intro.mp3" type="audio/mpeg" />
         </audio>
@@ -256,9 +280,8 @@
     <!-- Final Video Section -->
     <div id="final" class="section Final-section">
       <div class="video-container">
-        <video id="Final" preload="auto" playsinline>
+        <video id="Final" preload="metadata" playsinline>
           <source src="assets/video/Final.mp4" type="video/mp4" />
-
           Tu navegador no soporta el elemento video.
         </video>
         <div id="video-play-overlay"></div>
@@ -295,11 +318,9 @@
       </div>
       <div class="controles">
         <div class="replay-button"></div>
-        <!-- Audio de fondo final que se reproduce en countdown -->
         <audio id="audio-fondo-final" preload="auto" loop>
           <source src="assets/audio/background-final.mp3" type="audio/mpeg" />
         </audio>
-        <!-- Audio de narración para countdown (si existe) -->
         <audio id="audio-countdown" preload="auto">
           <source src="assets/audio/background-final.mp3" type="audio/mpeg" />
         </audio>
@@ -322,33 +343,27 @@
       </div>
     </div>
 
-    <!-- JavaScript modules -->
-
-    <!-- AGREGAR esta línea ANTES de los otros scripts -->
-    <script src="js/script.js"></script>
-    <script src="js/error-handler.js"></script>
-    <!-- Después de todos tus otros scripts, agregar TEMPORALMENTE -->
+    <!-- JavaScript modules - ORDEN CRÍTICO -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/preloader.js"></script>
     <script src="js/audio-manager.js"></script>
-    <script src="js/navigation.js"></script>
-    <!-- ESTE SE REEMPLAZA -->
     <script src="js/validation.js"></script>
-    <script src="js/content-manager.js"></script>
     <script src="js/countdown.js"></script>
-    <script src="js/main.js"></script>
-    <!-- ESTE SE ACTUALIZA -->
-    <script src="js/dev-tools.js"></script>
+    <script src="js/content-manager.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/script.js"></script>
 
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        try {
+      // Inicialización única y controlada
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
           App.init();
-          DevTools.init();
-        } catch (error) {
-          console.error("Error al inicializar la aplicación:", error);
-        }
-      });
+        });
+      } else {
+        App.init();
+      }
     </script>
   </body>
 </html>
