@@ -95,9 +95,15 @@ const SectionManager = {
     // Ocultar todas las secciones
     DOM.getAll(".section").forEach((s) => s.classList.remove("active"));
 
-    // Color de fondo
-    document.body.style.backgroundColor =
-      id === "intro" ? "#090a0f" : "#1a1a1a";
+    // Color de fondo - Negro total para countdown
+    if (id === "countdown") {
+      document.body.style.backgroundColor = "#000";
+      document.body.style.backgroundImage = "none";
+    } else if (id === "intro") {
+      document.body.style.backgroundColor = "#090a0f";
+    } else {
+      document.body.style.backgroundColor = "#1a1a1a";
+    }
 
     // Limpiar temporizador previo
     if (AppState.temporizadorBotonFinal) {
@@ -127,6 +133,9 @@ const SectionManager = {
       // CRÍTICO: Detener TODO antes de iniciar countdown
       AudioManager.detenerTodosLosAudios();
 
+      // Mantener pantalla completa en countdown
+      this._mantenerPantallaCompleta();
+
       // Esperar un momento antes de iniciar countdown
       setTimeout(() => {
         Countdown.init();
@@ -140,6 +149,86 @@ const SectionManager = {
     }
 
     this._manejarInicioSeccion(id, seccion, saltarAudio);
+  },
+
+  /**
+   * Mantiene la pantalla completa activa
+   */
+  _mantenerPantallaCompleta() {
+    // Si ya estamos en fullscreen, mantenerlo
+    if (
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement
+    ) {
+      console.log("✓ Pantalla completa mantenida en countdown");
+      return;
+    }
+
+    // Si no estamos en fullscreen, intentar activarlo de nuevo
+    console.log("Reactivando pantalla completa para countdown...");
+    this._activarPantallaCompletaExperiencia();
+  },
+
+  /**
+   * Activa pantalla completa para toda la experiencia
+   */
+  async _activarPantallaCompletaExperiencia() {
+    try {
+      const elemento = document.documentElement; // Todo el documento
+
+      // Móviles: webkit
+      if (elemento.webkitRequestFullscreen) {
+        await elemento.webkitRequestFullscreen();
+        console.log("✓ Experiencia en pantalla completa (webkit)");
+        return;
+      }
+
+      // Desktop estándar
+      if (elemento.requestFullscreen) {
+        await elemento.requestFullscreen();
+        console.log("✓ Experiencia en pantalla completa (estándar)");
+        return;
+      }
+
+      // Otros navegadores
+      if (elemento.mozRequestFullScreen) {
+        await elemento.mozRequestFullScreen();
+        console.log("✓ Experiencia en pantalla completa (moz)");
+        return;
+      }
+
+      if (elemento.msRequestFullscreen) {
+        await elemento.msRequestFullscreen();
+        console.log("✓ Experiencia en pantalla completa (ms)");
+        return;
+      }
+
+      console.log("Pantalla completa no disponible en este navegador");
+    } catch (error) {
+      console.warn("No se pudo activar pantalla completa:", error.message);
+      // Continuar la experiencia normalmente
+
+      // En móviles Android, forzar scroll para esconder barra de direcciones
+      this._esconderBarraDireccionesMovil();
+    }
+  },
+
+  /**
+   * Esconde la barra de direcciones en móviles mediante scroll
+   */
+  _esconderBarraDireccionesMovil() {
+    // Esta técnica funciona en la mayoría de navegadores móviles
+    setTimeout(() => {
+      window.scrollTo(0, 1);
+    }, 100);
+
+    // Repetir para asegurar
+    setTimeout(() => {
+      window.scrollTo(0, 1);
+    }, 500);
+
+    console.log("Intentando esconder barra de direcciones móvil");
   },
 
   /**
@@ -196,6 +285,9 @@ const SectionManager = {
    */
   _iniciarSeccionFinalConVideo(seccion, id) {
     console.log("Iniciando sección final con video...");
+
+    // CRÍTICO: Detener TODOS los audios antes del video
+    AudioManager.detenerTodosLosAudios();
 
     const videoContainer = seccion.querySelector(".video-container");
     const video = DOM.get("Final");
