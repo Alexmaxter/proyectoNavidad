@@ -6,14 +6,29 @@ const Countdown = {
   intervalo: null,
   revealTimers: [],
   initialized: false, // Para controlar el estado inicial
+  hasStartedOnce: false, // NUEVO: Prevenir reinicios
 
   /**
    * Inicializa la cuenta regresiva con una fecha objetivo
    * @param {Date} fechaObjetivo - Fecha objetivo para la cuenta regresiva
    */
   init(fechaObjetivo = CONFIG.textos.countdown.fechaCuentaRegresiva) {
+    // CRÍTICO: Si ya se inicializó una vez, no volver a iniciar animaciones
+    if (this.hasStartedOnce) {
+      console.log(
+        "⚠️ Countdown ya fue inicializado, solo actualizando valores"
+      );
+      this.fechaObjetivo = fechaObjetivo;
+      this.actualizar();
+      if (!this.intervalo) {
+        this.intervalo = setInterval(() => this.actualizar(), 1000);
+      }
+      return;
+    }
+
     this.fechaObjetivo = fechaObjetivo;
     this.initialized = false;
+    this.hasStartedOnce = true; // Marcar como iniciado
 
     // PRIMERO configurar todo oculto
     this.ocultarTodoInicialmente();
@@ -281,5 +296,6 @@ const Countdown = {
     this.revealTimers = [];
 
     this.initialized = false;
+    // NO resetear hasStartedOnce - mantener memoria de que ya se ejecutó
   },
 };

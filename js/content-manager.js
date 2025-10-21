@@ -3,7 +3,7 @@
 // =============================
 const ContentManager = {
   /**
-   * Renderiza el contenido de una sección específica
+   * Renderiza el contenido de una secciÃ³n especÃ­fica
    */
   render(id) {
     const seccion = DOM.get(id);
@@ -14,9 +14,9 @@ const ContentManager = {
       return;
     }
 
-    // Secciones especiales no necesitan renderizado estándar
+    // Secciones especiales no necesitan renderizado estÃ¡ndar
     if (id === "final" || id === "countdown") {
-      console.log(`Saltando renderizado para sección especial: ${id}`);
+      console.log(`Saltando renderizado para secciÃ³n especial: ${id}`);
       return;
     }
 
@@ -40,15 +40,15 @@ const ContentManager = {
     if (!acciones) return;
 
     if (datos.botones) {
-      // Múltiples botones
+      // MÃºltiples botones
       acciones.innerHTML = datos.botones
         .map((texto) => `<button type="button">${texto}</button>`)
         .join("");
     } else if (datos.boton) {
-      // Un solo botón
+      // Un solo botÃ³n
       acciones.innerHTML = `<button type="button">${datos.boton}</button>`;
     } else if (id.startsWith("explicacion")) {
-      // Botón siguiente
+      // BotÃ³n siguiente
       acciones.innerHTML = `<button type="button" class="siguiente">${
         CONFIG.mensajes.siguiente || "Siguiente"
       }</button>`;
@@ -63,10 +63,10 @@ const ContentManager = {
 // =============================
 const SectionManager = {
   /**
-   * Muestra una sección con transiciones optimizadas
+   * Muestra una secciÃ³n con transiciones optimizadas
    */
   async mostrar(id, saltarAudio = false) {
-    console.log(`Mostrando sección: ${id}, saltarAudio: ${saltarAudio}`);
+    console.log(`Mostrando secciÃ³n: ${id}, saltarAudio: ${saltarAudio}`);
 
     await this._transicionEntrada();
     this._prepararSeccion(id);
@@ -75,7 +75,7 @@ const SectionManager = {
   },
 
   /**
-   * Transición de entrada (fade in)
+   * TransiciÃ³n de entrada (fade in)
    */
   async _transicionEntrada() {
     const fadeOverlay = DOM.get("fadeOverlay");
@@ -89,7 +89,7 @@ const SectionManager = {
   },
 
   /**
-   * Prepara la nueva sección
+   * Prepara la nueva secciÃ³n
    */
   _prepararSeccion(id) {
     // Ocultar todas las secciones
@@ -113,13 +113,13 @@ const SectionManager = {
   },
 
   /**
-   * Activa la sección y maneja su lógica
+   * Activa la secciÃ³n y maneja su lÃ³gica
    */
   _activarSeccion(id, saltarAudio) {
     const seccion = DOM.get(id);
 
     if (!seccion) {
-      console.error(`Sección ${id} no encontrada`);
+      console.error(`SecciÃ³n ${id} no encontrada`);
       return;
     }
 
@@ -130,7 +130,7 @@ const SectionManager = {
 
     // Manejar countdown especial
     if (id === "countdown") {
-      // CRÍTICO: Detener TODO antes de iniciar countdown
+      // CRÃTICO: Detener TODO antes de iniciar countdown
       AudioManager.detenerTodosLosAudios();
 
       // Mantener pantalla completa en countdown
@@ -139,7 +139,7 @@ const SectionManager = {
       // Esperar un momento antes de iniciar countdown
       setTimeout(() => {
         Countdown.init();
-        // Iniciar audio del countdown después de inicializarlo
+        // Iniciar audio del countdown despuÃ©s de inicializarlo
         setTimeout(() => {
           AudioManager.reproducirNarracion("countdown");
         }, 500);
@@ -161,7 +161,7 @@ const SectionManager = {
       document.webkitFullscreenElement ||
       document.mozFullScreenElement
     ) {
-      console.log("✓ Pantalla completa mantenida en countdown");
+      console.log("âœ“ Pantalla completa mantenida en countdown");
       return;
     }
 
@@ -177,30 +177,30 @@ const SectionManager = {
     try {
       const elemento = document.documentElement; // Todo el documento
 
-      // Móviles: webkit
+      // MÃ³viles: webkit
       if (elemento.webkitRequestFullscreen) {
         await elemento.webkitRequestFullscreen();
-        console.log("✓ Experiencia en pantalla completa (webkit)");
+        console.log("âœ“ Experiencia en pantalla completa (webkit)");
         return;
       }
 
-      // Desktop estándar
+      // Desktop estÃ¡ndar
       if (elemento.requestFullscreen) {
         await elemento.requestFullscreen();
-        console.log("✓ Experiencia en pantalla completa (estándar)");
+        console.log("âœ“ Experiencia en pantalla completa (estÃ¡ndar)");
         return;
       }
 
       // Otros navegadores
       if (elemento.mozRequestFullScreen) {
         await elemento.mozRequestFullScreen();
-        console.log("✓ Experiencia en pantalla completa (moz)");
+        console.log("âœ“ Experiencia en pantalla completa (moz)");
         return;
       }
 
       if (elemento.msRequestFullscreen) {
         await elemento.msRequestFullscreen();
-        console.log("✓ Experiencia en pantalla completa (ms)");
+        console.log("âœ“ Experiencia en pantalla completa (ms)");
         return;
       }
 
@@ -209,16 +209,16 @@ const SectionManager = {
       console.warn("No se pudo activar pantalla completa:", error.message);
       // Continuar la experiencia normalmente
 
-      // En móviles Android, forzar scroll para esconder barra de direcciones
+      // En mÃ³viles Android, forzar scroll para esconder barra de direcciones
       this._esconderBarraDireccionesMovil();
     }
   },
 
   /**
-   * Esconde la barra de direcciones en móviles mediante scroll
+   * Esconde la barra de direcciones en mÃ³viles mediante scroll
    */
   _esconderBarraDireccionesMovil() {
-    // Esta técnica funciona en la mayoría de navegadores móviles
+    // Esta tÃ©cnica funciona en la mayorÃ­a de navegadores mÃ³viles
     setTimeout(() => {
       window.scrollTo(0, 1);
     }, 100);
@@ -228,11 +228,11 @@ const SectionManager = {
       window.scrollTo(0, 1);
     }, 500);
 
-    console.log("Intentando esconder barra de direcciones móvil");
+    console.log("Intentando esconder barra de direcciones mÃ³vil");
   },
 
   /**
-   * Transición de salida (fade out)
+   * TransiciÃ³n de salida (fade out)
    */
   async _transicionSalida() {
     setTimeout(() => {
@@ -245,7 +245,7 @@ const SectionManager = {
   },
 
   /**
-   * Maneja la lógica de inicio de cada sección
+   * Maneja la lÃ³gica de inicio de cada secciÃ³n
    */
   _manejarInicioSeccion(id, seccion, saltarAudio) {
     console.log(`Manejando inicio: ${id}`);
@@ -281,12 +281,12 @@ const SectionManager = {
   },
 
   /**
-   * Inicializa la sección final con video
+   * Inicializa la secciÃ³n final con video
    */
   _iniciarSeccionFinalConVideo(seccion, id) {
-    console.log("Iniciando sección final con video...");
+    console.log("Iniciando secciÃ³n final con video...");
 
-    // CRÍTICO: Detener TODOS los audios antes del video
+    // CRÃTICO: Detener TODOS los audios antes del video
     AudioManager.detenerTodosLosAudios();
 
     const videoContainer = seccion.querySelector(".video-container");
@@ -302,7 +302,7 @@ const SectionManager = {
     videoContainer.style.display = "block";
     videoContainer.style.opacity = "1";
 
-    // Reproducir video después de un delay
+    // Reproducir video despuÃ©s de un delay
     setTimeout(() => this._reproducirVideoFinal(id), 800);
 
     AppState.seccionesVisitadas.add(id);
@@ -321,9 +321,9 @@ const SectionManager = {
       return;
     }
 
-    // CRÍTICO: Verificar si ya está reproduciéndose
+    // CRÃTICO: Verificar si ya estÃ¡ reproduciÃ©ndose
     if (video._isPlaying) {
-      console.log("Video ya está reproduciéndose, evitando reinicio");
+      console.log("Video ya estÃ¡ reproduciÃ©ndose, evitando reinicio");
       return;
     }
 
@@ -334,7 +334,7 @@ const SectionManager = {
 
     console.log("Preparando video final...");
 
-    // Marcar como en reproducción
+    // Marcar como en reproducciÃ³n
     video._isPlaying = true;
 
     // Configurar video UNA SOLA VEZ
@@ -342,13 +342,13 @@ const SectionManager = {
     video.volume = CONFIG.audio.volumenNarracion;
     video.muted = false;
 
-    // NUEVO: Configurar atributos para móviles y ocultar controles
+    // NUEVO: Configurar atributos para mÃ³viles y ocultar controles
     video.setAttribute("playsinline", "true"); // Para iOS
     video.setAttribute("webkit-playsinline", "true"); // Para iOS antiguo
     video.removeAttribute("controls"); // Quitar controles nativos
     video.controls = false; // Asegurar que no hay controles
 
-    // Estilos del video - experiencia cinematográfica
+    // Estilos del video - experiencia cinematogrÃ¡fica
     video.style.width = "100%";
     video.style.height = "100%";
     video.style.objectFit = "cover";
@@ -383,7 +383,7 @@ const SectionManager = {
       return false;
     };
 
-    // Intentar reproducción
+    // Intentar reproducciÃ³n
     this._intentarReproduccionVideo(video, playOverlay);
   },
 
@@ -398,11 +398,11 @@ const SectionManager = {
       // Reproducir video
       await video.play();
 
-      console.log("✓ Video reproduciendo en pantalla completa");
+      console.log("âœ“ Video reproduciendo en pantalla completa");
       AppState.audioReproduciendo = true;
       AppState.audioActual = video;
     } catch (error) {
-      console.warn("Reproducción automática bloqueada:", error);
+      console.warn("ReproducciÃ³n automÃ¡tica bloqueada:", error);
       this._mostrarControlManualVideo(video, playOverlay);
     }
   },
@@ -412,33 +412,33 @@ const SectionManager = {
    */
   async _activarPantallaCompleta(video) {
     try {
-      // En móviles Android/iOS, usar webkitEnterFullscreen (específico para videos)
+      // En mÃ³viles Android/iOS, usar webkitEnterFullscreen (especÃ­fico para videos)
       if (video.webkitEnterFullscreen) {
         video.webkitEnterFullscreen();
-        console.log("✓ Pantalla completa móvil activada (webkit)");
+        console.log("âœ“ Pantalla completa mÃ³vil activada (webkit)");
         return;
       }
 
-      // En móviles modernos, usar webkitDisplayingFullscreen
+      // En mÃ³viles modernos, usar webkitDisplayingFullscreen
       if (video.webkitDisplayingFullscreen !== undefined) {
         video.webkitEnterFullscreen();
-        console.log("✓ Pantalla completa móvil activada");
+        console.log("âœ“ Pantalla completa mÃ³vil activada");
         return;
       }
 
-      // Desktop: Intentar fullscreen estándar en el video
+      // Desktop: Intentar fullscreen estÃ¡ndar en el video
       if (video.requestFullscreen) {
         await video.requestFullscreen();
-        console.log("✓ Pantalla completa desktop activada");
+        console.log("âœ“ Pantalla completa desktop activada");
       } else if (video.webkitRequestFullscreen) {
         await video.webkitRequestFullscreen();
-        console.log("✓ Pantalla completa webkit activada");
+        console.log("âœ“ Pantalla completa webkit activada");
       } else if (video.mozRequestFullScreen) {
         await video.mozRequestFullScreen();
-        console.log("✓ Pantalla completa moz activada");
+        console.log("âœ“ Pantalla completa moz activada");
       } else if (video.msRequestFullscreen) {
         await video.msRequestFullscreen();
-        console.log("✓ Pantalla completa ms activada");
+        console.log("âœ“ Pantalla completa ms activada");
       }
     } catch (error) {
       console.warn("No se pudo activar pantalla completa:", error);
@@ -467,7 +467,7 @@ const SectionManager = {
   },
 
   /**
-   * Inicia reproducción manual del video
+   * Inicia reproducciÃ³n manual del video
    */
   async _iniciarReproduccionManual(video, playOverlay) {
     try {
@@ -505,7 +505,7 @@ const SectionManager = {
       video.currentTime = 0;
       video._isPlaying = false;
 
-      // Salir de pantalla completa si está activa
+      // Salir de pantalla completa si estÃ¡ activa
       if (document.fullscreenElement) {
         try {
           await document.exitFullscreen();
@@ -518,10 +518,10 @@ const SectionManager = {
     AppState.audioReproduciendo = false;
     AppState.audioActual = null;
 
-    // CRÍTICO: Detener TODOS los audios antes de continuar
+    // CRÃTICO: Detener TODOS los audios antes de continuar
     AudioManager.detenerTodosLosAudios();
 
-    // Transición negra completa sin efectos de luz
+    // TransiciÃ³n negra completa sin efectos de luz
     const fadeOverlay = DOM.get("fadeOverlay");
     if (fadeOverlay) {
       fadeOverlay.style.backgroundColor = "#000";
@@ -529,13 +529,13 @@ const SectionManager = {
       fadeOverlay.style.transition = "opacity 0.8s ease";
     }
 
-    // Esperar a que la transición negra complete
+    // Esperar a que la transiciÃ³n negra complete
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     console.log("Navegando a countdown...");
     await Navigation.navigateTo("countdown");
 
-    // Fade out gradual después de mostrar countdown
+    // Fade out gradual despuÃ©s de mostrar countdown
     setTimeout(() => {
       if (fadeOverlay) {
         fadeOverlay.style.opacity = "0";
@@ -544,7 +544,7 @@ const SectionManager = {
   },
 
   /**
-   * Muestra botón de play
+   * Muestra botÃ³n de play
    */
   _mostrarBotonPlay(seccion) {
     const playCentro = seccion.querySelector(".play-center");
@@ -570,7 +570,7 @@ const SectionManager = {
   },
 
   /**
-   * Muestra sección directamente sin audio
+   * Muestra secciÃ³n directamente sin audio
    */
   _mostrarSeccionDirecta(seccion, id) {
     this._mostrarNarrativa(seccion);
@@ -582,7 +582,7 @@ const SectionManager = {
   },
 
   /**
-   * Inicia sección con audio
+   * Inicia secciÃ³n con audio
    */
   _iniciarSeccionConAudio(seccion, id) {
     // Mostrar narrativa inmediatamente
@@ -632,7 +632,7 @@ const SectionManager = {
   },
 
   /**
-   * Muestra controles después de audio
+   * Muestra controles despuÃ©s de audio
    */
   mostrarControles(id) {
     const { seccionActiva: seccion } = AppState;

@@ -156,6 +156,24 @@ body {
   }
 }
 
+@keyframes zoomBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* ============================= */
 /* CONTENEDOR PRINCIPAL */
 /* ============================= */
@@ -438,6 +456,20 @@ body {
   margin: clamp(0.5rem, 1vw, 1rem);
   min-width: 44px;
   min-height: 44px;
+  transform: scale(0);
+  opacity: 0;
+}
+
+.acciones.visible button {
+  animation: zoomBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.acciones.visible button:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.acciones.visible button:nth-child(2) {
+  animation-delay: 0.2s;
 }
 
 .acciones button:hover {
@@ -876,6 +908,78 @@ body {
     font-size: 0.9rem;
     letter-spacing: 1.5px;
   }
+
+  #final.active video {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  #final.active .controles {
+    position: relative;
+    bottom: auto;
+    width: 100%;
+    padding: clamp(0.5rem, 1vw, 1rem);
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+  .container {
+    padding-top: calc(clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-top));
+    padding-bottom: calc(
+      clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-bottom)
+    );
+    padding-left: calc(clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-left));
+    padding-right: calc(
+      clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-right)
+    );
+  }
+
+  .titulo h1 {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    padding: clamp(0.6rem, 1.5vw, 1rem);
+  }
+
+  .narrativa p {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+  }
+
+  #intro .play-center button {
+    font-size: clamp(1.5rem, 4.5vw, 2rem);
+  }
+
+  .acciones button {
+    font-size: clamp(1.2rem, 3.2vw, 1.6rem);
+    padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
+  }
+
+  #years,
+  #days,
+  #hours,
+  #minutes,
+  #seconds {
+    font-size: 4rem;
+    min-width: 80px;
+  }
+
+  .countdown-container {
+    gap: 1rem;
+  }
+
+  .countdown-unit .label {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+
+  .countdown-completed {
+    font-size: 1.5rem;
+  }
+
+  #final.active video {
+    width: 100%;
+    height: auto;
+  }
 }
 
 /* Móviles */
@@ -951,78 +1055,5 @@ body {
 
   .countdown-unit .label {
     font-size: 0.9rem;
-    letter-spacing: 1.5px;
-  }
-
-  #final.active video {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-  }
-
-  #final.active .controles {
-    position: relative;
-    bottom: auto;
-    width: 100%;
-    padding: clamp(0.5rem, 1vw, 1rem);
-  }
-}
-
-/* Móviles pequeños */
-@media (max-width: 480px) {
-  .container {
-    padding-top: calc(clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-top));
-    padding-bottom: calc(
-      clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-bottom)
-    );
-    padding-left: calc(clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-left));
-    padding-right: calc(
-      clamp(0.25rem, 1vw, 0.5rem) + env(safe-area-inset-right)
-    );
-  }
-
-  .titulo h1 {
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
-    padding: clamp(0.6rem, 1.5vw, 1rem);
-  }
-
-  .narrativa p {
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-  }
-
-  #intro .play-center button {
-    font-size: clamp(1.5rem, 4.5vw, 2rem);
-  }
-
-  .acciones button {
-    font-size: clamp(1.2rem, 3.2vw, 1.6rem);
-    padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.8rem, 2vw, 1.2rem);
-  }
-
-  #years,
-  #days,
-  #hours,
-  #minutes,
-  #seconds {
-    font-size: 4rem;
-    min-width: 80px;
-  }
-
-  .countdown-container {
-    gap: 1rem;
-  }
-
-  .countdown-unit .label {
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-  }
-
-  .countdown-completed {
-    font-size: 1.5rem;
-  }
-
-  #final.active video {
-    width: 100%;
-    height: auto;
   }
 }

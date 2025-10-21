@@ -9,8 +9,6 @@ const sectionBackgrounds = {
   explicacion1: "./assets/img/explicacion1-bg.png",
   explicacion2: "./assets/img/explicacion2-bg.png",
   explicacion3: "./assets/img/explicacion3-bg.png",
-  final: "assets/img/final-bg.jpg",
-  countdown: "assets/img/countdown-bg.jpg",
   final2: "assets/img/final2-bg.jpg",
 };
 

@@ -7,25 +7,25 @@ const CONFIG = {
     intro: {
       titulo: "¡Bienvenido Valentino!",
       narrativa:
-        "Ahhhh, lo hiciste.<br><br>Empujaste la bola de nieve. Y ahora ya está rodando.<br><br>¡Mírala! Tan pequeña… Pero las apariencias engañan, ¿no es cierto? Cada vuelta la alimenta, cada segundo la fortalece.<br><br>Es como si tuviera hambre… hambre de tiempo.<br><br>Esta no es una aventura de correr como loco, Valentino. No. Esta es una aventura de paciencia, de descubrir qué sucede cuando dejás que el tiempo haga su magia.<br><br>La bola de nieve rueda montaña abajo y ya duplicó su tamaño.<br>Prepárate para lo que viene.",
+        "Lo hiciste. Empujaste la bola de nieve. Ahí va, rodando montaña abajo, girando sobre sí misma. Todavía es pequeña, pero cada vuelta la alimenta. Cada segundo la fortalece. Es como si tuviera hambre... hambre de tiempo. Esta no es una aventura de correr como loco, Valentino. No no no... Esta es una aventura de espera, de descubrir qué sucede cuando dejás que el tiempo haga su magia. Prepárate para lo que viene.",
       boton: "Comenzar",
     },
     decision: {
       titulo: "La Gran Decisión",
       narrativa:
-        "Y aquí, en este preciso momento, el destino se bifurca como las ramas de un árbol retorcido.<br><br>El aire cambia. El viento trae dos voces distintas.<br><br>A tu izquierda, el primer sendero brilla como el oro bajo el sol. '¡Tómalo ahora!', grita. 'Tu regalo ya es tuyo. ¿Para qué esperar? El futuro es incierto. Disfruta hoy.' Podés ver, incluso, un cofre abierto que deja escapar destellos de luz. Es tentador. Muy tentador.<br><br>A tu derecha, el segundo sendero se pierde en la niebla. No hay cofres, ni promesas fáciles. Solo una voz más suave que susurra: 'Sigue rodando… Si confiás, tu bola de nieve crecerá más de lo que imaginas.'<br><br>Uno de los caminos te ofrece la gratificación inmediata. El otro, la paciencia de los sabios.<br><br>Y vos, Valentino… ¿qué tipo de viajero querés ser?<br><br>Recuerda: una vez que des un paso, no habrá retorno.",
+        "Y aquí, en este preciso momento, el destino se bifurca. A tu izquierda, el primer camino brilla como el oro. ¡Detén la bola ahora!, grita. Tu regalo ya es tuyo. ¿Para qué esperar? Es tentador. Muy tentador. A tu derecha, el segundo camino se pierde en la niebla. Solo una voz suave susurra: Déjala rodar... Si confías, crecerá más de lo que imaginas. Uno te ofrece la gratificación inmediata. El otro, algo mucho más grande. ¿Qué camino vas a elegir, Valentino? Recuerda: una vez que des un paso, no habrá retorno",
       botones: ["Camino Rápido", "Camino Paciente"],
     },
     confirmacion1: {
       titulo: "Primera Confirmación",
       narrativa:
-        "La bola de nieve se detiene. Brilla como una joya en la nieve, pequeña pero hermosa.<br><br>'¿Por qué esperar?', pregunta una vocecita en tu cabeza. 'A veces lo valioso está justo enfrente.'<br><br>Es tu decisión, Valentino. Si avanzás, la bola crecerá. Si la tomás ahora, el viaje será más corto, pero también tendrá su magia.",
+        "La bola se detiene a tus pies.<br>Brilla en la nieve,<br>lista para ser tomada.<br>Pero si escuchás con atención...<br>podés oír el eco de lo que pudo haber sido.<br>¿Estás seguro?",
       botones: ["Sí, quiero mi regalo ahora", "No, quiero seguir la aventura"],
     },
     confirmacion2: {
       titulo: "Segunda Confirmación",
       narrativa:
-        "Esta es tu última chance, Valentino. Si cerrás los ojos y escuchás, podés sentir que hay algo más grande esperándote, una aventura que se extiende más allá de lo que podés imaginar.<br><br>El aire mismo te susurra que hay secretos por descubrir, lecciones por aprender, magia por experimentar.<br><br>¿Estás completamente seguro de que querés que termine acá?",
+        "Última oportunidad, Valentino. Si la detenés ahora, la aventura termina aquí. Lo que viene después... nunca lo sabrás. ¿De verdad querés que termine acá?",
       botones: ["Sí, estoy seguro", "No, quiero volver"],
     },
     acertijo1: {
@@ -74,7 +74,7 @@ const CONFIG = {
     final2: {
       titulo: "Final",
       narrativa:
-        "Y así, la pequeña bola de nieve abrió sus secretos antes de tiempo. Cincuenta mil pesos brillan en tus manos como monedas de hada.<br><br>Es tuyo, Valentino. Una elección válida, un tesoro inmediato. La aventura pudo ser más larga, sí, pero no todos los caminos llevan a la misma montaña. Algunos terminan pronto, y aun así dejan luz en las manos.",
+        "La bola de nieve se quedó pequeña. Cincuenta mil pesos son tuyos. Un regalo real. Algo concreto en tus manos. Pero la montaña sigue ahí arriba, y la avalancha que pudo haber sido... solo existirá en tu imaginación. La aventura terminó antes de empezar.",
     },
     cartaFisica: {
       texto:
