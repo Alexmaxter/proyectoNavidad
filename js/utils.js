@@ -1,16 +1,12 @@
 // =============================
-// UTILIDADES GENERALES
+// UTILIDADES
 // =============================
 const Utils = {
   debounce(func, wait) {
     let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func.apply(this, args);
-      };
+    return function (...args) {
       clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
+      timeout = setTimeout(() => func.apply(this, args), wait);
     };
   },
 
@@ -23,32 +19,10 @@ const Utils = {
       .replace(/\s+/g, " "),
 
   lerp: (inicio, fin, t) => inicio + (fin - inicio) * t,
-
-  fadeAudio(elementoAudio, volumenInicio, volumenFin, duracion, callback) {
-    if (!elementoAudio) return callback?.();
-    const pasos = 30;
-    const tiempoPaso = duracion / pasos;
-    const cambio = (volumenFin - volumenInicio) / pasos;
-    let volumenActual = volumenInicio;
-    let conteo = 0;
-    const intervalo = setInterval(() => {
-      volumenActual = Math.max(0, Math.min(1, volumenActual + cambio));
-      elementoAudio.volume = volumenActual;
-      if (
-        ++conteo >= pasos ||
-        (cambio > 0 && volumenActual >= volumenFin) ||
-        (cambio < 0 && volumenActual <= volumenFin)
-      ) {
-        elementoAudio.volume = volumenFin;
-        clearInterval(intervalo);
-        callback?.();
-      }
-    }, tiempoPaso);
-  },
 };
 
 // =============================
-// CACHE DE REFERENCIAS DOM
+// CACHE DOM
 // =============================
 const DOM = (() => {
   const cache = {};
@@ -58,3 +32,70 @@ const DOM = (() => {
     clear: () => Object.keys(cache).forEach((key) => delete cache[key]),
   };
 })();
+
+// =============================
+// VALIDADOR DE RESPUESTAS
+// =============================
+const Validation = {
+  validarRespuesta(numeroAcertijo) {
+    const input = DOM.get(`respuesta${numeroAcertijo}`);
+    const error = DOM.get(`error${numeroAcertijo}`);
+    const datos = CONFIG.textos[`acertijo${numeroAcertijo}`];
+
+    if (!input || !error || !datos) {
+      console.warn(
+        `No se encontraron elementos para acertijo${numeroAcertijo}`
+      );
+      return;
+    }
+
+    const respuesta = Utils.normalizar(input.value);
+    const esVacio = !respuesta;
+    const esCorrecta =
+      !esVacio && this._esCorrecta(datos.respuestaCorrecta, respuesta);
+
+    this._limpiarEstados(error, input);
+
+    if (esVacio || !esCorrecta) {
+      this._mostrarError(error, input, esVacio);
+      return;
+    }
+
+    this._mostrarExito(input, numeroAcertijo);
+  },
+
+  _esCorrecta(tipo, respuesta) {
+    const validas = CONFIG.respuestasValidas[tipo];
+    return validas ? validas.includes(respuesta) : false;
+  },
+
+  _limpiarEstados(error, input) {
+    error.classList.remove("show");
+    input.classList.remove("input-correct", "input-incorrect", "shake");
+  },
+
+  _mostrarError(error, input, esVacio) {
+    const mensaje = esVacio
+      ? CONFIG.mensajes.errorVacio
+      : CONFIG.mensajes.erroresIncorrecto[
+          Math.floor(Math.random() * CONFIG.mensajes.erroresIncorrecto.length)
+        ];
+
+    error.textContent = mensaje;
+    error.classList.add("show");
+    input.classList.add("input-incorrect", "shake");
+
+    setTimeout(() => {
+      input.value = "";
+      input.classList.remove("input-incorrect", "shake");
+      error.classList.remove("show");
+    }, 3000);
+  },
+
+  _mostrarExito(input, numeroAcertijo) {
+    input.classList.add("input-correct");
+    setTimeout(() => {
+      Navigation.navigateTo(`explicacion${numeroAcertijo}`);
+    }, 800);
+  },
+};

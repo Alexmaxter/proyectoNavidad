@@ -1,16 +1,10 @@
 // =============================
-// MANEJADOR DE AUDIO SIMPLIFICADO
+// MANEJADOR DE AUDIO OPTIMIZADO
 // =============================
 const AudioManager = {
-  // State machine
-  state: "IDLE", // IDLE | PLAYING_BG | PLAYING_NARRATION
-
-  // Referencias
   audioFondo: null,
   audioFondoFinal: null,
   audiosNarracion: null,
-
-  // Control
   currentNarration: null,
   fadeIntervals: new Map(),
 
@@ -29,69 +23,53 @@ const AudioManager = {
     console.log("✓ AudioManager inicializado");
   },
 
-  /**
-   * Reproduce audio de fondo principal
-   */
   async reproducirFondo() {
-    if (!this.audioFondo || AppState.fondoIniciado) {
-      return;
-    }
+    if (!this.audioFondo || AppState.fondoIniciado) return;
 
     try {
       this.audioFondo.volume = 0;
       await this.audioFondo.play();
       AppState.fondoIniciado = true;
 
-      this._fadeAudio(
+      this._fade(
         this.audioFondo,
         0,
         CONFIG.audio.volumenFondoNormal,
         CONFIG.audio.duracionFadeIn
       );
-
       console.log("✓ Audio de fondo iniciado");
     } catch (error) {
       console.warn("Error iniciando audio de fondo:", error);
     }
   },
 
-  /**
-   * Reproduce audio de fondo final
-   */
   async reproducirFondoFinal() {
-    if (!this.audioFondoFinal || AppState.fondoFinalIniciado) {
-      return;
-    }
+    if (!this.audioFondoFinal || AppState.fondoFinalIniciado) return;
 
     try {
-      // Detener audio de fondo principal primero
-      await this._detenerAudioFondoPrincipal();
+      await this._stopMainBackground();
 
       this.audioFondoFinal.volume = 0;
       await this.audioFondoFinal.play();
       AppState.fondoFinalIniciado = true;
 
-      this._fadeAudio(
+      this._fade(
         this.audioFondoFinal,
         0,
         CONFIG.audio.volumenFondoFinalNormal,
         CONFIG.audio.duracionFadeIn
       );
-
       console.log("✓ Audio de fondo final iniciado");
     } catch (error) {
       console.warn("Error iniciando audio de fondo final:", error);
     }
   },
 
-  /**
-   * Detiene audio de fondo principal
-   */
-  async _detenerAudioFondoPrincipal() {
+  async _stopMainBackground() {
     if (!this.audioFondo || !AppState.fondoIniciado) return;
 
     return new Promise((resolve) => {
-      this._fadeAudio(
+      this._fade(
         this.audioFondo,
         this.audioFondo.volume,
         0,
@@ -106,14 +84,11 @@ const AudioManager = {
     });
   },
 
-  /**
-   * Detiene audio de fondo final
-   */
-  async _detenerAudioFondoFinal() {
+  async _stopFinalBackground() {
     if (!this.audioFondoFinal || !AppState.fondoFinalIniciado) return;
 
     return new Promise((resolve) => {
-      this._fadeAudio(
+      this._fade(
         this.audioFondoFinal,
         this.audioFondoFinal.volume,
         0,
@@ -128,139 +103,79 @@ const AudioManager = {
     });
   },
 
-  /**
-   * Detiene todos los audios
-   */
   detenerTodosLosAudios() {
     console.log("Deteniendo todos los audios");
     this.detenerNarraciones();
-    this._detenerAudioFondoPrincipal();
-    this._detenerAudioFondoFinal();
+    this._stopMainBackground();
+    this._stopFinalBackground();
   },
 
-  /**
-   * Salta la narración actual
-   */
   saltarSeccion() {
     if (!AppState.seccionActiva || !AppState.audioReproduciendo) return;
 
     this.detenerNarraciones();
     SectionManager.mostrarControles(AppState.seccionActiva.id);
-    this._mostrarFeedbackSalto();
+    this._showSkipFeedback();
   },
 
-  /**
-   * Muestra feedback visual al saltar
-   */
-  _mostrarFeedbackSalto() {
-    const skipFeedback = document.createElement("div");
-    skipFeedback.textContent = CONFIG.mensajes.saltarNarracion;
-    skipFeedback.className = "skip-feedback";
+  _showSkipFeedback() {
+    const feedback = document.createElement("div");
+    feedback.textContent = CONFIG.mensajes.saltarNarracion;
+    feedback.className = "skip-feedback";
 
-    document.body.appendChild(skipFeedback);
-    setTimeout(() => skipFeedback.classList.add("show"), 10);
+    document.body.appendChild(feedback);
+    setTimeout(() => feedback.classList.add("show"), 10);
     setTimeout(() => {
-      skipFeedback.classList.remove("show");
-      setTimeout(() => skipFeedback.remove(), 300);
+      feedback.classList.remove("show");
+      setTimeout(() => feedback.remove(), 300);
     }, 2000);
   },
 
-  /**
-   * Ajusta volumen de fondo con fade
-   */
-  fadeVolumenFondo(volumenObjetivo, seccionId = null) {
-    const esSeccionFinal = this._esSeccionConAudioFinalEspecifico(seccionId);
-    const audioActivo = esSeccionFinal ? this.audioFondoFinal : this.audioFondo;
-    const estadoActivo = esSeccionFinal
-      ? AppState.fondoFinalIniciado
-      : AppState.fondoIniciado;
-
-    if (!audioActivo) return;
-
-    // Si no está iniciado, iniciar primero
-    if (!estadoActivo) {
-      const metodoIniciar = esSeccionFinal
-        ? () => this.reproducirFondoFinal()
-        : () => this.reproducirFondo();
-
-      return metodoIniciar().then(() =>
-        this.fadeVolumenFondo(volumenObjetivo, seccionId)
-      );
-    }
-
-    // Ya está cerca del volumen objetivo
-    if (Math.abs(audioActivo.volume - volumenObjetivo) < 0.01) return;
-
-    this._fadeAudio(
-      audioActivo,
-      audioActivo.volume,
-      volumenObjetivo,
-      CONFIG.audio.duracionFade
-    );
-  },
-
-  /**
-   * Verifica si es sección con audio final
-   */
-  _esSeccionConAudioFinalEspecifico(seccionId) {
-    return ["final", "countdown", "final2"].includes(seccionId);
-  },
-
-  /**
-   * Reproduce narración de una sección
-   */
   async reproducirNarracion(id) {
-    console.log(`Reproduciendo narración: ${id}`);
+    console.log(`🔊 Reproduciendo narración: ${id}`);
 
-    // CRÍTICO: Nunca reproducir audio para la sección "final" (video)
+    // CRÍTICO: Nunca reproducir audio para video
     if (id === "final") {
-      console.log("Sección final es video, no reproducir narración");
+      console.log("Sección final es video, no hay narración");
       return;
     }
 
-    // Detener cualquier narración previa
+    // CRÍTICO: Prevenir doble reproducción del countdown
+    if (id === "countdown" && this.currentNarration?.id === `audio-${id}`) {
+      console.log("⚠️ Audio de countdown ya reproduciéndose, ignorando");
+      return;
+    }
+
     this.detenerNarraciones();
-
-    // Iniciar audio de fondo apropiado
-    await this._iniciarAudioFondoApropiado(id);
-
-    // Reproducir audio de la sección
-    await this._reproducirAudioSeccion(id);
+    await this._startAppropriateBackground(id);
+    await this._playSection(id);
   },
 
-  /**
-   * Inicia el audio de fondo apropiado para la sección
-   */
-  async _iniciarAudioFondoApropiado(id) {
-    const esSeccionFinal = this._esSeccionConAudioFinalEspecifico(id);
+  async _startAppropriateBackground(id) {
+    const isFinal = ["final", "countdown"].includes(id);
 
-    if (esSeccionFinal) {
-      if (!AppState.fondoFinalIniciado) {
-        await this.reproducirFondoFinal();
-      }
+    if (isFinal) {
+      if (!AppState.fondoFinalIniciado) await this.reproducirFondoFinal();
     } else {
-      if (!AppState.fondoIniciado) {
-        await this.reproducirFondo();
-      }
+      if (!AppState.fondoIniciado) await this.reproducirFondo();
     }
   },
 
-  /**
-   * Reproduce el audio específico de una sección
-   */
-  async _reproducirAudioSeccion(id) {
-    // Bajar volumen de fondo
-    const volumenFondo = this._obtenerVolumenFondoDuranteNarracion(id);
-    this._fadeAudioRapido(volumenFondo, id);
+  async _playSection(id) {
+    const bgVolume = this._getBackgroundVolume(id);
+    this._quickFade(bgVolume, id);
 
     const audio = DOM.get(`audio-${id}`);
 
     if (!audio) {
       console.warn(`Audio para ${id} no encontrado`);
-      // Esperar un poco antes de mostrar controles
-      setTimeout(() => {
-        SectionManager.mostrarControles(id);
-      }, 1000);
+      setTimeout(() => SectionManager.mostrarControles(id), 1000);
+      return;
+    }
+
+    // CRÍTICO: Verificar si ya está reproduciéndose
+    if (!audio.paused && audio.currentTime > 0) {
+      console.log(`⚠️ Audio ${id} ya está reproduciéndose, ignorando`);
       return;
     }
 
@@ -269,17 +184,14 @@ const AudioManager = {
       audio.volume = CONFIG.audio.volumenNarracion;
       AppState.audioReproduciendo = true;
 
-      const finalizarAudio = () => this._finalizarAudio(id);
+      const finish = () => this._finishAudio(id);
 
-      // Limpiar listeners previos
       audio.onended = null;
       audio.onerror = null;
-
-      // Configurar nuevos listeners
-      audio.onended = finalizarAudio;
+      audio.onended = finish;
       audio.onerror = (error) => {
         console.warn(`Error reproduciendo audio ${id}:`, error);
-        finalizarAudio();
+        finish();
       };
 
       await audio.play();
@@ -289,32 +201,26 @@ const AudioManager = {
       console.log(`✓ Narración ${id} reproduciendo`);
     } catch (error) {
       console.warn(`Error al intentar reproducir audio ${id}:`, error);
-      this._finalizarAudio(id);
+      this._finishAudio(id);
     }
   },
 
-  /**
-   * Fade rápido para transiciones
-   */
-  _fadeAudioRapido(volumenObjetivo, id) {
-    const audioActivo = this._obtenerAudioFondoActivo(id);
-    if (!audioActivo) return;
+  _quickFade(targetVolume, id) {
+    const activeBg = this._getActiveBackground(id);
+    if (!activeBg) return;
 
-    this._fadeAudio(
-      audioActivo,
-      audioActivo.volume,
-      volumenObjetivo,
+    this._fade(
+      activeBg,
+      activeBg.volume,
+      targetVolume,
       CONFIG.audio.duracionFadeRapido
     );
   },
 
-  /**
-   * Obtiene el audio de fondo activo
-   */
-  _obtenerAudioFondoActivo(id) {
-    const esSeccionFinal = this._esSeccionConAudioFinalEspecifico(id);
+  _getActiveBackground(id) {
+    const isFinal = ["final", "countdown"].includes(id);
 
-    if (esSeccionFinal && AppState.fondoFinalIniciado) {
+    if (isFinal && AppState.fondoFinalIniciado) {
       return this.audioFondoFinal;
     } else if (AppState.fondoIniciado) {
       return this.audioFondo;
@@ -323,37 +229,31 @@ const AudioManager = {
     return null;
   },
 
-  /**
-   * Obtiene el volumen de fondo apropiado durante narración
-   */
-  _obtenerVolumenFondoDuranteNarracion(id) {
-    const volumenesEspeciales = {
+  _getBackgroundVolume(id) {
+    const special = {
       final: CONFIG.audio.volumenFondoMudo,
       final2: CONFIG.audio.volumenFondoMudo,
       countdown: CONFIG.audio.volumenFondoMudo,
     };
 
-    return volumenesEspeciales[id] !== undefined
-      ? volumenesEspeciales[id]
+    return special[id] !== undefined
+      ? special[id]
       : CONFIG.audio.volumenFondoBajo;
   },
 
-  /**
-   * Finaliza la reproducción de audio
-   */
-  _finalizarAudio(id) {
+  _finishAudio(id) {
     AppState.audioReproduciendo = false;
     AppState.audioActual = null;
     this.currentNarration = null;
 
-    const volumenObjetivo = this._obtenerVolumenNormalParaSeccion(id);
-    const audioActivo = this._obtenerAudioFondoActivo(id);
+    const targetVolume = this._getNormalVolume(id);
+    const activeBg = this._getActiveBackground(id);
 
-    if (audioActivo) {
-      this._fadeAudio(
-        audioActivo,
-        audioActivo.volume,
-        volumenObjetivo,
+    if (activeBg) {
+      this._fade(
+        activeBg,
+        activeBg.volume,
+        targetVolume,
         CONFIG.audio.duracionFadeIn
       );
     }
@@ -361,41 +261,30 @@ const AudioManager = {
     SectionManager.mostrarControles(id);
   },
 
-  /**
-   * Obtiene el volumen normal para una sección
-   */
-  _obtenerVolumenNormalParaSeccion(id) {
-    if (this._esSeccionConAudioFinalEspecifico(id)) {
-      return CONFIG.audio.volumenFondoFinalNormal;
-    }
-    return CONFIG.audio.volumenFondoNormal;
+  _getNormalVolume(id) {
+    return ["final", "countdown"].includes(id)
+      ? CONFIG.audio.volumenFondoFinalNormal
+      : CONFIG.audio.volumenFondoNormal;
   },
 
-  /**
-   * Detiene todas las narraciones
-   */
   detenerNarraciones() {
     console.log("Deteniendo narraciones");
 
-    // Detener todos los audios de narración
     this.audiosNarracion.forEach((audio) => {
       if (!audio.paused) {
         audio.pause();
         audio.currentTime = 0;
-        // Limpiar eventos
         audio.onended = null;
         audio.onerror = null;
       }
     });
 
-    // Si hay un video reproduciéndose, detenerlo también
     if (AppState.audioActual) {
       if (AppState.audioActual.tagName === "VIDEO") {
         AppState.audioActual.pause();
         AppState.audioActual.currentTime = 0;
         AppState.audioActual._isPlaying = false;
       } else if (AppState.audioActual.tagName === "AUDIO") {
-        // Es un audio de narración
         if (!AppState.audioActual.paused) {
           AppState.audioActual.pause();
           AppState.audioActual.currentTime = 0;
@@ -412,76 +301,62 @@ const AudioManager = {
     console.log("✓ Narraciones detenidas");
   },
 
-  /**
-   * Función de fade mejorada con limpieza de intervalos
-   */
-  _fadeAudio(elementoAudio, volumenInicio, volumenFin, duracion, callback) {
-    if (!elementoAudio) {
+  _fade(audio, start, end, duration, callback) {
+    if (!audio) {
       callback?.();
       return;
     }
 
-    // Limpiar fade anterior si existe
-    const fadeKey = elementoAudio.id || "unnamed";
-    if (this.fadeIntervals.has(fadeKey)) {
-      clearInterval(this.fadeIntervals.get(fadeKey));
+    const key = audio.id || "unnamed";
+    if (this.fadeIntervals.has(key)) {
+      clearInterval(this.fadeIntervals.get(key));
     }
 
-    const pasos = Math.max(20, Math.min(50, duracion / 20));
-    const tiempoPaso = duracion / pasos;
-    const cambio = (volumenFin - volumenInicio) / pasos;
-    let volumenActual = volumenInicio;
-    let conteo = 0;
+    const steps = Math.max(20, Math.min(50, duration / 20));
+    const stepTime = duration / steps;
+    const change = (end - start) / steps;
+    let current = start;
+    let count = 0;
 
-    const intervalo = setInterval(() => {
-      volumenActual = Math.max(0, Math.min(1, volumenActual + cambio));
-      elementoAudio.volume = volumenActual;
+    const interval = setInterval(() => {
+      current = Math.max(0, Math.min(1, current + change));
+      audio.volume = current;
+      count++;
 
-      conteo++;
+      const done =
+        count >= steps ||
+        (change > 0 && current >= end) ||
+        (change < 0 && current <= end);
 
-      const completado =
-        conteo >= pasos ||
-        (cambio > 0 && volumenActual >= volumenFin) ||
-        (cambio < 0 && volumenActual <= volumenFin);
-
-      if (completado) {
-        elementoAudio.volume = Math.max(0, Math.min(1, volumenFin));
-        clearInterval(intervalo);
-        this.fadeIntervals.delete(fadeKey);
+      if (done) {
+        audio.volume = Math.max(0, Math.min(1, end));
+        clearInterval(interval);
+        this.fadeIntervals.delete(key);
         callback?.();
       }
-    }, tiempoPaso);
+    }, stepTime);
 
-    this.fadeIntervals.set(fadeKey, intervalo);
+    this.fadeIntervals.set(key, interval);
   },
 
-  /**
-   * Maneja transición entre secciones
-   */
-  manejarTransicionSeccion(seccionAnterior, seccionNueva) {
-    console.log(`Transición audio: ${seccionAnterior} → ${seccionNueva}`);
+  manejarTransicionSeccion(anterior, nueva) {
+    console.log(`Transición audio: ${anterior} → ${nueva}`);
 
-    const esTransicionAFinal = ["final", "countdown"].includes(seccionNueva);
-    const esTransicionDesdeFinal = ["final", "countdown"].includes(
-      seccionAnterior
-    );
+    const toFinal = ["final", "countdown"].includes(nueva);
+    const fromFinal = ["final", "countdown"].includes(anterior);
 
-    if (esTransicionAFinal && !esTransicionDesdeFinal) {
-      if (seccionNueva === "final") {
+    if (toFinal && !fromFinal) {
+      if (nueva === "final") {
         console.log("Transición a final - NO iniciar audio (video lo maneja)");
-        // No iniciar audio aquí
       } else {
         this.reproducirFondoFinal();
       }
-    } else if (!esTransicionAFinal && esTransicionDesdeFinal) {
+    } else if (!toFinal && fromFinal) {
       this.detenerTodosLosAudios();
       this.reproducirFondo();
     }
   },
 
-  /**
-   * Limpia todos los intervalos de fade
-   */
   cleanup() {
     this.fadeIntervals.forEach((interval) => clearInterval(interval));
     this.fadeIntervals.clear();

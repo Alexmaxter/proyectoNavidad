@@ -1,5 +1,5 @@
 // =============================
-// ROUTER UNIFICADO Y OPTIMIZADO
+// ROUTER OPTIMIZADO
 // =============================
 class Router {
   constructor() {
@@ -9,14 +9,9 @@ class Router {
       isTransitioning: false,
       queue: [],
     };
-
     this.initialized = false;
-    this.transitionLock = null;
   }
 
-  /**
-   * Inicializa el router
-   */
   init() {
     if (this.initialized) {
       console.warn("Router ya inicializado");
@@ -25,134 +20,107 @@ class Router {
 
     console.log("Inicializando Router...");
 
-    // Event listeners
-    window.addEventListener("hashchange", (e) => this._handleHashChange(e), {
+    window.addEventListener("hashchange", (e) => this._onHashChange(e), {
       passive: true,
     });
-    window.addEventListener("popstate", (e) => this._handlePopState(e), {
+    window.addEventListener("popstate", (e) => this._onPopState(e), {
       passive: true,
     });
 
-    // Establecer ruta inicial
-    this.state.current = this._getCurrentSectionFromURL();
+    this.state.current = this._getSectionFromURL();
 
-    // Procesar ruta inicial después de que el DOM esté listo
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () =>
-        this._handleInitialRoute()
+        this._handleInitial()
       );
     } else {
-      setTimeout(() => this._handleInitialRoute(), 0);
+      setTimeout(() => this._handleInitial(), 0);
     }
 
     this.initialized = true;
     console.log("✓ Router inicializado");
   }
 
-  /**
-   * Maneja la ruta inicial
-   */
-  async _handleInitialRoute() {
+  async _handleInitial() {
     const section = this.state.current || "intro";
 
-    if (!this._isValidSection(section)) {
-      console.warn(
-        `Sección inicial "${section}" no válida, redirigiendo a intro`
-      );
+    if (!this._isValid(section)) {
+      console.warn(`Sección inicial "${section}" no válida`);
       await this.navigateTo("intro", { replace: true });
       return;
     }
 
-    console.log(`Procesando ruta inicial: ${section}`);
+    console.log(`Ruta inicial: ${section}`);
     await this._transition(section, { isInitial: true });
   }
 
-  /**
-   * Maneja cambios en el hash
-   */
-  _handleHashChange(event) {
+  _onHashChange(event) {
     event.preventDefault();
-    const newSection = this._getCurrentSectionFromURL();
+    const section = this._getSectionFromURL();
 
-    // Evitar procesar la misma ruta múltiples veces
-    if (newSection === this.state.current && !this.state.isTransitioning) {
-      console.log("Misma sección, ignorando cambio");
+    if (section === this.state.current && !this.state.isTransitioning) {
+      console.log("Misma sección, ignorando");
       return;
     }
 
-    this._processRoute(newSection);
-  }
-
-  /**
-   * Maneja popstate (botón atrás/adelante)
-   */
-  _handlePopState(event) {
-    console.log("PopState detectado");
-    const section = this._getCurrentSectionFromURL();
     this._processRoute(section);
   }
 
-  /**
-   * Procesa una ruta (con cola de espera)
-   */
+  _onPopState(event) {
+    console.log("PopState detectado");
+    const section = this._getSectionFromURL();
+    this._processRoute(section);
+  }
+
   async _processRoute(sectionId) {
-    if (!this._isValidSection(sectionId)) {
+    if (!this._isValid(sectionId)) {
       console.error(`Sección "${sectionId}" no válida`);
       await this.navigateTo("intro", { replace: true });
       return;
     }
 
-    // Si estamos en transición, encolar
     if (this.state.isTransitioning) {
-      console.log(`Encolando ruta: ${sectionId}`);
+      console.log(`Encolando: ${sectionId}`);
       this.state.queue.push(sectionId);
       return;
     }
 
-    // Procesar transición
     await this._transition(sectionId);
   }
 
-  /**
-   * Ejecuta la transición a una nueva sección
-   */
   async _transition(sectionId, options = {}) {
     const { isInitial = false } = options;
 
-    // Lock de transición
     if (this.state.isTransitioning) {
-      console.warn("Transición ya en progreso, esperando...");
+      console.warn("⚠️ Transición ya en progreso, ignorando");
+      return;
+    }
+
+    // CRÍTICO: Si ya estamos en esta sección, NO hacer nada
+    if (this.state.current === sectionId && !isInitial) {
+      console.log(`✓ Ya estamos en ${sectionId}, ignorando transición`);
       return;
     }
 
     try {
       this.state.isTransitioning = true;
-      this.transitionLock = Date.now();
-
       console.log(
         `🔄 Transición: ${this.state.current || "ninguna"} → ${sectionId}`
       );
 
-      // Guardar estado anterior
       this.state.previous = this.state.current;
+      const skipAudio = this._shouldSkipAudio(sectionId, isInitial);
 
-      // Determinar si saltar audio
-      const shouldSkipAudio = this._shouldSkipAudio(sectionId, isInitial);
-
-      // CRÍTICO: Precargar recursos de la sección ANTES de mostrarla
+      // Precargar recursos
       if (sectionId === "final") {
-        await this._prepareVideoSection();
+        await this._prepareVideo();
       } else {
         await Preloader.preloadSectionAssets(sectionId);
       }
 
-      // Actualizar estado actual
       this.state.current = sectionId;
+      await SectionManager.mostrar(sectionId, skipAudio);
 
-      // Ejecutar transición visual
-      await SectionManager.mostrar(sectionId, shouldSkipAudio);
-
-      // Manejar transición de audio
       if (this.state.previous && this.state.previous !== sectionId) {
         AudioManager.manejarTransicionSeccion(this.state.previous, sectionId);
       }
@@ -161,79 +129,52 @@ class Router {
     } catch (error) {
       console.error(`Error en transición a ${sectionId}:`, error);
 
-      // Recuperación: intentar ir a intro
       if (sectionId !== "intro") {
         console.log("Recuperación: navegando a intro");
-        this.state.current = this.state.previous; // Restaurar estado
+        this.state.current = this.state.previous;
         await this.navigateTo("intro", { replace: true });
       }
     } finally {
       this.state.isTransitioning = false;
-      this.transitionLock = null;
-
-      // Procesar cola
       this._processQueue();
     }
   }
 
-  /**
-   * Preparación especial para la sección de video
-   */
-  async _prepareVideoSection() {
-    console.log("🎬 Preparando sección de video...");
+  async _prepareVideo() {
+    console.log("🎬 Preparando video...");
 
     try {
-      // Intentar precargar el video
       const video = await Preloader.preloadVideo("Final");
-
-      if (!video) {
-        throw new Error("Video no disponible");
-      }
-
-      console.log("✓ Video listo para reproducir");
+      if (!video) throw new Error("Video no disponible");
+      console.log("✓ Video listo");
     } catch (error) {
-      console.warn("⚠️ Video no disponible, saltando a countdown:", error);
-
-      // Si el video falla, ir directo a countdown
+      console.warn("⚠️ Video no disponible:", error);
       await this.navigateTo("countdown", { replace: true });
-      throw error; // Cancelar transición a 'final'
+      throw error;
     }
   }
 
-  /**
-   * Procesa la cola de rutas pendientes
-   */
   _processQueue() {
     if (this.state.queue.length > 0) {
-      const nextRoute = this.state.queue.shift();
-      console.log(`Procesando siguiente en cola: ${nextRoute}`);
-
-      // Pequeño delay para evitar transiciones muy rápidas
-      setTimeout(() => this._processRoute(nextRoute), 100);
+      const next = this.state.queue.shift();
+      console.log(`Procesando cola: ${next}`);
+      setTimeout(() => this._processRoute(next), 100);
     }
   }
 
-  /**
-   * Navega a una sección específica
-   * @param {string} sectionId - ID de la sección
-   * @param {Object} options - Opciones de navegación
-   * @returns {Promise<void>}
-   */
   async navigateTo(sectionId, options = {}) {
     const { replace = false, force = false } = options;
 
-    // Validaciones
     if (!sectionId || typeof sectionId !== "string") {
       console.error("navigateTo: sectionId inválido");
       return Promise.reject(new Error("Invalid sectionId"));
     }
 
-    if (!this._isValidSection(sectionId)) {
+    if (!this._isValid(sectionId)) {
       console.error(`navigateTo: Sección "${sectionId}" no existe`);
       return Promise.reject(new Error(`Section ${sectionId} does not exist`));
     }
 
-    // Evitar navegación redundante
     if (
       !force &&
       sectionId === this.state.current &&
@@ -243,14 +184,9 @@ class Router {
       return Promise.resolve();
     }
 
-    console.log(
-      `🧭 navigateTo: ${sectionId} (replace: ${replace}, force: ${force})`
-    );
+    console.log(`🧭 navigateTo: ${sectionId} (replace: ${replace})`);
 
-    // Limpiar cola si es navegación forzada
-    if (force) {
-      this.state.queue = [];
-    }
+    if (force) this.state.queue = [];
 
     return new Promise((resolve, reject) => {
       try {
@@ -267,7 +203,6 @@ class Router {
             window.location.hash = sectionId;
             resolve();
           } else {
-            // Hash no cambió pero necesitamos navegar
             setTimeout(
               () => this._processRoute(sectionId).then(resolve).catch(reject),
               0
@@ -281,9 +216,6 @@ class Router {
     });
   }
 
-  /**
-   * Navega basándose en la configuración de rutas
-   */
   navegarPorPosicion(seccionId, botonIndex) {
     const destino = CONFIG.navegacion[seccionId]?.[botonIndex];
 
@@ -298,9 +230,6 @@ class Router {
     return this.navigateTo(destino);
   }
 
-  /**
-   * Maneja clicks en botones de acción
-   */
   manejarClickBoton(boton, seccion) {
     const botones = [...seccion.querySelectorAll(".acciones button")];
     const indice = botones.indexOf(boton);
@@ -313,29 +242,21 @@ class Router {
     return this.navegarPorPosicion(seccion.id, indice);
   }
 
-  /**
-   * Maneja botones especiales (play, replay, etc.)
-   */
   manejarBotonEspecial(target, seccion) {
     try {
-      // Botón de play
       if (target.closest(".play-center button")) {
-        this._manejarBotonPlay(seccion);
+        this._handlePlay(seccion);
         return true;
       }
 
-      // Botón de replay
       if (target.closest(".replay-button button")) {
         AudioManager.reproducirNarracion(seccion.id);
         return true;
       }
 
-      // Botón de enviar (acertijos)
       if (target.closest(".send-button")) {
         const numero = seccion.id.match(/^acertijo(\d+)$/)?.[1];
-        if (numero) {
-          Validation.validarRespuesta(+numero);
-        }
+        if (numero) Validation.validarRespuesta(+numero);
         return true;
       }
 
@@ -346,10 +267,7 @@ class Router {
     }
   }
 
-  /**
-   * Maneja el botón de play en intro
-   */
-  _manejarBotonPlay(seccion) {
+  _handlePlay(seccion) {
     const playCentro = seccion.querySelector(".play-center");
     if (playCentro) {
       playCentro.style.display = "none";
@@ -362,61 +280,33 @@ class Router {
     AudioManager.reproducirFondo()
       .then(() => {
         AudioManager.reproducirNarracion(seccion.id);
-        SectionManager._mostrarNarrativa(seccion);
+        SectionManager._showNarrativa(seccion);
       })
-      .catch((error) => {
-        console.error("Error iniciando audio:", error);
-      });
+      .catch((error) => console.error("Error iniciando audio:", error));
   }
 
-  /**
-   * Continúa desde una explicación
-   */
-  continuarDesdeExplicacion(numeroExplicacion) {
-    console.log(`Continuando desde explicacion${numeroExplicacion}`);
-
+  continuarDesdeExplicacion(num) {
+    console.log(`Continuando desde explicacion${num}`);
     const destinos = { 1: "acertijo2", 2: "acertijo3", 3: "final" };
-    const destino = destinos[numeroExplicacion];
+    const destino = destinos[num];
 
     if (!destino) {
-      console.error(`No hay destino para explicacion${numeroExplicacion}`);
+      console.error(`No hay destino para explicacion${num}`);
       return false;
     }
 
     return this.navigateTo(destino);
   }
 
-  /**
-   * Determina si debe saltar el audio
-   */
   _shouldSkipAudio(sectionId, isInitial = false) {
-    // Navegación inicial desde URL (excepto intro)
-    if (isInitial && sectionId !== "intro") {
-      return true;
-    }
-
-    // Intro sin play clickeado
-    if (sectionId === "intro" && !AppState.playClickeado) {
-      return true;
-    }
-
-    // Sección ya visitada
-    if (AppState.seccionesVisitadas.has(sectionId)) {
-      return true;
-    }
-
-    // Navegación directa sin contexto
-    if (!AppState.playClickeado && sectionId !== "intro") {
-      return true;
-    }
-
+    if (isInitial && sectionId !== "intro") return true;
+    if (sectionId === "intro" && !AppState.playClickeado) return true;
+    if (AppState.seccionesVisitadas.has(sectionId)) return true;
+    if (!AppState.playClickeado && sectionId !== "intro") return true;
     return false;
   }
 
-  /**
-   * Valida si una sección existe
-   */
-  _isValidSection(sectionId) {
+  _isValid(sectionId) {
     return (
       sectionId &&
       typeof sectionId === "string" &&
@@ -425,52 +315,29 @@ class Router {
     );
   }
 
-  /**
-   * Obtiene la sección actual desde la URL
-   */
-  _getCurrentSectionFromURL() {
-    const hash = window.location.hash.slice(1);
-    return hash || "intro";
+  _getSectionFromURL() {
+    return window.location.hash.slice(1) || "intro";
   }
 
-  /**
-   * Obtiene el estado actual del router
-   */
   getState() {
     return {
       current: this.state.current,
       previous: this.state.previous,
       isTransitioning: this.state.isTransitioning,
       queueLength: this.state.queue.length,
-      initialized: this.initialized,
     };
   }
 
-  /**
-   * Resetea el router (útil para testing)
-   */
   reset() {
     this.state.isTransitioning = false;
     this.state.queue = [];
-    this.transitionLock = null;
-  }
-
-  /**
-   * Destruye el router
-   */
-  destroy() {
-    window.removeEventListener("hashchange", this._handleHashChange);
-    window.removeEventListener("popstate", this._handlePopState);
-    this.reset();
-    this.initialized = false;
-    console.log("Router destruido");
   }
 }
 
-// Instancia única del router
+// Instancia única
 const router = new Router();
 
-// Export compatible con código existente
+// Export compatible
 const Navigation = {
   init: () => router.init(),
   navigateTo: (...args) => router.navigateTo(...args),
@@ -480,8 +347,5 @@ const Navigation = {
   continuarDesdeExplicacion: (...args) =>
     router.continuarDesdeExplicacion(...args),
   getState: () => router.getState(),
-  isValidSection: (id) => router._isValidSection(id),
-
-  // Referencia directa al router
   router: router,
 };

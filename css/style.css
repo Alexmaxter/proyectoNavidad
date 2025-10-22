@@ -66,7 +66,6 @@ body {
       rgba(0, 0, 0, 0.5) 90%,
       rgba(0, 0, 0, 0.7) 100%
     );
-  background-color: #090a0f;
 }
 
 /* Viñeta */
@@ -623,7 +622,7 @@ body {
 }
 
 /* =============================
-   COUNTDOWN CSS COMPLETO
+   COUNTDOWN CSS CON EFECTO GLITCH
    ============================= */
 
 /* Contenedor principal del countdown */
@@ -659,18 +658,25 @@ body {
   opacity: 0;
   transform: translateY(30px) scale(0.8);
   transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: relative;
 }
 
-/* Estado cuando la unidad está siendo revelada */
+/* Estado cuando la unidad está siendo revelada - EFECTO GLITCH */
 .countdown-unit.revealing {
   opacity: 1;
   transform: translateY(0) scale(1);
+  animation: glitchReveal 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* Estado cuando la unidad ya fue revelada */
 .countdown-unit.revealed {
   opacity: 1;
   transform: translateY(0) scale(1);
+}
+
+/* Estado cuando un elemento nuevo aparece y afecta a los revelados anteriormente */
+.countdown-unit.revealed.glitch-affected {
+  animation: glitchAffected 0.4s ease-out;
 }
 
 /* Los números del countdown */
@@ -686,6 +692,88 @@ body {
   min-width: 120px;
   text-align: center;
   transition: transform 0.15s ease-out;
+  position: relative;
+}
+
+/* Etiquetas de texto (años, días, horas, etc.) */
+.countdown-unit .label {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+/* =============================
+   COUNTDOWN CSS CON EFECTO GLITCH
+   ============================= */
+
+/* Contenedor principal del countdown */
+#countdown {
+  font-family: "Verlag-light";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  z-index: 100;
+  background-color: black;
+  width: auto;
+  height: auto;
+}
+
+/* Contenedor de todas las unidades */
+.countdown-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Cada unidad individual (años, días, horas, etc.) */
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(30px) scale(0.8);
+  transition: none;
+  position: relative;
+}
+
+/* Estado cuando la unidad está siendo revelada - EFECTO GLITCH VIOLENTO */
+.countdown-unit.revealing {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: glitchRevealViolent 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Estado cuando la unidad ya fue revelada */
+.countdown-unit.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Estado cuando un elemento nuevo aparece y afecta a los revelados anteriormente */
+.countdown-unit.revealed.glitch-affected {
+  animation: glitchAffectedViolent 0.5s ease-out;
+}
+
+/* Los números del countdown */
+#years,
+#days,
+#hours,
+#minutes,
+#seconds {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  min-width: 120px;
+  text-align: center;
+  position: relative;
 }
 
 /* Etiquetas de texto (años, días, horas, etc.) */
@@ -697,32 +785,214 @@ body {
   text-align: center;
 }
 
-/* Efecto especial para años cuando se revelan */
-.countdown-unit.years-special-effect {
-  animation: specialYearsEffect 2s ease-out;
-}
+/* ============================= */
+/* ANIMACIONES GLITCH VIOLENTAS */
+/* ============================= */
 
-/* Animación especial para la revelación de años */
-@keyframes specialYearsEffect {
+/* Animación de revelación con efecto glitch VIOLENTO */
+@keyframes glitchRevealViolent {
   0% {
-    transform: scale(1);
-    filter: brightness(1);
+    opacity: 0;
+    transform: translateY(50px) scale(0.5) translateX(0) skewX(0deg);
+    filter: blur(20px) brightness(3) saturate(0);
+    text-shadow: none;
+  }
+  5% {
+    opacity: 0.2;
+    transform: translateY(40px) scale(0.6) translateX(-40px) skewX(-15deg);
+    filter: blur(15px) brightness(3.5) saturate(2);
+    text-shadow: -20px 0 0 rgba(255, 0, 0, 1), 20px 0 0 rgba(0, 255, 255, 1);
+  }
+  10% {
+    opacity: 0.4;
+    transform: translateY(30px) scale(0.7) translateX(35px) skewX(20deg);
+    filter: blur(12px) brightness(4) saturate(3) hue-rotate(90deg);
+    text-shadow: 25px 0 0 rgba(255, 0, 0, 1), -25px 0 0 rgba(0, 255, 255, 1),
+      0 15px 0 rgba(0, 255, 0, 0.8);
+  }
+  15% {
+    opacity: 0.3;
+    transform: translateY(25px) scale(1.3) translateX(-30px) skewX(-25deg);
+    filter: blur(10px) brightness(2) saturate(5) contrast(3);
+    text-shadow: -30px 0 0 rgba(255, 0, 0, 1), 30px 0 0 rgba(0, 255, 255, 1),
+      15px -10px 0 rgba(255, 255, 0, 1);
+  }
+  20% {
+    opacity: 0.6;
+    transform: translateY(20px) scale(0.4) translateX(45px) skewX(30deg);
+    filter: blur(18px) brightness(5) saturate(2) invert(0.3);
+    text-shadow: 40px 0 0 rgba(255, 0, 0, 1), -40px 0 0 rgba(0, 255, 255, 1);
   }
   25% {
-    transform: scale(1.05);
-    filter: brightness(1.3) drop-shadow(0 0 30px rgba(255, 255, 255, 0.8));
+    opacity: 0.5;
+    transform: translateY(15px) scale(1.5) translateX(-25px) skewX(-10deg);
+    filter: blur(8px) brightness(3.5) saturate(4) contrast(2);
+    text-shadow: -35px 0 0 rgba(255, 0, 0, 1), 35px 0 0 rgba(0, 255, 255, 1),
+      0 20px 0 rgba(255, 0, 255, 0.9);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translateY(10px) scale(0.8) translateX(38px) skewX(18deg);
+    filter: blur(14px) brightness(4) saturate(3) hue-rotate(180deg);
+    text-shadow: 28px 0 0 rgba(255, 0, 0, 1), -28px 0 0 rgba(0, 255, 255, 1);
+  }
+  35% {
+    opacity: 0.4;
+    transform: translateY(8px) scale(1.2) translateX(-42px) skewX(-22deg);
+    filter: blur(11px) brightness(2.5) saturate(5) contrast(4);
+    text-shadow: -32px 0 0 rgba(255, 0, 0, 1), 32px 0 0 rgba(0, 255, 255, 1),
+      -15px 12px 0 rgba(0, 255, 0, 1);
+  }
+  40% {
+    opacity: 0.8;
+    transform: translateY(5px) scale(0.9) translateX(22px) skewX(12deg);
+    filter: blur(9px) brightness(3) saturate(2);
+    text-shadow: 18px 0 0 rgba(255, 0, 0, 0.9), -18px 0 0 rgba(0, 255, 255, 0.9);
+  }
+  45% {
+    opacity: 0.6;
+    transform: translateY(3px) scale(1.1) translateX(-18px) skewX(-8deg);
+    filter: blur(7px) brightness(2.2) saturate(3) contrast(2);
+    text-shadow: -22px 0 0 rgba(255, 0, 0, 0.9), 22px 0 0 rgba(0, 255, 255, 0.9);
   }
   50% {
-    transform: scale(1.1);
-    filter: brightness(1.5) drop-shadow(0 0 40px rgba(255, 255, 255, 1));
+    opacity: 0.85;
+    transform: translateY(2px) scale(0.95) translateX(15px) skewX(6deg);
+    filter: blur(6px) brightness(1.8) saturate(2);
+    text-shadow: 12px 0 0 rgba(255, 0, 0, 0.8), -12px 0 0 rgba(0, 255, 255, 0.8);
+  }
+  55% {
+    opacity: 0.9;
+    transform: translateY(1px) scale(1.05) translateX(-12px) skewX(-5deg);
+    filter: blur(5px) brightness(1.5) saturate(1.5);
+    text-shadow: -10px 0 0 rgba(255, 0, 0, 0.7), 10px 0 0 rgba(0, 255, 255, 0.7);
+  }
+  60% {
+    opacity: 0.92;
+    transform: translateY(0) scale(1) translateX(8px) skewX(3deg);
+    filter: blur(4px) brightness(1.3) saturate(1.3);
+    text-shadow: 8px 0 0 rgba(255, 0, 0, 0.6), -8px 0 0 rgba(0, 255, 255, 0.6);
+  }
+  65% {
+    opacity: 0.95;
+    transform: translateY(0) scale(1.02) translateX(-6px) skewX(-2deg);
+    filter: blur(3px) brightness(1.2);
+    text-shadow: -6px 0 0 rgba(255, 0, 0, 0.5), 6px 0 0 rgba(0, 255, 255, 0.5);
+  }
+  70% {
+    opacity: 0.97;
+    transform: translateY(0) scale(1) translateX(4px) skewX(1deg);
+    filter: blur(2px) brightness(1.1);
+    text-shadow: 4px 0 0 rgba(255, 0, 0, 0.4), -4px 0 0 rgba(0, 255, 255, 0.4);
   }
   75% {
-    transform: scale(1.05);
-    filter: brightness(1.3) drop-shadow(0 0 30px rgba(255, 255, 255, 0.8));
+    opacity: 0.98;
+    transform: translateY(0) scale(1) translateX(-3px) skewX(-1deg);
+    filter: blur(1.5px) brightness(1.05);
+    text-shadow: -3px 0 0 rgba(255, 0, 0, 0.3), 3px 0 0 rgba(0, 255, 255, 0.3);
+  }
+  80% {
+    opacity: 0.99;
+    transform: translateY(0) scale(1) translateX(2px) skewX(0.5deg);
+    filter: blur(1px) brightness(1.02);
+    text-shadow: 2px 0 0 rgba(255, 0, 0, 0.2), -2px 0 0 rgba(0, 255, 255, 0.2);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateX(-1px) skewX(0deg);
+    filter: blur(0.5px) brightness(1.01);
+    text-shadow: -1px 0 0 rgba(255, 0, 0, 0.1), 1px 0 0 rgba(0, 255, 255, 0.1);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateX(0) skewX(0deg);
+    filter: blur(0px) brightness(1);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+  }
+  95% {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateX(0) skewX(0deg);
+    filter: brightness(1);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
   }
   100% {
-    transform: scale(1);
+    opacity: 1;
+    transform: translateY(0) scale(1) translateX(0) skewX(0deg);
     filter: brightness(1);
+    text-shadow: none;
+  }
+}
+
+/* Animación cuando un nuevo elemento afecta a los ya revelados - MÁS VIOLENTA */
+@keyframes glitchAffectedViolent {
+  0% {
+    transform: translateX(0) scale(1) skewX(0deg);
+    filter: brightness(1);
+    text-shadow: none;
+  }
+  8% {
+    transform: translateX(-25px) scale(0.92) skewX(-12deg);
+    filter: brightness(2.5) saturate(3);
+    text-shadow: -15px 0 0 rgba(255, 0, 0, 0.9), 15px 0 0 rgba(0, 255, 255, 0.9);
+  }
+  16% {
+    transform: translateX(28px) scale(1.08) skewX(15deg);
+    filter: brightness(3) saturate(4) hue-rotate(90deg);
+    text-shadow: 20px 0 0 rgba(255, 0, 0, 1), -20px 0 0 rgba(0, 255, 255, 1),
+      0 10px 0 rgba(0, 255, 0, 0.8);
+  }
+  24% {
+    transform: translateX(-22px) scale(0.95) skewX(-10deg);
+    filter: brightness(2) saturate(5) contrast(3);
+    text-shadow: -18px 0 0 rgba(255, 0, 0, 0.95),
+      18px 0 0 rgba(0, 255, 255, 0.95);
+  }
+  32% {
+    transform: translateX(18px) scale(1.05) skewX(8deg);
+    filter: brightness(2.2) saturate(3);
+    text-shadow: 12px 0 0 rgba(255, 0, 0, 0.85),
+      -12px 0 0 rgba(0, 255, 255, 0.85);
+  }
+  40% {
+    transform: translateX(-15px) scale(0.98) skewX(-6deg);
+    filter: brightness(1.8) saturate(2);
+    text-shadow: -10px 0 0 rgba(255, 0, 0, 0.75),
+      10px 0 0 rgba(0, 255, 255, 0.75);
+  }
+  48% {
+    transform: translateX(12px) scale(1.03) skewX(4deg);
+    filter: brightness(1.6) saturate(1.8);
+    text-shadow: 8px 0 0 rgba(255, 0, 0, 0.65), -8px 0 0 rgba(0, 255, 255, 0.65);
+  }
+  56% {
+    transform: translateX(-9px) scale(0.99) skewX(-3deg);
+    filter: brightness(1.4) saturate(1.5);
+    text-shadow: -6px 0 0 rgba(255, 0, 0, 0.55), 6px 0 0 rgba(0, 255, 255, 0.55);
+  }
+  64% {
+    transform: translateX(6px) scale(1.01) skewX(2deg);
+    filter: brightness(1.3) saturate(1.3);
+    text-shadow: 5px 0 0 rgba(255, 0, 0, 0.45), -5px 0 0 rgba(0, 255, 255, 0.45);
+  }
+  72% {
+    transform: translateX(-4px) scale(1) skewX(-1deg);
+    filter: brightness(1.2);
+    text-shadow: -4px 0 0 rgba(255, 0, 0, 0.35), 4px 0 0 rgba(0, 255, 255, 0.35);
+  }
+  80% {
+    transform: translateX(2px) scale(1) skewX(0.5deg);
+    filter: brightness(1.1);
+    text-shadow: 2px 0 0 rgba(255, 0, 0, 0.25), -2px 0 0 rgba(0, 255, 255, 0.25);
+  }
+  88% {
+    transform: translateX(-1px) scale(1) skewX(0deg);
+    filter: brightness(1.05);
+    text-shadow: -1px 0 0 rgba(255, 0, 0, 0.15), 1px 0 0 rgba(0, 255, 255, 0.15);
+  }
+  100% {
+    transform: translateX(0) scale(1) skewX(0deg);
+    filter: brightness(1);
+    text-shadow: none;
   }
 }
 
@@ -959,7 +1229,7 @@ body {
   #hours,
   #minutes,
   #seconds {
-    font-size: 4rem;
+    font-size: 2.5rem;
     min-width: 80px;
   }
 

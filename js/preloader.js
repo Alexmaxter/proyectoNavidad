@@ -1,5 +1,5 @@
 // =============================
-// SISTEMA DE PRECARGA DE RECURSOS
+// PRECARGA DE RECURSOS
 // =============================
 const Preloader = {
   cache: {
@@ -15,11 +15,6 @@ const Preloader = {
     errors: 0,
   },
 
-  /**
-   * Precarga una imagen y la cachea
-   * @param {string} src - URL de la imagen
-   * @returns {Promise<HTMLImageElement>}
-   */
   async preloadImage(src) {
     if (this.cache.images.has(src)) {
       return this.cache.images.get(src);
@@ -27,25 +22,23 @@ const Preloader = {
 
     return new Promise((resolve, reject) => {
       const img = new Image();
-
-      // Timeout para evitar esperas infinitas
       const timeout = setTimeout(() => {
-        console.warn(`⏱️ Timeout cargando imagen: ${src}`);
+        console.warn(`⏱️ Timeout imagen: ${src}`);
         reject(new Error(`Image timeout: ${src}`));
-      }, 15000); // 15 segundos
+      }, 15000);
 
       img.onload = () => {
         clearTimeout(timeout);
         this.cache.images.set(src, img);
         this.stats.imagesLoaded++;
-        console.log(`✓ Imagen precargada: ${src}`);
+        console.log(`✓ Imagen: ${src}`);
         resolve(img);
       };
 
       img.onerror = (error) => {
         clearTimeout(timeout);
         this.stats.errors++;
-        console.warn(`✗ Error cargando imagen: ${src}`, error);
+        console.warn(`✗ Error imagen: ${src}`);
         reject(error);
       };
 
@@ -53,16 +46,11 @@ const Preloader = {
     });
   },
 
-  /**
-   * Precarga múltiples imágenes en paralelo
-   * @param {string[]} sources - Array de URLs
-   * @returns {Promise<HTMLImageElement[]>}
-   */
   async preloadImages(sources) {
     console.log(`Precargando ${sources.length} imágenes...`);
 
     const promises = sources.map((src) =>
-      this.preloadImage(src).catch((err) => {
+      this.preloadImage(src).catch(() => {
         console.warn(`Imagen opcional no cargada: ${src}`);
         return null;
       })
@@ -76,25 +64,18 @@ const Preloader = {
     return results.filter(Boolean);
   },
 
-  /**
-   * Precarga un video COMPLETAMENTE antes de usarlo
-   * @param {string} videoId - ID del elemento video en el DOM
-   * @returns {Promise<HTMLVideoElement>}
-   */
   async preloadVideo(videoId) {
     if (this.cache.videos.has(videoId)) {
       return this.cache.videos.get(videoId);
     }
 
     const video = document.getElementById(videoId);
-
     if (!video) {
-      throw new Error(`Video con id "${videoId}" no encontrado`);
+      throw new Error(`Video "${videoId}" no encontrado`);
     }
 
-    // Verificar si ya está cargado
     if (video.readyState >= 3) {
-      console.log(`✓ Video ${videoId} ya estaba cargado`);
+      console.log(`✓ Video ${videoId} ya cargado`);
       this.cache.videos.set(videoId, video);
       return video;
     }
@@ -104,9 +85,9 @@ const Preloader = {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         cleanup();
-        console.warn(`⏱️ Timeout precargando video: ${videoId}`);
+        console.warn(`⏱️ Timeout video: ${videoId}`);
         reject(new Error(`Video timeout: ${videoId}`));
-      }, 10000); // 10 segundos timeout
+      }, 10000);
 
       const cleanup = () => {
         clearTimeout(timeout);
@@ -118,47 +99,36 @@ const Preloader = {
         cleanup();
         this.cache.videos.set(videoId, video);
         this.stats.videosLoaded++;
-        console.log(
-          `✓ Video precargado: ${videoId} (readyState: ${video.readyState})`
-        );
+        console.log(`✓ Video: ${videoId} (readyState: ${video.readyState})`);
         resolve(video);
       };
 
       const handleError = (error) => {
         cleanup();
         this.stats.errors++;
-        console.error(`✗ Error precargando video: ${videoId}`, error);
+        console.error(`✗ Error video: ${videoId}`, error);
         reject(error);
       };
 
       video.addEventListener("canplaythrough", handleSuccess, { once: true });
       video.addEventListener("error", handleError, { once: true });
-
-      // Forzar carga
       video.load();
     });
   },
 
-  /**
-   * Precarga un audio
-   * @param {string} audioId - ID del elemento audio en el DOM
-   * @returns {Promise<HTMLAudioElement>}
-   */
   async preloadAudio(audioId) {
     if (this.cache.audios.has(audioId)) {
       return this.cache.audios.get(audioId);
     }
 
     const audio = document.getElementById(audioId);
-
     if (!audio) {
-      console.warn(`Audio con id "${audioId}" no encontrado`);
+      console.warn(`Audio "${audioId}" no encontrado`);
       return null;
     }
 
-    // Verificar si ya está cargado
     if (audio.readyState >= 2) {
-      console.log(`✓ Audio ${audioId} ya estaba cargado`);
+      console.log(`✓ Audio ${audioId} ya cargado`);
       this.cache.audios.set(audioId, audio);
       return audio;
     }
@@ -168,11 +138,9 @@ const Preloader = {
     return new Promise((resolve) => {
       const timeout = setTimeout(() => {
         cleanup();
-        console.warn(
-          `⏱️ Timeout precargando audio: ${audioId} (continuando sin él)`
-        );
+        console.warn(`⏱️ Timeout audio: ${audioId}`);
         resolve(null);
-      }, 5000); // 5 segundos timeout
+      }, 5000);
 
       const cleanup = () => {
         clearTimeout(timeout);
@@ -184,28 +152,22 @@ const Preloader = {
         cleanup();
         this.cache.audios.set(audioId, audio);
         this.stats.audiosLoaded++;
-        console.log(`✓ Audio precargado: ${audioId}`);
+        console.log(`✓ Audio: ${audioId}`);
         resolve(audio);
       };
 
-      const handleError = (error) => {
+      const handleError = () => {
         cleanup();
-        console.warn(`✗ Error precargando audio: ${audioId}`, error);
-        resolve(null); // No rechazar, solo resolver con null
+        console.warn(`✗ Error audio: ${audioId}`);
+        resolve(null);
       };
 
       audio.addEventListener("canplay", handleSuccess, { once: true });
       audio.addEventListener("error", handleError, { once: true });
-
       audio.load();
     });
   },
 
-  /**
-   * Precarga múltiples audios en paralelo
-   * @param {string[]} audioIds - Array de IDs de audio
-   * @returns {Promise<HTMLAudioElement[]>}
-   */
   async preloadAudios(audioIds) {
     console.log(`Precargando ${audioIds.length} audios...`);
 
@@ -215,25 +177,15 @@ const Preloader = {
     console.log(
       `✓ ${this.stats.audiosLoaded}/${audioIds.length} audios cargados`
     );
-
     return results.filter(Boolean);
   },
 
-  /**
-   * Verifica si un video está listo para reproducir
-   * @param {string} videoId - ID del video
-   * @returns {boolean}
-   */
   isVideoReady(videoId) {
     const video =
       this.cache.videos.get(videoId) || document.getElementById(videoId);
     return video && video.readyState >= 3;
   },
 
-  /**
-   * Obtiene estadísticas de precarga
-   * @returns {Object}
-   */
   getStats() {
     return {
       ...this.stats,
@@ -243,51 +195,15 @@ const Preloader = {
     };
   },
 
-  /**
-   * Limpia la caché de recursos
-   */
   clearCache() {
     this.cache.images.clear();
     this.cache.videos.clear();
     this.cache.audios.clear();
-    console.log("🧹 Caché de preloader limpiada");
+    console.log("🧹 Caché limpiada");
   },
 
-  /**
-   * Precarga recursos críticos al inicio de la aplicación
-   * @returns {Promise<void>}
-   */
-  async preloadCriticalAssets() {
-    console.log("=== PRECARGANDO RECURSOS CRÍTICOS ===");
-
-    const criticalImages = [
-      "./assets/img/intro-bg.png",
-      "./assets/img/decision-bg.png",
-    ];
-
-    const criticalAudios = ["audio-fondo", "audio-intro"];
-
-    try {
-      await Promise.allSettled([
-        this.preloadImages(criticalImages),
-        this.preloadAudios(criticalAudios),
-      ]);
-
-      console.log("✓ Recursos críticos precargados");
-      console.log("Estadísticas:", this.getStats());
-    } catch (error) {
-      console.error("Error en precarga crítica:", error);
-      // No bloquear la aplicación por errores de precarga
-    }
-  },
-
-  /**
-   * Precarga recursos de una sección específica bajo demanda
-   * @param {string} sectionId - ID de la sección
-   * @returns {Promise<void>}
-   */
   async preloadSectionAssets(sectionId) {
-    const sectionBackgrounds = {
+    const backgrounds = {
       intro: "./assets/img/intro-bg.png",
       decision: "./assets/img/decision-bg.png",
       confirmacion1: "./assets/img/confirmacion1-bg.jpg",
@@ -298,29 +214,23 @@ const Preloader = {
       explicacion1: "./assets/img/explicacion1-bg.png",
       explicacion2: "./assets/img/explicacion2-bg.png",
       explicacion3: "./assets/img/explicacion3-bg.png",
-      final: "assets/img/final-bg.jpg",
-      countdown: "assets/img/countdown-bg.jpg",
-      final2: "assets/img/final2-bg.jpg",
+      final: "./assets/img/final-bg.jpg",
+      countdown: "./assets/img/countdown-bg.jpg",
+      final2: "./assets/img/final2-bg.jpg",
     };
 
-    const bgImage = sectionBackgrounds[sectionId];
+    const bg = backgrounds[sectionId];
     const audioId = `audio-${sectionId}`;
-
     const promises = [];
 
-    if (bgImage) {
-      promises.push(this.preloadImage(bgImage));
-    }
-
-    if (document.getElementById(audioId)) {
+    if (bg) promises.push(this.preloadImage(bg));
+    if (document.getElementById(audioId))
       promises.push(this.preloadAudio(audioId));
-    }
 
-    // Precarga especial para la sección final (video)
     if (sectionId === "final") {
       promises.push(
-        this.preloadVideo("Final").catch((err) => {
-          console.warn("Video final no disponible, se saltará");
+        this.preloadVideo("Final").catch(() => {
+          console.warn("Video final no disponible");
           return null;
         })
       );

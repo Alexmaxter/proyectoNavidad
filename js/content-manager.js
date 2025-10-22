@@ -1,10 +1,7 @@
 // =============================
-// GESTOR DE CONTENIDO Y SECCIONES UNIFICADO
+// GESTOR DE CONTENIDO
 // =============================
 const ContentManager = {
-  /**
-   * Renderiza el contenido de una secciÃ³n especÃ­fica
-   */
   render(id) {
     const seccion = DOM.get(id);
     const datos = CONFIG.textos[id];
@@ -14,9 +11,8 @@ const ContentManager = {
       return;
     }
 
-    // Secciones especiales no necesitan renderizado estÃ¡ndar
     if (id === "final" || id === "countdown") {
-      console.log(`Saltando renderizado para secciÃ³n especial: ${id}`);
+      console.log(`Saltando renderizado para: ${id}`);
       return;
     }
 
@@ -40,18 +36,13 @@ const ContentManager = {
     if (!acciones) return;
 
     if (datos.botones) {
-      // MÃºltiples botones
       acciones.innerHTML = datos.botones
         .map((texto) => `<button type="button">${texto}</button>`)
         .join("");
     } else if (datos.boton) {
-      // Un solo botÃ³n
       acciones.innerHTML = `<button type="button">${datos.boton}</button>`;
     } else if (id.startsWith("explicacion")) {
-      // BotÃ³n siguiente
-      acciones.innerHTML = `<button type="button" class="siguiente">${
-        CONFIG.mensajes.siguiente || "Siguiente"
-      }</button>`;
+      acciones.innerHTML = `<button type="button" class="siguiente">Siguiente</button>`;
     } else {
       acciones.innerHTML = "";
     }
@@ -62,450 +53,268 @@ const ContentManager = {
 // GESTOR DE SECCIONES
 // =============================
 const SectionManager = {
-  /**
-   * Muestra una secciÃ³n con transiciones optimizadas
-   */
   async mostrar(id, saltarAudio = false) {
-    console.log(`Mostrando secciÃ³n: ${id}, saltarAudio: ${saltarAudio}`);
+    console.log(`Mostrando sección: ${id}`);
 
-    await this._transicionEntrada();
-    this._prepararSeccion(id);
-    this._activarSeccion(id, saltarAudio);
-    await this._transicionSalida();
+    await this._fadeIn();
+    this._prepare(id);
+    this._activate(id, saltarAudio);
+    await this._fadeOut();
   },
 
-  /**
-   * TransiciÃ³n de entrada (fade in)
-   */
-  async _transicionEntrada() {
-    const fadeOverlay = DOM.get("fadeOverlay");
-    if (fadeOverlay) {
-      fadeOverlay.style.opacity = "1";
-      fadeOverlay.style.transition = "opacity 0.4s ease";
+  async _fadeIn() {
+    const overlay = DOM.get("fadeOverlay");
+    if (overlay) {
+      overlay.style.opacity = "1";
+      overlay.style.transition = "opacity 0.4s ease";
     }
-
     AudioManager.detenerNarraciones();
     await new Promise((r) => setTimeout(r, 400));
   },
 
-  /**
-   * Prepara la nueva secciÃ³n
-   */
-  _prepararSeccion(id) {
-    // Ocultar todas las secciones
+  _prepare(id) {
     DOM.getAll(".section").forEach((s) => s.classList.remove("active"));
 
-    // Color de fondo - Negro total para countdown
+    // Background
     if (id === "countdown") {
       document.body.style.backgroundColor = "#000";
       document.body.style.backgroundImage = "none";
     } else if (id === "intro") {
-      document.body.style.backgroundColor = "#090a0f";
+      document.body.style.backgroundColor = "#000";
     } else {
-      document.body.style.backgroundColor = "#1a1a1a";
+      document.body.style.backgroundColor = "#000";
     }
 
-    // Limpiar temporizador previo
     if (AppState.temporizadorBotonFinal) {
       clearTimeout(AppState.temporizadorBotonFinal);
       AppState.temporizadorBotonFinal = null;
     }
   },
 
-  /**
-   * Activa la secciÃ³n y maneja su lÃ³gica
-   */
-  _activarSeccion(id, saltarAudio) {
+  _activate(id, saltarAudio) {
     const seccion = DOM.get(id);
-
     if (!seccion) {
-      console.error(`SecciÃ³n ${id} no encontrada`);
+      console.error(`Sección ${id} no encontrada`);
       return;
     }
 
     ContentManager.render(id);
-    this._ocultarControles(seccion);
+    this._hideControls(seccion);
     seccion.classList.add("active");
     AppState.seccionActiva = seccion;
 
-    // Manejar countdown especial
+    // Countdown especial - SOLO inicializar UNA VEZ
     if (id === "countdown") {
-      // CRÃTICO: Detener TODO antes de iniciar countdown
+      console.log("📍 Activando sección countdown");
+
+      // CRÍTICO: Detener TODO antes de iniciar countdown
       AudioManager.detenerTodosLosAudios();
 
-      // Mantener pantalla completa en countdown
-      this._mantenerPantallaCompleta();
+      // Destruir countdown previo si existe
+      Countdown.destruir();
 
-      // Esperar un momento antes de iniciar countdown
+      // Esperar un momento para asegurar limpieza
       setTimeout(() => {
-        Countdown.init();
-        // Iniciar audio del countdown despuÃ©s de inicializarlo
-        setTimeout(() => {
-          AudioManager.reproducirNarracion("countdown");
-        }, 500);
-      }, 100);
+        // SOLO si seguimos en countdown, iniciar
+        if (AppState.seccionActiva?.id === "countdown") {
+          console.log("🕐 Iniciando countdown por primera vez");
+          Countdown.init();
+
+          // Reproducir audio del countdown DESPUÉS de inicializarlo
+          setTimeout(() => {
+            if (AppState.seccionActiva?.id === "countdown") {
+              AudioManager.reproducirNarracion("countdown");
+            }
+          }, 500);
+        }
+      }, 150);
     } else {
+      // Para otras secciones, destruir countdown
       Countdown.destruir();
     }
 
-    this._manejarInicioSeccion(id, seccion, saltarAudio);
+    this._handleSectionStart(id, seccion, saltarAudio);
   },
 
-  /**
-   * Mantiene la pantalla completa activa
-   */
-  _mantenerPantallaCompleta() {
-    // Si ya estamos en fullscreen, mantenerlo
-    if (
-      document.fullscreenElement ||
-      document.webkitFullscreenElement ||
-      document.mozFullScreenElement
-    ) {
-      console.log("âœ“ Pantalla completa mantenida en countdown");
-      return;
-    }
-
-    // Si no estamos en fullscreen, intentar activarlo de nuevo
-    console.log("Reactivando pantalla completa para countdown...");
-    this._activarPantallaCompletaExperiencia();
-  },
-
-  /**
-   * Activa pantalla completa para toda la experiencia
-   */
-  async _activarPantallaCompletaExperiencia() {
-    try {
-      const elemento = document.documentElement; // Todo el documento
-
-      // MÃ³viles: webkit
-      if (elemento.webkitRequestFullscreen) {
-        await elemento.webkitRequestFullscreen();
-        console.log("âœ“ Experiencia en pantalla completa (webkit)");
-        return;
-      }
-
-      // Desktop estÃ¡ndar
-      if (elemento.requestFullscreen) {
-        await elemento.requestFullscreen();
-        console.log("âœ“ Experiencia en pantalla completa (estÃ¡ndar)");
-        return;
-      }
-
-      // Otros navegadores
-      if (elemento.mozRequestFullScreen) {
-        await elemento.mozRequestFullScreen();
-        console.log("âœ“ Experiencia en pantalla completa (moz)");
-        return;
-      }
-
-      if (elemento.msRequestFullscreen) {
-        await elemento.msRequestFullscreen();
-        console.log("âœ“ Experiencia en pantalla completa (ms)");
-        return;
-      }
-
-      console.log("Pantalla completa no disponible en este navegador");
-    } catch (error) {
-      console.warn("No se pudo activar pantalla completa:", error.message);
-      // Continuar la experiencia normalmente
-
-      // En mÃ³viles Android, forzar scroll para esconder barra de direcciones
-      this._esconderBarraDireccionesMovil();
-    }
-  },
-
-  /**
-   * Esconde la barra de direcciones en mÃ³viles mediante scroll
-   */
-  _esconderBarraDireccionesMovil() {
-    // Esta tÃ©cnica funciona en la mayorÃ­a de navegadores mÃ³viles
+  async _fadeOut() {
     setTimeout(() => {
-      window.scrollTo(0, 1);
-    }, 100);
-
-    // Repetir para asegurar
-    setTimeout(() => {
-      window.scrollTo(0, 1);
-    }, 500);
-
-    console.log("Intentando esconder barra de direcciones mÃ³vil");
-  },
-
-  /**
-   * TransiciÃ³n de salida (fade out)
-   */
-  async _transicionSalida() {
-    setTimeout(() => {
-      const fadeOverlay = DOM.get("fadeOverlay");
-      if (fadeOverlay) {
-        fadeOverlay.style.opacity = "0";
-        fadeOverlay.style.transition = "opacity 0.4s ease";
+      const overlay = DOM.get("fadeOverlay");
+      if (overlay) {
+        overlay.style.opacity = "0";
+        overlay.style.transition = "opacity 0.4s ease";
       }
     }, 100);
   },
 
-  /**
-   * Maneja la lÃ³gica de inicio de cada secciÃ³n
-   */
-  _manejarInicioSeccion(id, seccion, saltarAudio) {
-    console.log(`Manejando inicio: ${id}`);
-
+  _handleSectionStart(id, seccion, saltarAudio) {
     if (id === "intro" && !AppState.playClickeado) {
-      this._mostrarBotonPlay(seccion);
+      this._showPlayButton(seccion);
     } else if (id === "intro" && AppState.playClickeado) {
-      this._iniciarIntroCompleta(seccion, id);
+      this._startIntro(seccion, id);
     } else if (id === "final") {
-      this._iniciarSeccionFinalConVideo(seccion, id);
+      this._startVideoSection(seccion, id);
     } else if (id === "countdown") {
-      // Ya manejado en _activarSeccion
-      this._mostrarSeccionDirecta(seccion, id);
+      this._showNarrativa(seccion);
     } else if (saltarAudio || AppState.seccionesVisitadas.has(id)) {
-      this._mostrarSeccionDirecta(seccion, id);
+      this._showDirect(seccion, id);
     } else {
-      this._iniciarSeccionConAudio(seccion, id);
+      this._startWithAudio(seccion, id);
     }
 
-    // Manejar secciones finales especiales
-    if (["final2"].includes(id)) {
-      this._manejarSeccionFinal(id);
-    }
-  },
-
-  /**
-   * Maneja secciones finales
-   */
-  _manejarSeccionFinal(id) {
     if (id === "final2") {
       AudioManager.detenerTodosLosAudios();
     }
   },
 
-  /**
-   * Inicializa la secciÃ³n final con video
-   */
-  _iniciarSeccionFinalConVideo(seccion, id) {
-    console.log("Iniciando secciÃ³n final con video...");
+  _startVideoSection(seccion, id) {
+    console.log("Iniciando sección de video...");
 
-    // CRÃTICO: Detener TODOS los audios antes del video
     AudioManager.detenerTodosLosAudios();
 
     const videoContainer = seccion.querySelector(".video-container");
     const video = DOM.get("Final");
 
     if (!videoContainer || !video) {
-      console.error("Video no encontrado, navegando a countdown");
+      console.error("Video no encontrado");
       setTimeout(() => Navigation.navigateTo("countdown"), 1000);
       return;
     }
 
-    // Asegurar visibilidad del contenedor
     videoContainer.style.display = "block";
     videoContainer.style.opacity = "1";
 
-    // Reproducir video despuÃ©s de un delay
-    setTimeout(() => this._reproducirVideoFinal(id), 800);
-
+    setTimeout(() => this._playVideo(video), 800);
     AppState.seccionesVisitadas.add(id);
   },
 
-  /**
-   * Reproduce el video final
-   */
-  _reproducirVideoFinal(id) {
-    const video = DOM.get("Final");
-    const playOverlay = DOM.get("video-play-overlay");
-
-    if (!video) {
-      console.error("Video no encontrado");
-      Navigation.navigateTo("countdown");
-      return;
-    }
-
-    // CRÃTICO: Verificar si ya estÃ¡ reproduciÃ©ndose
+  _playVideo(video) {
+    // SOLUCIÓN: Verificar si ya está reproduciéndose
     if (video._isPlaying) {
-      console.log("Video ya estÃ¡ reproduciÃ©ndose, evitando reinicio");
+      console.log("⚠️ Video ya reproduciéndose, ignorando");
       return;
     }
 
-    // Verificar precarga
     if (!Preloader.isVideoReady("Final")) {
-      console.warn("Video no precargado, intentando carga directa");
+      console.warn("Video no precargado");
     }
 
-    console.log("Preparando video final...");
-
-    // Marcar como en reproducciÃ³n
     video._isPlaying = true;
-
-    // Configurar video UNA SOLA VEZ
     video.currentTime = 0;
     video.volume = CONFIG.audio.volumenNarracion;
     video.muted = false;
+    video.setAttribute("playsinline", "true");
+    video.removeAttribute("controls");
+    video.controls = false;
+    video.style.cssText = "width:100%;height:100%;object-fit:cover;cursor:none";
 
-    // NUEVO: Configurar atributos para mÃ³viles y ocultar controles
-    video.setAttribute("playsinline", "true"); // Para iOS
-    video.setAttribute("webkit-playsinline", "true"); // Para iOS antiguo
-    video.removeAttribute("controls"); // Quitar controles nativos
-    video.controls = false; // Asegurar que no hay controles
-
-    // Estilos del video - experiencia cinematogrÃ¡fica
-    video.style.width = "100%";
-    video.style.height = "100%";
-    video.style.objectFit = "cover";
-    video.style.cursor = "none"; // Ocultar cursor sobre el video
-
-    // Ocultar overlay
+    const playOverlay = DOM.get("video-play-overlay");
     if (playOverlay) {
       playOverlay.classList.add("hidden");
       playOverlay.style.display = "none";
     }
 
-    // Eventos del video (limpiar primeros)
+    // Limpiar eventos previos
     video.onended = null;
     video.onerror = null;
-
-    // Configurar nuevos eventos
-    const finalizarVideo = () => {
-      video._isPlaying = false;
-      this._finalizarVideoYNavegar();
-    };
-
-    video.onended = finalizarVideo;
-    video.onerror = (e) => {
-      console.error("Error en video:", e);
-      video._isPlaying = false;
-      finalizarVideo();
-    };
-
-    // NUEVO: Prevenir contexto del clic derecho
     video.oncontextmenu = (e) => {
       e.preventDefault();
       return false;
     };
 
-    // Intentar reproducciÃ³n
-    this._intentarReproduccionVideo(video, playOverlay);
+    // Nuevos eventos
+    const finishVideo = () => {
+      video._isPlaying = false;
+      this._finishVideoAndNavigate();
+    };
+
+    video.onended = finishVideo;
+    video.onerror = (e) => {
+      console.error("Error en video:", e);
+      finishVideo();
+    };
+
+    this._tryPlay(video, playOverlay);
   },
 
-  /**
-   * Intenta reproducir el video
-   */
-  async _intentarReproduccionVideo(video, playOverlay) {
+  async _tryPlay(video, playOverlay) {
     try {
-      // Intentar entrar en pantalla completa primero
-      await this._activarPantallaCompleta(video);
-
-      // Reproducir video
+      await this._enterFullscreen(video);
       await video.play();
-
-      console.log("âœ“ Video reproduciendo en pantalla completa");
+      console.log("✓ Video reproduciéndose");
       AppState.audioReproduciendo = true;
       AppState.audioActual = video;
     } catch (error) {
-      console.warn("ReproducciÃ³n automÃ¡tica bloqueada:", error);
-      this._mostrarControlManualVideo(video, playOverlay);
+      console.warn("Reproducción bloqueada:", error);
+      this._showManualControls(video, playOverlay);
     }
   },
 
-  /**
-   * Activa pantalla completa para el video
-   */
-  async _activarPantallaCompleta(video) {
+  async _enterFullscreen(video) {
     try {
-      // En mÃ³viles Android/iOS, usar webkitEnterFullscreen (especÃ­fico para videos)
       if (video.webkitEnterFullscreen) {
         video.webkitEnterFullscreen();
-        console.log("âœ“ Pantalla completa mÃ³vil activada (webkit)");
-        return;
-      }
-
-      // En mÃ³viles modernos, usar webkitDisplayingFullscreen
-      if (video.webkitDisplayingFullscreen !== undefined) {
-        video.webkitEnterFullscreen();
-        console.log("âœ“ Pantalla completa mÃ³vil activada");
-        return;
-      }
-
-      // Desktop: Intentar fullscreen estÃ¡ndar en el video
-      if (video.requestFullscreen) {
+      } else if (video.requestFullscreen) {
         await video.requestFullscreen();
-        console.log("âœ“ Pantalla completa desktop activada");
-      } else if (video.webkitRequestFullscreen) {
-        await video.webkitRequestFullscreen();
-        console.log("âœ“ Pantalla completa webkit activada");
       } else if (video.mozRequestFullScreen) {
         await video.mozRequestFullScreen();
-        console.log("âœ“ Pantalla completa moz activada");
       } else if (video.msRequestFullscreen) {
         await video.msRequestFullscreen();
-        console.log("âœ“ Pantalla completa ms activada");
       }
     } catch (error) {
-      console.warn("No se pudo activar pantalla completa:", error);
-      // Continuar sin pantalla completa - el usuario puede activarla manualmente
+      console.warn("Pantalla completa no disponible:", error);
     }
   },
 
-  /**
-   * Muestra controles manuales para el video
-   */
-  _mostrarControlManualVideo(video, playOverlay) {
-    console.log("Mostrando controles manuales");
-
+  _showManualControls(video, playOverlay) {
     if (playOverlay) {
       playOverlay.classList.remove("hidden");
       playOverlay.style.display = "flex";
-      playOverlay.onclick = () =>
-        this._iniciarReproduccionManual(video, playOverlay);
+      playOverlay.onclick = () => this._manualPlay(video, playOverlay);
     }
-
     video.onclick = () => {
-      if (video.paused) {
-        this._iniciarReproduccionManual(video, playOverlay);
-      }
+      if (video.paused) this._manualPlay(video, playOverlay);
     };
   },
 
-  /**
-   * Inicia reproducciÃ³n manual del video
-   */
-  async _iniciarReproduccionManual(video, playOverlay) {
+  async _manualPlay(video, playOverlay) {
     try {
-      // Intentar pantalla completa
-      await this._activarPantallaCompleta(video);
-
-      // Reproducir
+      await this._enterFullscreen(video);
       await video.play();
-
-      console.log("Video iniciado manualmente");
       AppState.audioReproduciendo = true;
       AppState.audioActual = video;
-
       if (playOverlay) {
         playOverlay.classList.add("hidden");
         playOverlay.style.display = "none";
       }
     } catch (error) {
       console.error("Error iniciando video:", error);
-      this._finalizarVideoYNavegar();
+      this._finishVideoAndNavigate();
     }
   },
 
-  /**
-   * Finaliza video y navega a countdown
-   */
-  async _finalizarVideoYNavegar() {
+  async _finishVideoAndNavigate() {
     console.log("Finalizando video");
 
     const video = DOM.get("Final");
 
-    // Detener video completamente
+    // SOLUCIÓN: Detener y limpiar video completamente
     if (video) {
       video.pause();
       video.currentTime = 0;
       video._isPlaying = false;
+      video.onended = null;
+      video.onerror = null;
+      video.oncontextmenu = null;
+      video.onclick = null;
 
-      // Salir de pantalla completa si estÃ¡ activa
+      // Ocultar contenedor del video
+      const videoContainer = video.closest(".video-container");
+      if (videoContainer) {
+        videoContainer.style.display = "none";
+        videoContainer.style.opacity = "0";
+      }
+
+      // Salir de pantalla completa
       if (document.fullscreenElement) {
         try {
           await document.exitFullscreen();
@@ -517,36 +326,27 @@ const SectionManager = {
 
     AppState.audioReproduciendo = false;
     AppState.audioActual = null;
-
-    // CRÃTICO: Detener TODOS los audios antes de continuar
     AudioManager.detenerTodosLosAudios();
 
-    // TransiciÃ³n negra completa sin efectos de luz
-    const fadeOverlay = DOM.get("fadeOverlay");
-    if (fadeOverlay) {
-      fadeOverlay.style.backgroundColor = "#000";
-      fadeOverlay.style.opacity = "1";
-      fadeOverlay.style.transition = "opacity 0.8s ease";
+    // Transición negra
+    const overlay = DOM.get("fadeOverlay");
+    if (overlay) {
+      overlay.style.backgroundColor = "#000";
+      overlay.style.opacity = "1";
+      overlay.style.transition = "opacity 0.8s ease";
     }
 
-    // Esperar a que la transiciÃ³n negra complete
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     console.log("Navegando a countdown...");
     await Navigation.navigateTo("countdown");
 
-    // Fade out gradual despuÃ©s de mostrar countdown
     setTimeout(() => {
-      if (fadeOverlay) {
-        fadeOverlay.style.opacity = "0";
-      }
+      if (overlay) overlay.style.opacity = "0";
     }, 200);
   },
 
-  /**
-   * Muestra botÃ³n de play
-   */
-  _mostrarBotonPlay(seccion) {
+  _showPlayButton(seccion) {
     const playCentro = seccion.querySelector(".play-center");
     if (playCentro) {
       playCentro.classList.add("visible");
@@ -554,72 +354,50 @@ const SectionManager = {
     }
   },
 
-  /**
-   * Inicia intro completa
-   */
-  _iniciarIntroCompleta(seccion, id) {
+  _startIntro(seccion, id) {
     seccion.classList.add("show-content");
-    this._mostrarNarrativa(seccion);
-
+    this._showNarrativa(seccion);
     AudioManager.reproducirFondo().then(() =>
       setTimeout(() => {
         AudioManager.reproducirNarracion(id);
-        this._mostrarNarrativa(seccion);
+        this._showNarrativa(seccion);
       }, 100)
     );
   },
 
-  /**
-   * Muestra secciÃ³n directamente sin audio
-   */
-  _mostrarSeccionDirecta(seccion, id) {
-    this._mostrarNarrativa(seccion);
-
-    // No mostrar controles para countdown
+  _showDirect(seccion, id) {
+    this._showNarrativa(seccion);
     if (id !== "countdown") {
       this.mostrarControles(id);
     }
   },
 
-  /**
-   * Inicia secciÃ³n con audio
-   */
-  _iniciarSeccionConAudio(seccion, id) {
-    // Mostrar narrativa inmediatamente
-    this._mostrarNarrativa(seccion);
+  _startWithAudio(seccion, id) {
+    this._showNarrativa(seccion);
 
     const esSeccionFinal = ["final", "countdown"].includes(id);
-
     const iniciarAudio = esSeccionFinal
       ? AudioManager.reproducirFondoFinal()
       : AudioManager.reproducirFondo();
 
     iniciarAudio.then(() =>
-      setTimeout(() => {
-        AudioManager.reproducirNarracion(id);
-      }, 300)
+      setTimeout(() => AudioManager.reproducirNarracion(id), 300)
     );
 
     AppState.seccionesVisitadas.add(id);
   },
 
-  /**
-   * Muestra narrativa
-   */
-  _mostrarNarrativa(seccion) {
+  _showNarrativa(seccion) {
     seccion.querySelector(".narrativa")?.classList.add("visible");
   },
 
-  /**
-   * Oculta controles
-   */
-  _ocultarControles(seccion) {
+  _hideControls(seccion) {
     [".play-center", ".acciones", ".input-group", ".replay-button"].forEach(
       (selector) => {
-        const elemento = seccion.querySelector(selector);
-        if (elemento) {
-          elemento.classList.remove("visible");
-          if (selector === ".play-center") elemento.style.display = "none";
+        const el = seccion.querySelector(selector);
+        if (el) {
+          el.classList.remove("visible");
+          if (selector === ".play-center") el.style.display = "none";
         }
       }
     );
@@ -631,23 +409,18 @@ const SectionManager = {
     }
   },
 
-  /**
-   * Muestra controles despuÃ©s de audio
-   */
   mostrarControles(id) {
-    const { seccionActiva: seccion } = AppState;
+    const seccion = AppState.seccionActiva;
     if (!seccion || seccion.id !== id) return;
 
-    // No mostrar controles para secciones especiales
     if (id === "final" || id === "countdown") {
       console.log(`No mostrar controles para: ${id}`);
-      const controles = seccion.querySelectorAll(
-        ".acciones, .input-group, .replay-button"
-      );
-      controles.forEach((control) => {
-        control.classList.remove("visible");
-        control.style.display = "none";
-      });
+      seccion
+        .querySelectorAll(".acciones, .input-group, .replay-button")
+        .forEach((control) => {
+          control.classList.remove("visible");
+          control.style.display = "none";
+        });
       return;
     }
 
