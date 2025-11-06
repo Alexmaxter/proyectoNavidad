@@ -1,88 +1,63 @@
-// =============================
-// VALIDADOR DE RESPUESTAS (SOLO ACERTIJOS)
-// =============================
+// Usar los nombres de archivo correctos
+import config from "./config.js";
+// --- NUEVA IMPORTACIÓN ---
+import FirebaseManager from "./firebase-manager.js";
+
+/**
+ * validation.js: El Validador de Acertijos
+ */
 const Validation = {
   /**
-   * Valida la respuesta de un acertijo específico
-   * @param {number} numeroAcertijo - Número del acertijo (1, 2, 3)
+   * Normaliza un string
    */
-  validarRespuesta(numeroAcertijo) {
-    const input = DOM.get(`respuesta${numeroAcertijo}`);
-    const error = DOM.get(`error${numeroAcertijo}`);
-    const datos = CONFIG.textos[`acertijo${numeroAcertijo}`];
+  _normalize(str) {
+    return str
+      .toLowerCase()
+      .trim()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  },
 
-    if (!input || !error || !datos) {
-      console.warn(
-        `No se encontraron elementos para acertijo${numeroAcertijo}`
-      );
+  /**
+   * --- FUNCIÓN MODIFICADA ---
+   * Verifica la respuesta de un acertijo.
+   */
+  check(inputEl, errorEl, validationKey, onSuccess) {
+    const userInput = inputEl.value;
+    const normalizedInput = this._normalize(userInput);
+
+    const validAnswers = config.validation[validationKey];
+    if (!validAnswers) {
+      console.error(`Validación: No se encontró la clave "${validationKey}".`);
       return;
     }
 
-    const respuesta = Utils.normalizar(input.value);
-    const esVacio = !respuesta;
-    const esCorrecta =
-      !esVacio && this._esRespuestaCorrecta(datos.respuestaCorrecta, respuesta);
+    const isCorrect = validAnswers.includes(normalizedInput);
 
-    this._limpiarEstados(error, input);
+    // --- ¡NUEVA LÓGICA DE GUARDADO DE INTENTOS! ---
+    // Guardar el intento en Firebase ANTES de mostrar el resultado.
+    // Usamos el 'userInput' original para ver exactamente lo que escribió.
+    FirebaseManager.saveRiddleAttempt(validationKey, userInput, isCorrect);
+    // --- Fin de la nueva lógica ---
 
-    if (esVacio || !esCorrecta) {
-      this._mostrarError(error, input, esVacio);
+    if (!normalizedInput) {
+      errorEl.textContent = "Por favor, escribe una respuesta.";
+      errorEl.classList.add("show");
       return;
     }
 
-    this._mostrarExito(input, numeroAcertijo);
-  },
-
-  /**
-   * Verifica si una respuesta es correcta según las opciones válidas
-   * @param {string} tipoRespuesta - Tipo de respuesta esperada (constancia, paciencia, disciplina)
-   * @param {string} respuestaUsuario - Respuesta normalizada del usuario
-   * @returns {boolean} - True si la respuesta es correcta
-   */
-  _esRespuestaCorrecta(tipoRespuesta, respuestaUsuario) {
-    const respuestasValidas = CONFIG.respuestasValidas[tipoRespuesta];
-    return respuestasValidas
-      ? respuestasValidas.includes(respuestaUsuario)
-      : false;
-  },
-
-  /**
-   * Limpia los estados visuales previos del input y error
-   */
-  _limpiarEstados(error, input) {
-    error.classList.remove("show");
-    input.classList.remove("input-correct", "input-incorrect", "shake");
-  },
-
-  /**
-   * Muestra un error en el input (respuesta vacía o incorrecta)
-   */
-  _mostrarError(error, input, esVacio) {
-    const mensajeError = esVacio
-      ? CONFIG.mensajes.errorVacio
-      : CONFIG.mensajes.erroresIncorrecto[
-          Math.floor(Math.random() * CONFIG.mensajes.erroresIncorrecto.length)
-        ];
-
-    error.textContent = mensajeError;
-    error.classList.add("show");
-    input.classList.add("input-incorrect", "shake");
-
-    setTimeout(() => {
-      input.value = "";
-      input.classList.remove("input-incorrect", "shake");
-      error.classList.remove("show");
-    }, 3000);
-  },
-
-  /**
-   * Muestra el éxito y navega a la siguiente sección
-   */
-  _mostrarExito(input, numeroAcertijo) {
-    input.classList.add("input-correct");
-
-    setTimeout(() => {
-      Navigation.navigateTo(`explicacion${numeroAcertijo}`);
-    }, 800);
+    if (isCorrect) {
+      // ¡Éxito!
+      errorEl.classList.remove("show");
+      inputEl.disabled = true;
+      onSuccess();
+    } else {
+      // Error
+      errorEl.textContent = "No es la respuesta correcta, reflexiona...";
+      errorEl.classList.add("show");
+      inputEl.value = ""; // Limpiar el input para reintentar
+    }
   },
 };
+
+export default Validation;

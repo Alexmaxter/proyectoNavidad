@@ -6,28 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
     />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-fullscreen"
-    />
-    <meta name="theme-color" content="#000000" />
-    <title>Regalo</title>
+    <title>Proyecto Navidad</title>
 
-    <!-- Preload critical fonts -->
-    <link
-      rel="preload"
-      href="https://db.onlinewebfonts.com/c/bcd0c9bdcf29c2dd630785c724469553?family=Verlag-Book"
-      as="style"
-    />
-    <link
-      rel="preload"
-      href="https://db.onlinewebfonts.com/c/ddee8efcace361d6aab1d9b0473cd521?family=Verlag-Light"
-      as="style"
-    />
-
-    <!-- Font stylesheets -->
     <link
       href="https://db.onlinewebfonts.com/c/bcd0c9bdcf29c2dd630785c724469553?family=Verlag-Book"
       rel="stylesheet"
@@ -37,340 +17,62 @@
       rel="stylesheet"
     />
 
-    <!-- Favicon -->
+    <link rel="stylesheet" href="css/style.css" />
+
     <link
       rel="icon"
       href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='0.9em' font-size='90'&gt;🎁&lt;/text&gt;&lt;/svg&gt;"
     />
-
-    <!-- Main stylesheet -->
-    <link rel="stylesheet" href="css/style.css" />
-
-    <!-- Estilos críticos inline para evitar FOUC -->
-    <style>
-      /* Ocultar contenido hasta que la app esté cargada */
-      body:not(.loaded) .section {
-        opacity: 0 !important;
-        visibility: hidden !important;
-      }
-
-      body:not(.loaded) .vignette {
-        opacity: 0 !important;
-      }
-
-      /* Mostrar gradualmente cuando esté listo */
-      body.loaded .section {
-        transition: opacity 0.5s ease-in;
-      }
-
-      body.loaded .vignette {
-        transition: opacity 0.5s ease-in;
-      }
-    </style>
-
-    <!-- Preload critical images -->
-    <link rel="preload" as="image" href="./assets/img/intro-bg.png" />
-    <link rel="preload" as="image" href="./assets/img/decision-bg.png" />
   </head>
-
   <body>
-    <!-- Background and overlay layers -->
     <div class="vignette"></div>
-    <div id="fadeOverlay"></div>
+    <div id="fade-overlay"></div>
 
-    <!-- Global audio elements -->
-    <audio id="audio-fondo" preload="auto" loop>
-      <source src="assets/audio/background.mp3" type="audio/mpeg" />
-    </audio>
+    <audio id="audio-bgm" loop preload="auto"></audio>
+    <audio id="audio-bgm-final" loop preload="auto"></audio>
+    <audio id="audio-narration" preload="auto"></audio>
 
-    <!-- Intro Section -->
-    <div id="intro" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="play-center">
-          <button type="button"><pre>▶</pre></button>
-          <p class="aviso-volumen">🔊 Sube el volumen antes de empezar</p>
-        </div>
-        <div class="acciones"></div>
-        <audio id="audio-intro" preload="auto">
-          <source src="assets/audio/intro.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
+    <main id="app-root"></main>
 
-    <!-- Decision Section -->
-    <div id="decision" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="acciones"></div>
-        <div class="replay-button"></div>
-        <audio id="audio-decision" preload="auto">
-          <source src="assets/audio/decision.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
+    <script type="module">
+      // Importa las funciones que necesitamos
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+      
+      // --- CAMBIOS AQUÍ ---
+      // 'signInAnonymously' ya no es necesario
+      // 'signInWithEmailAndPassword' es nuevo
+      import { 
+        getAuth, 
+        onAuthStateChanged, 
+        signInWithEmailAndPassword 
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+      
+      import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-    <!-- Confirmation Sections -->
-    <div id="confirmacion1" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="acciones"></div>
-        <div class="replay-button"></div>
-        <audio id="audio-confirmacion1" preload="auto">
-          <source src="assets/audio/confirmacion1.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <div id="confirmacion2" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="acciones"></div>
-        <div class="replay-button"></div>
-        <audio id="audio-confirmacion2" preload="auto">
-          <source src="assets/audio/confirmacion2.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <!-- Puzzle Sections -->
-    <div id="acertijo1" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="input-group">
-          <div>
-            <input
-              id="respuesta1"
-              type="text"
-              placeholder="Tu respuesta"
-              autocomplete="off"
-            />
-            <button class="send-button">Enviar</button>
-          </div>
-          <div id="error1" class="mensaje-error"></div>
-        </div>
-        <div class="replay-button"></div>
-        <audio id="audio-acertijo1" preload="auto">
-          <source src="assets/audio/acertijo1.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <div id="acertijo2" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="input-group">
-          <div>
-            <input
-              id="respuesta2"
-              type="text"
-              placeholder="Tu respuesta"
-              autocomplete="off"
-            />
-            <button class="send-button">Enviar</button>
-          </div>
-          <div id="error2" class="mensaje-error"></div>
-        </div>
-        <div class="replay-button"></div>
-        <audio id="audio-acertijo2" preload="auto">
-          <source src="assets/audio/acertijo2.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <div id="acertijo3" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="input-group">
-          <div>
-            <input
-              id="respuesta3"
-              type="text"
-              placeholder="Tu respuesta"
-              autocomplete="off"
-            />
-            <button class="send-button">Enviar</button>
-          </div>
-          <div id="error3" class="mensaje-error"></div>
-        </div>
-        <div class="replay-button"></div>
-        <audio id="audio-acertijo3" preload="auto">
-          <source src="assets/audio/acertijo3.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <!-- Explanation Sections -->
-    <div id="explicacion1" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="acciones"></div>
-        <div class="replay-button"></div>
-        <audio id="audio-explicacion1" preload="auto">
-          <source src="assets/audio/explicacion1.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <div id="explicacion2" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="acciones"></div>
-        <div class="replay-button"></div>
-        <audio id="audio-explicacion2" preload="auto">
-          <source src="assets/audio/explicacion2.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <div id="explicacion3" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="acciones"></div>
-        <div class="replay-button"></div>
-        <audio id="audio-explicacion3" preload="auto">
-          <source src="assets/audio/explicacion3.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <!-- Final Video Section -->
-    <div id="final" class="section Final-section">
-      <div class="video-container">
-        <video id="Final" preload="metadata" playsinline>
-          <source src="assets/video/Final.mp4" type="video/mp4" />
-          Tu navegador no soporta el elemento video.
-        </video>
-        <div id="video-play-overlay"></div>
-      </div>
-    </div>
-
-    <!-- Final Gift Section -->
-    <div id="countdown" class="section final-regalo-section">
-      <!-- Cuenta regresiva -->
-      <div class="countdown-container-vertical">
-        <div class="countdown-title"></div>
-        <div id="countdown" class="countdown-display-vertical">
-          <div class="countdown-unit">
-            <span id="years">0</span>
-            <label>años</label>
-          </div>
-          <div class="countdown-unit">
-            <span id="days">0</span>
-            <label>días</label>
-          </div>
-          <div class="countdown-unit">
-            <span id="hours">0</span>
-            <label>horas</label>
-          </div>
-          <div class="countdown-unit">
-            <span id="minutes">0</span>
-            <label>minutos</label>
-          </div>
-          <div class="countdown-unit">
-            <span id="seconds">0</span>
-            <label>segundos</label>
-          </div>
-        </div>
-      </div>
-      <div class="controles">
-        <div class="replay-button"></div>
-        <audio id="audio-fondo-final" preload="auto" loop>
-          <source src="assets/audio/background-final.mp3" type="audio/mpeg" />
-        </audio>
-        <audio id="audio-countdown" preload="auto">
-          <source src="assets/audio/background-final.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <!-- Final Alternative Section -->
-    <div id="final2" class="section">
-      <div class="titulo">
-        <h1></h1>
-      </div>
-      <div class="contenido">
-        <div class="narrativa"></div>
-      </div>
-      <div class="controles">
-        <div class="replay-button"></div>
-        <audio id="audio-final2" preload="auto">
-          <source src="assets/audio/final2.mp3" type="audio/mpeg" />
-        </audio>
-      </div>
-    </div>
-
-    <!-- JavaScript modules - ORDEN CRÍTICO -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/preloader.js"></script>
-    <script src="js/audio-manager.js"></script>
-    <script src="js/validation.js"></script>
-    <script src="js/countdown.js"></script>
-    <script src="js/content-manager.js"></script>
-    <script src="js/router.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/script.js"></script>
-
-    <script>
-      // Inicialización única y controlada
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => {
-          App.init();
-        });
-      } else {
-        App.init();
-      }
+      // Pasa tu config a nuestro nuevo módulo `firebase-manager.js`
+      window.firebaseSDK = {
+        initializeApp,
+        getAuth,
+        onAuthStateChanged,
+        signInWithEmailAndPassword, // <-- NUEVO
+        getFirestore,
+        doc,
+        setDoc,
+        getDoc,
+        collection,
+        addDoc,
+        // Tu Configuración (sin cambios)
+        firebaseConfig: {
+          apiKey: "AIzaSyCPKR80Dft600xzIGvrfeXCYQmOdro8kx0",
+          authDomain: "valentinoexperiencia-fcb5f.firebaseapp.com",
+          projectId: "valentinoexperiencia-fcb5f",
+          storageBucket: "valentinoexperiencia-fcb5f.firebasestorage.app",
+          messagingSenderId: "50762641960",
+          appId: "1:50762641960:web:9af4c1811d6c7b80977b1d"
+        }
+      };
     </script>
+    
+    <script src="js/app.js" type="module"></script>
   </body>
 </html>

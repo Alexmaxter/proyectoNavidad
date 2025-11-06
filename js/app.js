@@ -1,328 +1,310 @@
-// =============================
-// INICIALIZADOR PRINCIPAL
-// =============================
+// Usar los nombres de archivo correctos
+import config from "./config.js";
+import Router from "./router.js";
+import Render from "./render.js";
+import AudioManager from "./audio-manager.js";
+import Countdown from "./countdown.js";
+import Preloader from "./preloader.js";
+import FirebaseManager from "./firebase-manager.js";
+
+/**
+ * app.js: El Orquestador
+ */
 const App = {
+  _isAudioStarted: false,
+  _currentSection: null,
+  _activeBGMType: null,
+  _skipNarrationFor: null,
+  _isCriticalLoadingDone: false,
+  _userMaxStep: 0,
+  _userLastSection: "intro",
+  _isExceptionNav: false,
+
   async init() {
+    console.log("[App.js] 1. Proyecto Navidad: Iniciando...");
+
+    const rootElement = document.getElementById("app-root");
+    if (!rootElement) {
+      return console.error("[App.js] ERROR FATAL: No se encontró #app-root.");
+    }
+
+    AudioManager.init({
+      onNarrationEnd: this._handleNarrationEnd.bind(this),
+    });
+
+    Render.init(rootElement, {
+      onNavigate: (sectionId) => Router.navigate(sectionId),
+      onIntroPlay: this._handleIntroPlay.bind(this),
+      onNavigateWithSkip: this._handleSpecialNavigation.bind(this),
+      onAudioUnlocked: this._handleAudioUnlock.bind(this),
+    });
+
     try {
-      console.log("=== INICIANDO APLICACIÓN ===");
+      await FirebaseManager.init();
+      console.log("[App.js] 2. Firebase autenticado.");
 
-      this._showLoadingScreen();
-      await this._waitForDOM();
-      this._validateDOM();
-      this._validateConfig();
-      this._initState();
-      await this._preloadCriticalAssets();
-      await this._initModules();
-      this._renderInitialContent();
-      this._initNavigation();
-      this._hideLoadingScreen();
-      this._initDevTools();
-
-      console.log("=== ✓ APLICACIÓN INICIALIZADA ===");
-    } catch (error) {
-      console.error("=== ✗ ERROR FATAL ===", error);
-      this._showFatalError(error);
-    }
-  },
-
-  _showLoadingScreen() {
-    const loadingHTML = `
-      <div class="loading-content">
-        <div class="spinner"></div>
-        <p id="loading-text">Cargando experiencia...</p>
-        <div class="loading-progress">
-          <div id="loading-bar" class="loading-bar"></div>
-        </div>
-        <p id="loading-percent">0%</p>
-      </div>`;
-
-    const styles = `
-      .loading-content { text-align: center; }
-      .spinner {
-        width: 60px; height: 60px;
-        border: 4px solid rgba(213, 75, 17, 0.2);
-        border-top-color: #d54b11;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin: 0 auto 20px;
-      }
-      @keyframes spin { to { transform: rotate(360deg); } }
-      #loading-text { margin: 10px 0; font-size: 14px; opacity: 0.8; }
-      .loading-progress {
-        width: 250px; height: 6px;
-        background: rgba(213, 75, 17, 0.2);
-        border-radius: 3px;
-        margin: 20px auto 10px;
-        overflow: hidden;
-      }
-      .loading-bar {
-        height: 100%;
-        background: linear-gradient(90deg, #d54b11 0%, #ff8c42 100%);
-        width: 0%;
-        transition: width 0.3s ease;
-        box-shadow: 0 0 10px rgba(213, 75, 17, 0.5);
-      }
-      #loading-percent { margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #d54b11; }`;
-
-    const screen = document.createElement("div");
-    screen.id = "app-loading-screen";
-    screen.innerHTML = loadingHTML;
-    screen.style.cssText =
-      "position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999;color:#fff;font-family:Arial,sans-serif";
-
-    const style = document.createElement("style");
-    style.textContent = styles;
-
-    document.head.appendChild(style);
-    document.body.appendChild(screen);
-  },
-
-  _updateLoadingProgress(percent, text) {
-    const bar = DOM.get("loading-bar");
-    const txt = DOM.get("loading-text");
-    const pct = DOM.get("loading-percent");
-
-    if (bar) bar.style.width = `${percent}%`;
-    if (txt && text) txt.textContent = text;
-    if (pct) pct.textContent = `${Math.round(percent)}%`;
-  },
-
-  _hideLoadingScreen() {
-    const screen = DOM.get("app-loading-screen");
-    if (screen) {
-      screen.style.opacity = "0";
-      screen.style.transition = "opacity 0.5s ease-out";
-      setTimeout(() => screen.remove(), 500);
-    }
-    setTimeout(() => document.body.classList.add("loaded"), 600);
-  },
-
-  async _waitForDOM() {
-    if (document.readyState === "loading") {
-      await new Promise((resolve) =>
-        document.addEventListener("DOMContentLoaded", resolve, { once: true })
+      const progress = await FirebaseManager.loadProgress();
+      this._userMaxStep = progress.maxStep || 0;
+      this._userLastSection = progress.lastSection || "intro";
+      console.log(
+        `[App.js] 3. Progreso máximo cargado: Step ${this._userMaxStep} (${this._userLastSection})`
       );
+    } catch (error) {
+      console.error(
+        "[App.js] ERROR FATAL de Firebase. La app no puede continuar.",
+        error
+      );
+      return;
     }
-    console.log("✓ DOM listo");
-  },
 
-  _validateDOM() {
-    const critical = [
-      "intro",
-      "decision",
-      "final",
-      "countdown",
-      "audio-fondo",
-      "fadeOverlay",
-    ];
-    const missing = critical.filter((id) => !document.getElementById(id));
+    Router.init((sectionId) => this.showSection(sectionId));
+    console.log("[App.js] 4. Router inicializado.");
 
-    if (missing.length > 0) {
-      throw new Error(`Elementos críticos faltantes: ${missing.join(", ")}`);
-    }
-    console.log("✓ Validación DOM exitosa");
-  },
-
-  _validateConfig() {
-    if (typeof CONFIG === "undefined")
-      throw new Error("CONFIG no está definido");
-    if (!CONFIG.textos || !CONFIG.navegacion || !CONFIG.audio) {
-      throw new Error("CONFIG incompleto");
-    }
-    console.log("✓ Configuración válida");
-  },
-
-  _initState() {
-    AppState.seccionActiva = DOM.get("intro");
-    AppState.playClickeado = false;
-    AppState.fondoIniciado = false;
-    AppState.fondoFinalIniciado = false;
-    AppState.seccionesVisitadas = new Set();
-    AppState.audioReproduciendo = false;
-    AppState.audioActual = null;
-    AppState.temporizadorBotonFinal = null;
-    AppState.seccionAnterior = null;
-    console.log("✓ Estado inicializado");
+    this._preloadCriticalAssets();
   },
 
   async _preloadCriticalAssets() {
-    console.log("Precargando recursos críticos...");
-
-    const criticalImages = [
-      "./assets/img/intro-bg.png",
-      "./assets/img/decision-bg.png",
+    console.log("[App.js] 3. Iniciando precarga de assets críticos...");
+    const intro = config.sections.intro;
+    const decision = config.sections.decision;
+    const assetsToLoad = [
+      { type: "image", src: intro.background },
+      { type: "audio", src: intro.audio },
+      { type: "image", src: decision.background },
+      { type: "audio", src: decision.audio },
+      { type: "audio", src: config.global.audioBGM },
     ];
-    const criticalAudios = ["audio-fondo", "audio-intro"];
-    const total = criticalImages.length + criticalAudios.length;
-    let completed = 0;
-
-    const updateProgress = () => {
-      completed++;
-      const percent = (completed / total) * 100;
-      this._updateLoadingProgress(
-        percent,
-        `Cargando recursos... ${completed}/${total}`
-      );
-    };
-
-    const imagePromises = criticalImages.map((src) =>
-      Preloader.preloadImage(src)
-        .then(updateProgress)
-        .catch(() => updateProgress())
-    );
-
-    const audioPromises = criticalAudios.map((id) =>
-      Preloader.preloadAudio(id)
-        .then(updateProgress)
-        .catch(() => updateProgress())
-    );
-
-    await Promise.allSettled([...imagePromises, ...audioPromises]);
-    this._updateLoadingProgress(100, "¡Listo!");
-
-    console.log("✓ Recursos críticos precargados");
-  },
-
-  async _initModules() {
-    console.log("Inicializando módulos...");
-
-    if (typeof AudioManager !== "undefined") {
-      AudioManager.init();
-      console.log("  ✓ AudioManager");
+    await Preloader.loadAssets(assetsToLoad);
+    console.log("[App.js] 6. Assets críticos CARGADOS.");
+    this._isCriticalLoadingDone = true;
+    if (this._currentSection === "intro") {
+      console.log("[App.js] 7. La intro ya estaba visible. Ocultando spinner.");
+      Render.setIntroLoading(false);
     }
+  },
 
-    if (typeof EventManager !== "undefined") {
-      EventManager.init();
-      console.log("  ✓ EventManager");
+  _preloadNextSections(sectionId) {
+    const currentSection = config.sections[sectionId];
+    if (!currentSection) return;
+    let nextSectionIds = new Set();
+    if (currentSection.onNavigate) {
+      nextSectionIds.add(currentSection.onNavigate);
     }
-
-    console.log("✓ Módulos inicializados");
-  },
-
-  _renderInitialContent() {
-    console.log("Renderizando contenido inicial...");
-    let rendered = 0;
-
-    Object.keys(CONFIG.textos).forEach((id) => {
-      if (id === "final" || id === "countdown") return;
-      try {
-        ContentManager.render(id);
-        rendered++;
-      } catch (error) {
-        console.warn(`Error renderizando ${id}:`, error);
-      }
-    });
-
-    console.log(`✓ Contenido renderizado: ${rendered} secciones`);
-  },
-
-  _initNavigation() {
-    console.log("Inicializando navegación...");
-    if (typeof Navigation === "undefined") {
-      throw new Error("Navigation no está disponible");
+    if (currentSection.onSuccess) {
+      nextSectionIds.add(currentSection.onSuccess);
     }
-    Navigation.init();
-    console.log("✓ Navegación inicializada");
-  },
-
-  _initDevTools() {
-    if (
-      !(
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1" ||
-        window.location.search.includes("debug=true")
-      )
-    )
-      return;
-
-    window.appDebug = {
-      goTo: (section) => Navigation.navigateTo(section),
-      getState: () => ({
-        seccionActiva: AppState.seccionActiva?.id,
-        playClickeado: AppState.playClickeado,
-        seccionesVisitadas: [...AppState.seccionesVisitadas],
-        router: Navigation.getState(),
-        preloader: Preloader.getStats(),
-      }),
-      playAudio: (id) => AudioManager.reproducirNarracion(id),
-      stopAudio: () => AudioManager.detenerTodosLosAudios(),
-      reload: () => window.location.reload(),
-    };
-
-    console.log("🔧 Debug disponible en window.appDebug");
-  },
-
-  _showFatalError(error) {
-    document.body.innerHTML = `
-      <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);color:#fff;display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;z-index:10000">
-        <div style="background:#ff4444;padding:40px;border-radius:15px;text-align:center;max-width:500px;box-shadow:0 0 30px rgba(255,68,68,0.5)">
-          <h2 style="margin:0 0 20px 0;font-size:28px">⚠️ Error de Carga</h2>
-          <p style="margin:0 0 15px 0;font-size:16px">No se pudo inicializar la aplicación.</p>
-          <p style="font-size:14px;opacity:0.9;margin:0 0 25px 0;font-family:monospace">${error.message}</p>
-          <button onclick="window.location.reload()" style="background:#fff;color:#ff4444;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:14px">🔄 Recargar</button>
-        </div>
-      </div>`;
-  },
-};
-
-// =============================
-// MANEJADOR DE EVENTOS
-// =============================
-const EventManager = {
-  init() {
-    console.log("Configurando eventos...");
-    document.addEventListener("click", (e) => this._handleClick(e), {
-      passive: false,
-    });
-    document.addEventListener("keydown", (e) => this._handleKeydown(e), {
-      passive: false,
-    });
-    window.addEventListener("error", (e) =>
-      console.error("Error global:", e.error)
-    );
-    window.addEventListener("unhandledrejection", (e) => {
-      console.error("Promise rechazada:", e.reason);
-      e.preventDefault();
-    });
-  },
-
-  _handleClick(e) {
-    const { target } = e;
-    const seccion = AppState.seccionActiva;
-    if (!seccion) return;
-
-    try {
-      if (Navigation.manejarBotonEspecial(target, seccion)) return;
-
-      if (target.closest(".acciones button")) {
-        const boton = target.closest(".acciones button");
-
-        if (boton.classList.contains("siguiente")) {
-          const numero = seccion.id.match(/^explicacion(\d+)$/)?.[1];
-          if (numero) Navigation.continuarDesdeExplicacion(+numero);
-          return;
+    if (currentSection.buttons) {
+      currentSection.buttons.forEach((btn) => nextSectionIds.add(btn.target));
+    }
+    let assetsToLoad = [];
+    nextSectionIds.forEach((id) => {
+      const data = config.sections[id];
+      if (data) {
+        if (data.background)
+          assetsToLoad.push({ type: "image", src: data.background });
+        if (data.audio) assetsToLoad.push({ type: "audio", src: data.audio });
+        if (data.video) assetsToLoad.push({ type: "video", src: data.video });
+        if (id === "final") {
+          assetsToLoad.push({
+            type: "audio",
+            src: config.global.audioBGMFinal,
+          });
         }
-
-        Navigation.manejarClickBoton(boton, seccion);
       }
-    } catch (error) {
-      console.error("Error manejando click:", error);
+    });
+    if (assetsToLoad.length > 0) {
+      console.log(
+        `[App.js] Precargando ${assetsToLoad.length} assets de '${sectionId}' en 2do plano...`
+      );
+      Preloader.loadAssets(assetsToLoad);
     }
   },
 
-  _handleKeydown(e) {
-    try {
-      if (e.key === "Enter" && AppState.seccionActiva) {
-        const numero = AppState.seccionActiva.id.match(/^acertijo(\d+)$/)?.[1];
-        if (numero) Validation.validarRespuesta(+numero);
-      }
+  /**
+   * --- FUNCIÓN MODIFICADA ---
+   * Helper para el fundido A negro
+   */
+  _fadeOut() {
+    console.log("[App.js] Fundido A NEGRO.");
+    const overlay = document.getElementById("fade-overlay");
+    // --- CORRECCIÓN AQUÍ ---
+    // Hacer que el overlay sea "sólido" (atrape clics)
+    overlay.style.pointerEvents = "auto";
 
-      if (e.key === " " || e.key === "Space") {
-        AudioManager.saltarSeccion();
-        e.preventDefault();
+    return new Promise((resolve) => {
+      overlay.style.opacity = "1";
+      setTimeout(resolve, 400); // Duración del fundido
+    });
+  },
+
+  /**
+   * --- FUNCIÓN MODIFICADA ---
+   * Helper para el fundido DESDE negro
+   */
+  _fadeIn() {
+    console.log("[App.js] Fundido DESDE NEGRO.");
+    const overlay = document.getElementById("fade-overlay");
+
+    return new Promise((resolve) => {
+      overlay.style.opacity = "0";
+      setTimeout(() => {
+        // --- CORRECCIÓN AQUÍ ---
+        // Hacer que el overlay sea "invisible" a los clics
+        overlay.style.pointerEvents = "none";
+        resolve();
+      }, 400);
+    });
+  },
+
+  /**
+   * El corazón de la app. Se llama CADA VEZ que la ruta cambia.
+   */
+  async showSection(sectionId) {
+    console.log(`[App.js] Intento de navegar a: ${sectionId}`);
+    const sectionData = config.sections[sectionId];
+    if (!sectionData) return;
+
+    const requestedStep = sectionData.step;
+
+    // --- LÓGICA DE GUARDIA (Progreso Forzado) ---
+    if (requestedStep < this._userMaxStep) {
+      if (this._isExceptionNav) {
+        console.log(
+          `[App.js] Guardia: NAVEGACIÓN EXCEPCIONAL permitida a ${sectionId}.`
+        );
+        this._isExceptionNav = false;
+      } else {
+        console.warn(
+          `[App.js] Guardia: Navegación a step ${requestedStep} BLOQUEADA (Max: ${this._userMaxStep}).`
+        );
+        const maxSectionId = this._userLastSection;
+
+        if (maxSectionId && maxSectionId !== sectionId) {
+          Router.navigate(maxSectionId, true);
+        }
+        return;
       }
-    } catch (error) {
-      console.error("Error manejando tecla:", error);
+    }
+
+    // 1. Fundido a negro
+    if (this._currentSection !== null) {
+      await this._fadeOut();
+    }
+
+    // --- (La pantalla está en negro) ---
+
+    // 2. Lógica de actualización
+    this._currentSection = sectionId;
+    document.body.className = `view-${sectionId}`;
+
+    FirebaseManager.updateCurrentLocation(sectionId);
+
+    if (requestedStep > this._userMaxStep) {
+      console.log(`[App.js] Nuevo paso máximo alcanzado: ${requestedStep}`);
+      this._userMaxStep = requestedStep;
+      this._userLastSection = sectionId;
+      FirebaseManager.saveProgress(requestedStep, sectionId);
+    }
+
+    AudioManager.stopNarration();
+    if (sectionId !== "countdown") {
+      Countdown.stop();
+    }
+
+    if (sectionData.type === "intro") {
+      Render.section(sectionId);
+      if (this._isCriticalLoadingDone) {
+        Render.setIntroLoading(false);
+      }
+      // --- CORRECCIÓN AQUÍ ---
+      // Si volvemos a la intro, forzamos el fadeIn
+      // (antes solo lo hacía si !this._isAudioStarted)
+      await this._fadeIn();
+      return;
+    }
+
+    // Lógica de BGM
+    let targetBGMType = "none";
+    if (sectionId === "countdown") {
+      targetBGMType = "final";
+    } else if (sectionId !== "final") {
+      targetBGMType = "main";
+    }
+    if (this._isAudioStarted && targetBGMType !== this._activeBGMType) {
+      if (targetBGMType === "final") {
+        AudioManager.playBGMFinal();
+      } else if (targetBGMType === "main") {
+        AudioManager.playBGM();
+      } else {
+        AudioManager.stopAllBGM();
+      }
+      this._activeBGMType = targetBGMType;
+    }
+
+    Render.section(sectionId);
+
+    // Lógica de Narración
+    const skip = this._skipNarrationFor === sectionId;
+    this._skipNarrationFor = null;
+    if (sectionData.audio && !skip) {
+      console.log(`[App.js] Reproduciendo narración: ${sectionData.audio}`);
+      setTimeout(() => {
+        AudioManager.playNarration(sectionData.audio);
+      }, 100);
+    }
+
+    await this._fadeIn();
+    this._preloadNextSections(sectionId);
+  },
+
+  _handleAudioUnlock() {
+    if (this._isAudioStarted) return;
+    console.log(
+      "[App.js] Interacción de usuario (video) ha DESBLOQUEADO el audio."
+    );
+    this._isAudioStarted = true;
+    if (this._currentSection === "countdown") {
+      AudioManager.playBGMFinal();
+      this._activeBGMType = "final";
+    }
+  },
+
+  _handleIntroPlay() {
+    console.log("[App.js] Botón 'Play' presionado.");
+    if (this._isAudioStarted) return;
+    this._isAudioStarted = true;
+
+    AudioManager.playBGM();
+    this._activeBGMType = "main";
+
+    Render.showContent();
+    Render.hidePlayButton();
+
+    const introAudio = config.sections.intro.audio;
+    if (introAudio) {
+      setTimeout(() => {
+        AudioManager.playNarration(introAudio);
+      }, 300);
+    }
+  },
+
+  _handleSpecialNavigation(sectionId) {
+    console.log(`[App.js] Navegación ESPECIAL (excepción) a ${sectionId}.`);
+    this._isExceptionNav = true;
+    this._skipNarrationFor = sectionId;
+    Router.navigate(sectionId);
+  },
+
+  _handleNarrationEnd() {
+    console.log("[App.js] Narración terminada.");
+    if (this._currentSection === "intro") {
+      console.log("[App.js] Mostrando botón 'Comenzar'.");
+      Render.showActions();
     }
   },
 };
+
+// --- PUNTO DE ENTRADA ---
+document.addEventListener("DOMContentLoaded", () => {
+  App.init();
+});

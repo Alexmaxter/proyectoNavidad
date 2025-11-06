@@ -103,7 +103,7 @@ const SectionManager = {
     seccion.classList.add("active");
     AppState.seccionActiva = seccion;
 
-    // Countdown especial - SOLO inicializar UNA VEZ
+    // countdown especial - SOLO inicializar UNA VEZ
     if (id === "countdown") {
       console.log("📍 Activando sección countdown");
 
@@ -111,14 +111,14 @@ const SectionManager = {
       AudioManager.detenerTodosLosAudios();
 
       // Destruir countdown previo si existe
-      Countdown.destruir();
+      countdown.destruir();
 
       // Esperar un momento para asegurar limpieza
       setTimeout(() => {
         // SOLO si seguimos en countdown, iniciar
         if (AppState.seccionActiva?.id === "countdown") {
           console.log("🕐 Iniciando countdown por primera vez");
-          Countdown.init();
+          countdown.init();
 
           // Reproducir audio del countdown DESPUÉS de inicializarlo
           setTimeout(() => {
@@ -130,7 +130,7 @@ const SectionManager = {
       }, 150);
     } else {
       // Para otras secciones, destruir countdown
-      Countdown.destruir();
+      countdown.destruir();
     }
 
     this._handleSectionStart(id, seccion, saltarAudio);
