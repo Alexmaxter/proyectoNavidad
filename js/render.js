@@ -16,7 +16,6 @@ const Render = {
   },
 
   section(sectionId) {
-    // ... (idéntico) ...
     console.log(`[Render.js] Renderizando sección: ${sectionId}`);
     const data = config.sections[sectionId];
     if (!data) return;
@@ -60,8 +59,9 @@ const Render = {
   },
 
   _renderIntroLayout(data) {
-    // ... (idéntico) ...
-    console.log("[Render.js] Creando layout de 'intro' (con spinner).");
+    console.log(
+      "[Render.js] Creando layout de 'intro' (con barra de progreso)."
+    );
     const titleEl = this._createTitle(data.title);
     const narrativeEl = this._createNarrative(data.narrative);
     titleEl.classList.add("hidden-content");
@@ -79,7 +79,6 @@ const Render = {
   },
 
   _createTitle(text) {
-    // ... (idéntico) ...
     const titleEl = document.createElement("h1");
     titleEl.className = "titulo";
     titleEl.textContent = text;
@@ -87,37 +86,49 @@ const Render = {
   },
 
   _createNarrative(html) {
-    // ... (idéntico) ...
     const narrativeEl = document.createElement("p");
     narrativeEl.className = "narrativa";
     narrativeEl.innerHTML = html;
     return narrativeEl;
   },
 
+  /**
+   * --- FUNCIÓN MODIFICADA ---
+   * Crea el centro de "Play" con la nueva barra de progreso.
+   */
   _createIntroPlayCenter(data) {
-    // ... (idéntico) ...
     const playCenter = document.createElement("div");
-    playCenter.className = "play-center is-loading";
+    playCenter.className = "play-center is-loading"; // Sigue cargando por defecto
     playCenter.id = "play-center-control";
     console.log(
       "[Render.js] Creado '#play-center-control' con clase '.is-loading'."
     );
+
+    // 1. Botón "Play" (oculto por .is-loading)
     const playButton = document.createElement("button");
     playButton.innerHTML = "<pre>▶</pre>";
     playButton.addEventListener("click", () => {
       this._callbacks.onIntroPlay();
     });
+
+    // 2. Aviso de volumen (oculto por .is-loading)
     const avisoVolumen = document.createElement("p");
     avisoVolumen.className = "aviso-volumen";
     avisoVolumen.textContent = "🔊 Sube el volumen antes de empezar";
+
+    // 3. Indicador de Carga (CON BARRA DE PROGRESO)
     const loadingIndicator = document.createElement("div");
     loadingIndicator.className = "loading-indicator";
-    const spinner = document.createElement("div");
-    spinner.className = "spinner";
-    loadingIndicator.appendChild(spinner);
-    const loadingText = document.createElement("span");
-    loadingText.textContent = "Cargando...";
-    loadingIndicator.appendChild(loadingText);
+
+    // Añadimos la barra y el texto de porcentaje
+    loadingIndicator.innerHTML = `
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+      <div class="progress-percentage" id="progress-percentage">0%</div>
+    `;
+
+    // Añadimos todos al contenedor
     playCenter.appendChild(loadingIndicator);
     playCenter.appendChild(playButton);
     playCenter.appendChild(avisoVolumen);
@@ -125,7 +136,6 @@ const Render = {
   },
 
   _createIntroActions(data) {
-    // ... (idéntico) ...
     const button = document.createElement("button");
     button.textContent = data.buttonText;
     button.addEventListener("click", () => {
@@ -135,7 +145,6 @@ const Render = {
   },
 
   _createDecisionControls(data) {
-    // ... (idéntico) ...
     const acciones = document.createElement("div");
     acciones.className = "acciones";
     data.buttons.forEach((buttonData) => {
@@ -156,7 +165,6 @@ const Render = {
   },
 
   _createExplanationControls(data) {
-    // ... (idéntico) ...
     const acciones = document.createElement("div");
     acciones.className = "acciones";
     if (data.buttonText) {
@@ -171,7 +179,6 @@ const Render = {
   },
 
   _createRiddleControls(data) {
-    // ... (idéntico) ...
     const group = document.createElement("div");
     group.className = "input-group";
     const inputContainer = document.createElement("div");
@@ -201,7 +208,6 @@ const Render = {
   },
 
   _createVideoPlayer(data) {
-    // ... (idéntico) ...
     const videoContainer = document.createElement("div");
     videoContainer.className = "video-container";
     const video = document.createElement("video");
@@ -224,12 +230,9 @@ const Render = {
     return videoContainer;
   },
 
-  // --- FUNCIÓN MODIFICADA ---
   _createCountdownControls(data) {
     const display = document.createElement("div");
-    display.className = "countdown-display"; // El CSS lo hará vertical
-
-    // --- Orden Vertical (Request 1) ---
+    display.className = "countdown-display";
     display.innerHTML = `
       <div class="countdown-unit" id="unit-years">
         <span id="countdown-years">--</span>
@@ -252,12 +255,15 @@ const Render = {
         <label>segundos</label>
       </div>
     `;
-
     return display;
   },
 
+  /**
+   * --- FUNCIÓN MODIFICADA ---
+   * Habilita/deshabilita el estado de carga de la intro.
+   * (Añadidos logs)
+   */
   setIntroLoading(isLoading) {
-    // ... (idéntico) ...
     console.log(
       `[Render.js] setIntroLoading() llamado con: ${
         isLoading ? "TRUE" : "FALSE"
@@ -280,8 +286,27 @@ const Render = {
     }
   },
 
+  /**
+   * --- NUEVA FUNCIÓN ---
+   * Actualiza la barra de progreso y el porcentaje.
+   * @param {number} percentage - Un valor de 0.0 a 1.0
+   */
+  updateLoadingProgress(percentage) {
+    const fillEl = document.getElementById("progress-bar-fill");
+    const textEl = document.getElementById("progress-percentage");
+    if (!fillEl || !textEl) return;
+
+    const percentNum = Math.floor(percentage * 100);
+    fillEl.style.width = `${percentNum}%`;
+    textEl.textContent = `${percentNum}%`;
+
+    if (percentage === 1) {
+      // Opcional: cambiar el texto cuando llega al 100%
+      textEl.textContent = "¡Listo!";
+    }
+  },
+
   showContent() {
-    // ... (idéntico) ...
     this._rootElement.querySelectorAll(".hidden-content").forEach((el) => {
       if (el.tagName === "H1" || el.tagName === "P") {
         el.classList.remove("hidden-content");
@@ -291,7 +316,6 @@ const Render = {
   },
 
   hidePlayButton() {
-    // ... (idéntico) ...
     const playButton = this._rootElement.querySelector(".play-center");
     if (playButton) {
       playButton.classList.add("hidden-content");
@@ -299,7 +323,6 @@ const Render = {
   },
 
   showActions() {
-    // ... (idéntico) ...
     const acciones = this._rootElement.querySelector(".acciones");
     if (acciones) {
       acciones.classList.remove("hidden-content");
