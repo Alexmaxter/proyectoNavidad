@@ -99,6 +99,47 @@
                 Reiniciar Progreso del Usuario
               </button>
             </div>
+
+            <div
+              class="admin-danger-zone"
+              style="
+                margin-top: 1rem;
+                border-top: 1px solid var(--admin-border);
+                padding-top: 1rem;
+              "
+            >
+              <h2 class="admin-column-title">
+                Zona de Pruebas (Control Remoto)
+              </h2>
+              <p
+                class="narrativa"
+                style="
+                  font-size: 0.9rem;
+                  text-align: left;
+                  margin-bottom: 1rem;
+                  color: var(--admin-text-secondary);
+                "
+              >
+                Este botón desbloqueará el botón "Siguiente" en la sección
+                'pausa' para el usuario (Valentino) en tiempo real, ignorando la
+                fecha.
+              </p>
+
+              <button
+                id="force-pausa-unlock-btn"
+                class="admin-button-google"
+                style="
+                  text-decoration: none;
+                  background-color: var(--admin-accent-green);
+                  width: 100%;
+                  justify-content: center;
+                  font-size: 1rem;
+                "
+                disabled
+              >
+                Forzar Desbloqueo de Pausa (Remoto)
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -122,6 +163,8 @@
         orderBy,
         getDocs,
         deleteDoc,
+        // --- CAMBIO: Necesitamos setDoc para el botón ---
+        setDoc,
       } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
       window.firebaseAdminSDK = {
@@ -139,6 +182,8 @@
         orderBy,
         getDocs,
         deleteDoc,
+        // --- CAMBIO: Pasar setDoc ---
+        setDoc,
         firebaseConfig: {
           apiKey: "AIzaSyCPKR80Dft600xzIGvrfeXCYQmOdro8kx0",
           authDomain: "valentinoexperiencia-fcb5f.firebaseapp.com",

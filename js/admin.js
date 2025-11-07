@@ -21,6 +21,8 @@ const {
   doc,
   getDocs,
   deleteDoc,
+  // --- CAMBIO: Importar setDoc ---
+  setDoc,
 } = window.firebaseAdminSDK;
 
 // --- NUEVO: Mapa de Navegación Inversa ---
@@ -60,25 +62,21 @@ const detailsCardsEl = document.getElementById("details-cards");
 const attemptsListEl = document.getElementById("attempts-list");
 const deleteProgressBtn = document.getElementById("delete-progress-btn");
 
+// --- CAMBIO: Añadir referencia al nuevo botón ---
+const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
+
 let activeListeners = {};
 
-// --- signIn (sin cambios) ---
+// --- signIn (MODIFICADO para compatibilidad móvil) ---
 const signIn = () => {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      console.log(
-        "Admin: ¡Inicio de sesión de Google exitoso!",
-        result.user.email
-      );
-    })
-    .catch((error) => {
-      console.error("Admin: Error en el popup de Google:", error);
-    });
-};
-
-// --- logOut (sin cambios) ---
-const logOut = () => {
-  signOut(auth);
+  // Cambiamos signInWithPopup por signInWithRedirect
+  signInWithRedirect(auth, provider).catch((error) => {
+    // El catch aquí es solo para errores iniciales (ej. red)
+    console.error("Admin: Error al iniciar redirección de Google:", error);
+  });
+  // La lógica del .then() ya no va aquí.
+  // El resultado se capturará automáticamente en 'onAuthStateChanged'
+  // cuando la página se recargue después de la redirección.
 };
 
 /**
@@ -122,7 +120,7 @@ const renderVisualPath = (currentSection, maxStep, lastSection) => {
   if (!visualPathEl) return;
   visualPathEl.innerHTML = "";
 
-  // --- NUEVA LÓGICA DE TRAZADO DE CAMINO ---
+  // --- NUEVA LÓGICA DE TRAZADO de CAMINO ---
   const visitedPath = new Set();
   let currentTrace = lastSection; // Empezar desde la sección máxima alcanzada
 
@@ -224,6 +222,7 @@ const listenToProgress = () => {
       attemptsListEl.innerHTML = "<li>...</li>";
       currentUserId = null;
       deleteProgressBtn.disabled = true;
+      forcePausaUnlockBtn.disabled = true; // --- CAMBIO: Deshabilitar botón
       return;
     }
     const userDoc = snapshot.docs[0];
@@ -231,6 +230,7 @@ const listenToProgress = () => {
     const userId = userDoc.id;
     currentUserId = userId;
     deleteProgressBtn.disabled = false;
+    forcePausaUnlockBtn.disabled = false; // --- CAMBIO: Habilitar botón
 
     // --- CAMBIO AQUÍ ---
     // Pasamos los 3 datos necesarios a la lógica de renderizado
@@ -337,7 +337,38 @@ const handleDeleteProgress = async () => {
   }
 };
 
-// --- initAdmin (sin cambios) ---
+// --- NUEVA FUNCIÓN: Handler para el botón de forzar desbloqueo ---
+const handleForcePausaUnlock = async () => {
+  if (!currentUserId) {
+    alert("No hay un usuario al cual desbloquear.");
+    return;
+  }
+  console.log(
+    `Admin: Forzando desbloqueo de 'pausa' para el usuario ${currentUserId}...`
+  );
+  forcePausaUnlockBtn.disabled = true;
+  forcePausaUnlockBtn.textContent = "Enviando...";
+
+  try {
+    const progressDocRef = doc(db, "progress", currentUserId);
+    // Escribimos 'pausaUnlocked: true' en el documento del usuario
+    await setDoc(progressDocRef, { pausaUnlocked: true }, { merge: true });
+
+    console.log("Admin: ¡Desbloqueo enviado!");
+    alert("¡Desbloqueo forzado enviado al usuario!");
+
+    // Opcional: cambiar el texto del botón para mostrar que ya se hizo
+    forcePausaUnlockBtn.textContent = "¡Desbloqueo Enviado!";
+    // No lo re-habilitamos para no enviarlo múltiples veces
+  } catch (error) {
+    console.error("Admin: Error al forzar el desbloqueo:", error);
+    alert("Error al enviar el desbloqueo: " + error.message);
+    forcePausaUnlockBtn.disabled = false; // Re-habilitar si falla
+    forcePausaUnlockBtn.textContent = "Forzar Desbloqueo de Pausa (Remoto)";
+  }
+};
+
+// --- initAdmin (Modificado) ---
 const initAdmin = () => {
   app = initializeApp(window.firebaseAdminSDK.firebaseConfig);
   auth = getAuth(app);
@@ -346,6 +377,10 @@ const initAdmin = () => {
   loginBtn.addEventListener("click", signIn);
   logoutBtn.addEventListener("click", logOut);
   deleteProgressBtn.addEventListener("click", handleDeleteProgress);
+
+  // --- CAMBIO: Añadir listener al nuevo botón ---
+  forcePausaUnlockBtn.addEventListener("click", handleForcePausaUnlock);
+
   onAuthStateChanged(auth, (user) => {
     if (user && user.providerData.some((p) => p.providerId === "google.com")) {
       console.log("Admin: Autenticado como", user.email);

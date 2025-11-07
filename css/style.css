@@ -137,7 +137,8 @@ body.view-final2 {
   color: #ffffff;
   padding: 0 clamp(0.5rem, 2vw, 1rem);
   max-width: 800px;
-  margin: clamp(0.5rem, 2vw, 1rem) 0;
+  /* --- CAMBIO AQUÍ: Añadido 'auto' para centrar los márgenes L/R --- */
+  margin: clamp(0.5rem, 2vw, 1rem) auto;
   animation: slideInUp 0.8s ease-out 0.2s;
   animation-fill-mode: backwards;
   line-height: 1.6;

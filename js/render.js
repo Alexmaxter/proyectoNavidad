@@ -37,7 +37,10 @@ const Render = {
         controlesContainer.appendChild(this._createDecisionControls(data));
         break;
       case "explanation":
-        controlesContainer.appendChild(this._createExplanationControls(data));
+        // --- CAMBIO AQUÍ: Pasar sectionId ---
+        controlesContainer.appendChild(
+          this._createExplanationControls(data, sectionId)
+        );
         break;
       case "riddle":
         controlesContainer.appendChild(this._createRiddleControls(data));
@@ -164,16 +167,31 @@ const Render = {
     return acciones;
   },
 
-  _createExplanationControls(data) {
+  // --- CAMBIO AQUÍ: Acepta sectionId ---
+  _createExplanationControls(data, sectionId) {
     const acciones = document.createElement("div");
     acciones.className = "acciones";
     if (data.buttonText) {
       const button = document.createElement("button");
       button.textContent = data.buttonText;
-      button.addEventListener("click", () => {
-        this._callbacks.onNavigate(data.onNavigate);
-      });
+
+      // --- CAMBIO AQUÍ: Lógica especial para el botón de Pausa ---
+      if (sectionId === "pausa" && data.onNavigate === "final") {
+        button.addEventListener("click", () => {
+          this._callbacks.onPausaNext(data.onNavigate); // Llama al nuevo handler
+        });
+      } else {
+        button.addEventListener("click", () => {
+          this._callbacks.onNavigate(data.onNavigate);
+        });
+      }
       acciones.appendChild(button);
+
+      // --- CAMBIO AQUÍ: Ocultar el botón de Pausa por defecto ---
+      if (sectionId === "pausa") {
+        acciones.classList.add("hidden-content"); // Oculto por defecto
+        acciones.id = "pausa-acciones"; // ID para encontrarlo
+      }
     }
     return acciones;
   },
@@ -212,20 +230,23 @@ const Render = {
     videoContainer.className = "video-container";
     const video = document.createElement("video");
     video.src = data.video;
-    video.playsInline = true;
+    video.playsInline = true; // --- CAMBIO: Asegurar playsinline ---
     video.preload = "auto";
-    video.autoplay = true;
-    video.controls = false;
+    video.autoplay = true; // --- CAMBIO: Mantener autoplay para el intento ---
+    video.controls = false; // --- CAMBIO: Forzar sin controles ---
     video.addEventListener("ended", () => {
       this._callbacks.onNavigate(data.onNavigate);
     });
     video.addEventListener("play", () => {
       this._callbacks.onAudioUnlocked();
     });
-    video.play().catch((error) => {
-      console.warn("Autoplay de video bloqueado. Mostrando controles.", error);
-      video.controls = true;
-    });
+
+    // --- CAMBIO: Intentar play() aquí es muy pronto, app.js lo manejará ---
+    // video.play().catch((error) => {
+    //   console.warn("Autoplay de video bloqueado. Mostrando controles.", error);
+    //   video.controls = true; // Esto es lo que queremos evitar
+    // });
+
     videoContainer.appendChild(video);
     return videoContainer;
   },
@@ -303,6 +324,30 @@ const Render = {
     if (percentage === 1) {
       // Opcional: cambiar el texto cuando llega al 100%
       textEl.textContent = "¡Listo!";
+    }
+  },
+
+  // --- NUEVA FUNCIÓN ---
+  // Intenta forzar el video a pantalla completa
+  forceVideoFullscreen() {
+    const video = this._rootElement.querySelector("video");
+    if (video) {
+      console.log("[Render.js] Intentando forzar fullscreen...");
+      if (video.requestFullscreen) {
+        video
+          .requestFullscreen()
+          .catch((err) =>
+            console.warn("[Render.js] requestFullscreen falló:", err.message)
+          );
+      } else if (video.webkitEnterFullscreen) {
+        // Para Safari en iOS
+        console.log("[Render.js] Usando webkitEnterFullscreen para iOS.");
+        video.webkitEnterFullscreen();
+      } else {
+        console.warn("[Render.js] Ningún método de fullscreen disponible.");
+      }
+    } else {
+      console.warn("[Render.js] forceVideoFullscreen: No se encontró video.");
     }
   },
 

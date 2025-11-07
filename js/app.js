@@ -21,6 +21,8 @@ const App = {
   _isExceptionNav: false,
   _pausaFadeTimer: null,
   _isFirebaseConnected: false,
+  _videoElementForPausa: null,
+  _pausaCheckInterval: null, // --- NUEVO: Timer para chequear la pausa
 
   async init() {
     console.log("[App.js] 1. Proyecto Navidad: Iniciando...");
@@ -38,6 +40,7 @@ const App = {
       onIntroPlay: this._handleIntroPlay.bind(this),
       onNavigateWithSkip: this._handleSpecialNavigation.bind(this),
       onAudioUnlocked: this._handleAudioUnlock.bind(this),
+      onPausaNext: this._handlePausaNext.bind(this),
     });
 
     try {
@@ -187,6 +190,7 @@ const App = {
     if (!sectionData) return;
     const requestedStep = sectionData.step;
 
+    // --- CAMBIO: Ya no se necesita el admin_unlock en la URL aquí ---
     if (requestedStep < this._userMaxStep) {
       if (this._isExceptionNav) {
         console.log(
@@ -206,6 +210,17 @@ const App = {
     }
 
     if (this._currentSection !== null) {
+      if (this._currentSection === "final") {
+        this._videoElementForPausa = null;
+      }
+      // --- CAMBIO: Detener el timer de 'pausa' si salimos de ella ---
+      if (this._currentSection === "pausa") {
+        if (this._pausaCheckInterval) {
+          console.log("[App.js] Saliendo de Pausa. Deteniendo timer.");
+          clearInterval(this._pausaCheckInterval);
+          this._pausaCheckInterval = null;
+        }
+      }
       await this._fadeOut();
     }
 
@@ -280,6 +295,26 @@ const App = {
 
     Render.section(sectionId);
 
+    // --- NUEVO: Lógica de Pausa y Final ---
+    if (sectionId === "final") {
+      // Capturar el elemento de video renderizado
+      this._videoElementForPausa = document.querySelector("#app-root video");
+      console.log(
+        "[App.js] Elemento de video capturado.",
+        this._videoElementForPausa
+      );
+    }
+    if (sectionId === "pausa") {
+      // Iniciar la lógica de desbloqueo de tiempo
+      // --- CAMBIO: Se ejecuta 1 vez y luego en intervalo ---
+      this._checkPausaUnlock(); // Chequear inmediatamente
+      this._pausaCheckInterval = setInterval(
+        () => this._checkPausaUnlock(),
+        30000
+      ); // Y luego cada 30 seg
+    }
+    // --- FIN NUEVO ---
+
     // Lógica de Narración
     const skip = this._skipNarrationFor === sectionId;
     this._skipNarrationFor = null;
@@ -292,6 +327,67 @@ const App = {
 
     await this._fadeIn();
     this._preloadNextSections(sectionId);
+  },
+
+  // --- NUEVA FUNCIÓN HELPER ---
+  _showPausaButton() {
+    const acciones = document.getElementById("pausa-acciones");
+    if (acciones && acciones.classList.contains("hidden-content")) {
+      console.log("[App.js] ¡Desbloqueando botón 'Siguiente' de Pausa!");
+      acciones.classList.remove("hidden-content");
+
+      // --- CAMBIO: Una vez que se muestra, detenemos el timer ---
+      if (this._pausaCheckInterval) {
+        console.log("[App.js] Botón de Pausa mostrado. Deteniendo timer.");
+        clearInterval(this._pausaCheckInterval);
+        this._pausaCheckInterval = null;
+      }
+    }
+  },
+
+  // --- FUNCIÓN MODIFICADA ---
+  async _checkPausaUnlock() {
+    console.log("[App.js] Verificando desbloqueo de Pausa...");
+    // --- USA LA FECHA REAL ---
+    const unlockTime = new Date("2025-12-25T00:00:00-03:00").getTime(); // AR
+
+    // 1. Check Admin Force-Unlock (desde Firebase)
+    if (this._isFirebaseConnected) {
+      // Volvemos a cargar el progreso para ver si el admin activó el flag
+      const progressData = await FirebaseManager.loadProgress();
+      if (progressData.pausaUnlocked === true) {
+        console.log("[App.js] Admin forzó desbloqueo (Flag de Firebase).");
+        this._showPausaButton();
+        return; // Salimos, ya está desbloqueado
+      }
+    }
+
+    // 2. Check Server Time (usando una API pública)
+    try {
+      // Usamos una API de tiempo para evitar que el usuario cambie la hora local
+      const response = await fetch("https://worldtimeapi.org/api/ip");
+      if (!response.ok) throw new Error("Fallo en la API de tiempo");
+      const data = await response.json();
+      const serverTime = new Date(data.utc_datetime).getTime();
+
+      console.log(
+        `[App.js] Hora Servidor: ${new Date(
+          serverTime
+        )}, Hora Desbloqueo: ${new Date(unlockTime)}`
+      );
+
+      if (serverTime >= unlockTime) {
+        console.log("[App.js] ¡Tiempo cumplido! Mostrando botón.");
+        this._showPausaButton();
+      } else {
+        console.log("[App.js] Aún no es tiempo. El timer volverá a chequear.");
+      }
+    } catch (e) {
+      console.error(
+        "Error al fetchear la hora del servidor. El timer reintentará.",
+        e
+      );
+    }
   },
 
   _handleAudioUnlock() {
@@ -329,6 +425,49 @@ const App = {
     Router.navigate(sectionId);
   },
 
+  // --- NUEVA FUNCIÓN ---
+  _handlePausaNext(sectionId) {
+    console.log(
+      "[App.js] Botón 'Siguiente' de Pausa presionado. Intentando desbloquear video..."
+    );
+
+    // 1. Asegurarse de que el audio principal esté iniciado (BGM)
+    if (!this._isAudioStarted) {
+      this._isAudioStarted = true;
+      AudioManager.playBGM(); // Inicia la BGM principal
+      this._activeBGMType = "main";
+    }
+
+    // 2. Navegar a la sección 'final'
+    Router.navigate(sectionId);
+
+    // 3. El router llamará a showSection('final')
+    //    showSection('final') renderizará el video y lo guardará en this._videoElementForPausa
+    //    El video tiene autoplay=true, controls=false.
+
+    // 4. Usar un pequeño timeout para asegurar que el DOM esté actualizado
+    //    y *luego* forzar play y fullscreen.
+    setTimeout(() => {
+      if (this._videoElementForPausa) {
+        console.log("[App.js] Intentando play() y fullscreen() en el video...");
+        this._videoElementForPausa.play().catch((err) => {
+          console.warn(
+            "play() automático falló, el navegador mostrará controles:",
+            err.message
+          );
+          // SI el play() falla, el navegador *mostrará* los controles.
+          // Es la única forma de que el usuario vea el video.
+          this._videoElementForPausa.controls = true;
+        });
+        Render.forceVideoFullscreen();
+      } else {
+        console.error(
+          "[App.js] _handlePausaNext: No se encontró el elemento de video para forzar play."
+        );
+      }
+    }, 100); // 100ms para que el DOM se actualice post-navegación
+  },
+
   _handleNarrationEnd() {
     console.log("[App.js] Narración terminada.");
 
@@ -336,15 +475,11 @@ const App = {
       console.log("[App.js] Mostrando botón 'Comenzar'.");
       Render.showActions();
     } else if (this._currentSection === "pausa") {
+      // --- CAMBIO: Ya no hacemos el fade de 10 seg ---
+      // La lógica ahora depende del botón que aparece con la fecha.
       console.log(
-        "[App.js] Narración de Pausa terminada. Iniciando fundido a negro en 10 segundos."
+        "[App.js] Narración de Pausa terminada. Esperando desbloqueo de fecha."
       );
-      if (this._pausaFadeTimer) clearTimeout(this._pausaFadeTimer);
-      this._pausaFadeTimer = setTimeout(() => {
-        console.log("[App.js] Timer de Pausa: ¡Fundido a negro!");
-        this._fadeOut();
-        AudioManager.stopAllBGM();
-      }, 10000);
     }
   },
 };

@@ -127,8 +127,9 @@ const config = {
         "Todavía no es el momento.<br>Pero lo reconocerás cuando llegue.", // <-- Tu texto
       background: "./assets/img/explicacion3-bg.png",
       audio: "./assets/audio/pausa.mp3", // <-- Tu audio
-      buttonText: null,
-      onNavigate: null, // <-- Callejón sin salida
+      // --- CAMBIOS AQUÍ ---
+      buttonText: "Siguiente", // <-- Texto del botón
+      onNavigate: "final", // <-- Destino del botón
     },
 
     // --- Finales (Steps Re-numerados) ---
