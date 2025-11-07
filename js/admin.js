@@ -1,6 +1,6 @@
 /**
  * admin.js: Lógica del Panel de Administración
- * (Actualizado con Nueva UX 2.0 y la sección #pausa)
+ * (Corregido con la lógica de "camino visitado" para arreglar el bug visual)
  */
 
 // Importamos el config de la app principal para saber la estructura
@@ -23,12 +23,33 @@ const {
   deleteDoc,
 } = window.firebaseAdminSDK;
 
-// ... (variables globales sin cambios) ...
+// --- NUEVO: Mapa de Navegación Inversa ---
+// Esto nos permite trazar el camino hacia atrás.
+const pathMap = {
+  decision: "intro",
+  confirmacion1: "decision",
+  acertijo1: "decision",
+  confirmacion2: "confirmacion1",
+  explicacion1: "acertijo1",
+  acertijo2: "explicacion1",
+  explicacion2: "acertijo2",
+  acertijo3: "explicacion2",
+  explicacion3: "acertijo3",
+  final2: "confirmacion2",
+  pausa: "explicacion3",
+  final: "pausa", // Aunque se salta con QR, lo mapeamos
+  countdown: "final",
+};
+// --- FIN DEL NUEVO MAPA ---
+
+// Variables globales del Admin
 let app;
 let auth;
 let db;
 let provider;
 let currentUserId = null;
+
+// Referencias a los elementos del DOM (sin cambios)
 const loginView = document.getElementById("admin-login");
 const panelView = document.getElementById("admin-panel");
 const loginBtn = document.getElementById("login-btn");
@@ -38,6 +59,7 @@ const visualPathEl = document.getElementById("visual-path");
 const detailsCardsEl = document.getElementById("details-cards");
 const attemptsListEl = document.getElementById("attempts-list");
 const deleteProgressBtn = document.getElementById("delete-progress-btn");
+
 let activeListeners = {};
 
 // --- signIn (sin cambios) ---
@@ -59,22 +81,31 @@ const logOut = () => {
   signOut(auth);
 };
 
-// --- createStepElement (sin cambios) ---
-const createStepElement = (sectionId, currentSection, maxStep) => {
+/**
+ * --- FUNCIÓN MODIFICADA ---
+ * Ahora comprueba contra el "visitedPath" (Set) en lugar de "maxStep" (Number)
+ */
+const createStepElement = (sectionId, currentSection, visitedPath) => {
   const sectionData = config.sections[sectionId];
   if (!sectionData) return null;
+
   const step = sectionData.step;
   const el = document.createElement("div");
   el.className = "path-step";
+
+  // --- LÓGICA DE ESTADO CORREGIDA ---
   if (sectionId === currentSection) {
-    el.classList.add("current");
+    el.classList.add("current"); // Dónde está AHORA
   }
-  if (step <= maxStep) {
-    el.classList.add("visited");
+
+  // Comprueba si la sección está en el Set de visitados
+  if (visitedPath.has(sectionId)) {
+    el.classList.add("visited"); // Pasos alcanzados
+  } else if (sectionId !== currentSection) {
+    el.classList.add("locked"); // Pasos futuros o del camino alterno
   }
-  if (step > maxStep) {
-    el.classList.add("locked");
-  }
+  // --- FIN DE LA LÓGICA CORREGIDA ---
+
   el.innerHTML = `
     <strong>${sectionId}</strong>
     <span>(Paso ${step})</span>
@@ -84,17 +115,26 @@ const createStepElement = (sectionId, currentSection, maxStep) => {
 
 /**
  * --- FUNCIÓN MODIFICADA ---
- * Construye y renderiza el árbol de progreso visual completo
- * (Actualizado con #pausa)
+ * Ahora construye el "visitedPath" (Set) trazando el camino hacia atrás
+ * desde la "lastSection" (sección máxima alcanzada).
  */
-const renderVisualPath = (currentSection, maxStep) => {
+const renderVisualPath = (currentSection, maxStep, lastSection) => {
   if (!visualPathEl) return;
-  visualPathEl.innerHTML = ""; // Limpiar el mapa
+  visualPathEl.innerHTML = "";
 
-  // Definir los dos caminos basados en config.js
+  // --- NUEVA LÓGICA DE TRAZADO DE CAMINO ---
+  const visitedPath = new Set();
+  let currentTrace = lastSection; // Empezar desde la sección máxima alcanzada
+
+  // Trazar el camino hacia atrás hasta llegar a 'intro'
+  while (currentTrace) {
+    visitedPath.add(currentTrace);
+    currentTrace = pathMap[currentTrace];
+  }
+  visitedPath.add("intro"); // Asegurarse de que 'intro' esté siempre
+  // --- FIN DE LA NUEVA LÓGICA ---
+
   const caminoRapido = ["confirmacion1", "confirmacion2", "final2"];
-
-  // --- CAMBIO AQUÍ: Añadido 'pausa' ---
   const caminoPaciente = [
     "acertijo1",
     "explicacion1",
@@ -102,32 +142,36 @@ const renderVisualPath = (currentSection, maxStep) => {
     "explicacion2",
     "acertijo3",
     "explicacion3",
-    "pausa", // <-- AÑADIDO
+    "pausa",
     "final",
     "countdown",
   ];
 
-  // --- Renderizar Paso Inicial Común ---
-  visualPathEl.appendChild(createStepElement("intro", currentSection, maxStep));
+  // Renderizar usando el nuevo "visitedPath"
   visualPathEl.appendChild(
-    createStepElement("decision", currentSection, maxStep)
+    createStepElement("intro", currentSection, visitedPath)
+  );
+  visualPathEl.appendChild(
+    createStepElement("decision", currentSection, visitedPath)
   );
 
-  // --- Renderizar Bifurcación: Camino Rápido ---
   const branchRapido = document.createElement("div");
   branchRapido.className = "path-branch";
   branchRapido.innerHTML = `<h3 class="path-branch-title">Camino Rápido</h3>`;
   caminoRapido.forEach((id) => {
-    branchRapido.appendChild(createStepElement(id, currentSection, maxStep));
+    branchRapido.appendChild(
+      createStepElement(id, currentSection, visitedPath)
+    );
   });
   visualPathEl.appendChild(branchRapido);
 
-  // --- Renderizar Bifurcación: Camino Paciente ---
   const branchPaciente = document.createElement("div");
   branchPaciente.className = "path-branch";
   branchPaciente.innerHTML = `<h3 class="path-branch-title">Camino Paciente</h3>`;
   caminoPaciente.forEach((id) => {
-    branchPaciente.appendChild(createStepElement(id, currentSection, maxStep));
+    branchPaciente.appendChild(
+      createStepElement(id, currentSection, visitedPath)
+    );
   });
   visualPathEl.appendChild(branchPaciente);
 };
@@ -165,7 +209,10 @@ const renderDetails = (userData) => {
   `;
 };
 
-// --- listenToProgress (sin cambios) ---
+/**
+ * --- FUNCIÓN MODIFICADA ---
+ * Pasa `lastSection` a la función de renderizado.
+ */
 const listenToProgress = () => {
   const progressCollection = collection(db, "progress");
   const unsubscribe = onSnapshot(progressCollection, (snapshot) => {
@@ -184,7 +231,16 @@ const listenToProgress = () => {
     const userId = userDoc.id;
     currentUserId = userId;
     deleteProgressBtn.disabled = false;
-    renderVisualPath(userData.currentSection, userData.maxStep);
+
+    // --- CAMBIO AQUÍ ---
+    // Pasamos los 3 datos necesarios a la lógica de renderizado
+    renderVisualPath(
+      userData.currentSection,
+      userData.maxStep,
+      userData.lastSection
+    );
+    // --- FIN DEL CAMBIO ---
+
     renderDetails(userData);
     listenToAttempts(userId);
   });
