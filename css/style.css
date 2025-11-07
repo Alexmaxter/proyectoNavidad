@@ -713,3 +713,9 @@ body.admin-view #app-root {
     text-align: center;
   }
 }
+/* ... (después de body.view-final2) ... */
+
+body.view-pausa {
+  /* Reusamos el fondo de explicacion3 o pon uno nuevo */
+  background-color: #000;
+}
