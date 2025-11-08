@@ -1,12 +1,13 @@
 /**
  * firebase-manager.js: Módulo para manejar Firebase
+ * (VERSIÓN CORREGIDA CON LOGIN ANÓNIMO)
  */
 
 const {
   initializeApp,
   getAuth,
   onAuthStateChanged,
-  signInWithEmailAndPassword,
+  signInAnonymously, // <-- CAMBIADO
   getFirestore,
   doc,
   setDoc,
@@ -17,8 +18,7 @@ const {
 } = window.firebaseSDK;
 
 // --- RELLENA ESTOS DATOS con el usuario que creaste en Firebase ---
-const USER_EMAIL = "valentino@experiencia.com"; // <-- PON TU EMAIL AQUÍ
-const USER_PASSWORD = "aventura2025"; // <-- PON TU CONTRASEÑA AQUÍ
+// --- ELIMINADOS USER_EMAIL y USER_PASSWORD ---
 // -------------------------------------------------------------
 
 let app;
@@ -28,7 +28,7 @@ let currentUserId = null;
 let currentMaxStep = 0;
 
 /**
- * Inicializa Firebase e inicia sesión con el usuario único.
+ * Inicializa Firebase e inicia sesión anónimamente.
  */
 const init = () => {
   console.log("[Firebase] Inicializando...");
@@ -39,29 +39,31 @@ const init = () => {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        // --- CAMBIO EN EL LOG ---
         console.log(
-          `[Firebase] Usuario ya autenticado. UID: ${user.uid} (Email: ${user.email})`
+          `[Firebase] Usuario ya autenticado. UID: ${user.uid} (Anónimo: ${user.isAnonymous})`
         );
         currentUserId = user.uid;
         resolve();
       } else {
+        // --- ¡¡LÓGICA CAMBIADA!! ---
         console.log(
-          `[Firebase] No hay usuario. Intentando inicio de sesión con Email/Pass...`
+          `[Firebase] No hay usuario. Intentando inicio de sesión anónimo...`
         );
-        signInWithEmailAndPassword(auth, USER_EMAIL, USER_PASSWORD)
+        signInAnonymously(auth)
           .then((userCredential) => {
             console.log(
-              `[Firebase] ¡Inicio de sesión EXITOSO! UID: ${userCredential.user.uid} (Email: ${userCredential.user.email})`
+              `[Firebase] ¡Inicio de sesión anónimo EXITOSO! UID: ${userCredential.user.uid}`
             );
             currentUserId = userCredential.user.uid;
             resolve();
           })
           .catch((error) => {
             console.error(
-              "[Firebase] ERROR en inicio de sesión con Email/Pass:",
+              "[Firebase] ERROR en inicio de sesión anónimo:",
               error
             );
-            alert("Error de conexión con Firebase. Verifica las credenciales.");
+            alert("Error de conexión con Firebase.");
             reject(error);
           });
       }

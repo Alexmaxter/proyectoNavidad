@@ -1,6 +1,6 @@
 /**
  * admin.js: Lógica del Panel de Administración
- * (Corregido con la lógica de "camino visitado" para arreglar el bug visual)
+ * (VERSIÓN CORREGIDA PARA LOGIN ANÓNIMO)
  */
 
 // Importamos el config de la app principal para saber la estructura
@@ -68,25 +68,19 @@ const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 
 let activeListeners = {};
 
-// --- signIn (MODIFICADO para compatibilidad móvil) ---
-// --- ¡¡ESTA ES LA CORRECCIÓN CLAVE!! ---
+// --- CORRECCIÓN 1: en signIn (Sigue siendo útil) ---
 const signIn = async () => {
-  // <--- 1. Convertir a async
   try {
-    // --- 2. Añadir este bloque ---
-    // Primero, cerrar sesión de cualquier usuario activo (ej. Valentino)
+    // Primero, cerrar sesión de cualquier usuario activo (ej. Anónimo)
     if (auth.currentUser) {
       console.log(
-        "Admin: Cerrando sesión del usuario actual antes de loguear..."
+        "Admin: (signIn) Cerrando sesión del usuario actual antes de loguear..."
       );
-      await signOut(auth); // <--- ESTA LÍNEA CIERRA LA SESIÓN DE VALENTINO
+      await signOut(auth);
     }
-    // -----------------------------
-
-    // 3. Proceder con la redirección para el admin de Google
+    // Proceder con la redirección para el admin de Google
     await signInWithRedirect(auth, provider);
   } catch (error) {
-    // El catch ahora maneja todo
     console.error("Admin: Error al iniciar redirección de Google:", error);
   }
 };
@@ -237,10 +231,14 @@ const listenToProgress = () => {
       forcePausaUnlockBtn.disabled = true; // --- CAMBIO: Deshabilitar botón
       return;
     }
+    // --- CAMBIO ---
+    // En modo anónimo, puede haber MÚLTIPLOS usuarios.
+    // Por ahora, solo tomaremos el primero que encuentre.
+    // Para un admin real, necesitarías una UI para *seleccionar* el usuario.
     const userDoc = snapshot.docs[0];
     const userData = userDoc.data();
     const userId = userDoc.id;
-    currentUserId = userId;
+    currentUserId = userId; // <-- CUIDADO: Esto solo funciona si hay UN usuario
     deleteProgressBtn.disabled = false;
     forcePausaUnlockBtn.disabled = false; // --- CAMBIO: Habilitar botón
 
@@ -396,15 +394,24 @@ const initAdmin = () => {
   // --- CAMBIO: Añadir listener al nuevo botón ---
   forcePausaUnlockBtn.addEventListener("click", handleForcePausaUnlock);
 
+  // --- ¡¡CORRECCIÓN 2: Lógica de autenticación robusta!! ---
   onAuthStateChanged(auth, (user) => {
     if (user && user.providerData.some((p) => p.providerId === "google.com")) {
+      // Caso 1: El usuario es el Admin de Google. ¡Éxito!
       console.log("Admin: Autenticado como", user.email);
       userEmailEl.textContent = user.email;
       loginView.classList.add("hidden-content");
       panelView.classList.remove("hidden-content");
       listenToProgress();
+    } else if (user && user.isAnonymous) {
+      // Caso 2: El usuario es Anónimo (de la app principal).
+      console.warn(
+        "Admin: Detectado usuario 'Anónimo'. Cerrando sesión para mostrar login..."
+      );
+      signOut(auth); // Esto disparará onAuthStateChanged de nuevo, con user=null
     } else {
-      console.log("Admin: No autenticado.");
+      // Caso 3: No hay usuario (user=null) o es un usuario desconocido (como el de email/pass)
+      console.log("Admin: No autenticado. Mostrando login.");
       loginView.classList.remove("hidden-content");
       panelView.classList.add("hidden-content");
       stopAllListeners();

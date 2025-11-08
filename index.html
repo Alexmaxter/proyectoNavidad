@@ -37,24 +37,29 @@
     <script type="module">
       // Importa las funciones que necesitamos
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-      
-      // --- CAMBIOS AQUÍ ---
-      // 'signInAnonymously' ya no es necesario
-      // 'signInWithEmailAndPassword' es nuevo
-      import { 
-        getAuth, 
-        onAuthStateChanged, 
-        signInWithEmailAndPassword 
+
+      // --- ¡¡CORRECCIÓN AQUÍ!! ---
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signInAnonymously, // <-- CAMBIADO
       } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-      
-      import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+      import {
+        getFirestore,
+        doc,
+        setDoc,
+        getDoc,
+        collection,
+        addDoc,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
       // Pasa tu config a nuestro nuevo módulo `firebase-manager.js`
       window.firebaseSDK = {
         initializeApp,
         getAuth,
         onAuthStateChanged,
-        signInWithEmailAndPassword, // <-- NUEVO
+        signInAnonymously, // <-- CAMBIADO
         getFirestore,
         doc,
         setDoc,
@@ -68,11 +73,11 @@
           projectId: "valentinoexperiencia-fcb5f",
           storageBucket: "valentinoexperiencia-fcb5f.firebasestorage.app",
           messagingSenderId: "50762641960",
-          appId: "1:50762641960:web:9af4c1811d6c7b80977b1d"
-        }
+          appId: "1:50762641960:web:9af4c1811d6c7b80977b1d",
+        },
       };
     </script>
-    
+
     <script src="js/app.js" type="module"></script>
   </body>
 </html>
