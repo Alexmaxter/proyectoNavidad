@@ -12,6 +12,7 @@ const {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect, // <-- CORRECCIÓN: Añadido
   signOut,
   getFirestore,
   collection,
@@ -375,7 +376,10 @@ const initAdmin = () => {
   db = getFirestore(app);
   provider = new GoogleAuthProvider();
   loginBtn.addEventListener("click", signIn);
-  logoutBtn.addEventListener("click", logOut);
+
+  // --- CORRECCIÓN: Llamar a signOut(auth) con una función de flecha ---
+  logoutBtn.addEventListener("click", () => signOut(auth));
+
   deleteProgressBtn.addEventListener("click", handleDeleteProgress);
 
   // --- CAMBIO: Añadir listener al nuevo botón ---
