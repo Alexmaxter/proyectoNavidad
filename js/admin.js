@@ -1,20 +1,13 @@
 /**
  * admin.js: Lógica del Panel de Administración
- * (VERSIÓN NUEVA: ARQUITECTURA "BD ÚNICA")
+ * (VERSIÓN SIN SEGURIDAD - ACCESO DIRECTO)
  */
 
-// Importamos el config de la app principal para saber la estructura
 import config from "./config.js";
 
-// Gracias a la corrección en admin.html, esto ahora se ejecuta
-// DESPUÉS de que window.firebaseAdminSDK está definido.
+// --- Destructuring simplificado (SIN AUTH) ---
 const {
   initializeApp,
-  getAuth,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup, // <-- ¡Ahora usaremos esta!
-  signOut,
   getFirestore,
   collection,
   onSnapshot,
@@ -26,10 +19,7 @@ const {
   setDoc,
 } = window.firebaseAdminSDK;
 
-// --- ¡¡ESTA ES LA CLAVE!! ---
-// El ID del documento que vamos a monitorear.
 const PROGRESS_DOC_ID = "valentino";
-// ------------------------------
 
 // Mapa de Navegación Inversa (sin cambios)
 const pathMap = {
@@ -48,19 +38,12 @@ const pathMap = {
   countdown: "final",
 };
 
-// Variables globales del Admin
+// --- Variables de Auth eliminadas ---
 let app;
-let auth;
 let db;
-let provider;
 let currentUserId = PROGRESS_DOC_ID;
 
-// Referencias a los elementos del DOM (sin cambios)
-const loginView = document.getElementById("admin-login");
-const panelView = document.getElementById("admin-panel");
-const loginBtn = document.getElementById("login-btn");
-const logoutBtn = document.getElementById("logout-btn");
-const userEmailEl = document.getElementById("admin-user-email");
+// --- Referencias a elementos de login/logout eliminadas ---
 const visualPathEl = document.getElementById("visual-path");
 const detailsCardsEl = document.getElementById("details-cards");
 const attemptsListEl = document.getElementById("attempts-list");
@@ -69,37 +52,7 @@ const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 
 let activeListeners = {};
 
-// =================================================================
-// --- ¡¡CORRECCIÓN: USAR POPUP!! ---
-// =================================================================
-const signIn = async () => {
-  try {
-    // 1. Sigue siendo buena idea desconectar al usuario anónimo primero
-    if (auth.currentUser) {
-      console.log(
-        "Admin: (signIn) Cerrando sesión del usuario actual antes de loguear..."
-      );
-      await signOut(auth);
-    }
-
-    // 2. --- CAMBIO DE ESTRATEGIA: signInWithPopup ---
-    console.log("Admin: Abriendo popup de Google...");
-    const userCredential = await signInWithPopup(auth, provider);
-    console.log("Admin: Popup exitoso. Usuario:", userCredential.user.email);
-    // El listener 'onAuthStateChanged' (que ya está corregido)
-    // detectará a este nuevo usuario y mostrará el panel.
-  } catch (error) {
-    console.error("Admin: Error durante el inicio de sesión con popup:", error);
-    if (error.code === "auth/popup-closed-by-user") {
-      console.warn("Admin: Popup cerrado por el usuario.");
-    } else {
-      alert("Error al iniciar sesión: " + error.message);
-    }
-  }
-};
-// =================================================================
-// --- ¡¡FIN DE LA CORRECCIÓN: USAR POPUP!! ---
-// =================================================================
+// --- FUNCIÓN signIn ELIMINADA ---
 
 // createStepElement (sin cambios)
 const createStepElement = (sectionId, currentSection, visitedPath) => {
@@ -205,12 +158,9 @@ const renderDetails = (userData) => {
   `;
 };
 
-/**
- * Escucha el documento de progreso único
- */
+// listenToProgress (sin cambios)
 const listenToProgress = () => {
   const progressDocRef = doc(db, "progress", PROGRESS_DOC_ID);
-
   const unsubscribe = onSnapshot(progressDocRef, (docSnap) => {
     console.log("Admin: ¡Datos de progreso recibidos!");
     if (!docSnap.exists()) {
@@ -222,37 +172,30 @@ const listenToProgress = () => {
       forcePausaUnlockBtn.disabled = true;
       return;
     }
-
     const userData = docSnap.data();
     deleteProgressBtn.disabled = false;
     forcePausaUnlockBtn.disabled = false;
-
     renderVisualPath(
       userData.currentSection,
       userData.maxStep,
       userData.lastSection
     );
-
     renderDetails(userData);
     listenToAttempts(PROGRESS_DOC_ID);
   });
   activeListeners["progress"] = unsubscribe;
 };
 
-/**
- * Escucha la subcolección de intentos
- */
+// listenToAttempts (sin cambios)
 const listenToAttempts = (userId) => {
   if (activeListeners[userId]) {
     return;
   }
   if (!attemptsListEl) return;
-
   const attemptsQuery = query(
     collection(db, "progress", userId, "attempts"),
     orderBy("timestamp", "desc")
   );
-
   const unsubscribe = onSnapshot(attemptsQuery, (snapshot) => {
     console.log(`Admin: ¡Nuevos intentos recibidos para ${userId}!`);
     if (snapshot.empty) {
@@ -291,9 +234,7 @@ const stopAllListeners = () => {
   activeListeners = {};
 };
 
-/**
- * Borra el documento de progreso
- */
+// handleDeleteProgress (sin cambios)
 const handleDeleteProgress = async () => {
   const uid = PROGRESS_DOC_ID;
   const confirmation = prompt(
@@ -328,9 +269,7 @@ const handleDeleteProgress = async () => {
   }
 };
 
-/**
- * Desbloquea la sección 'pausa' remotamente
- */
+// handleForcePausaUnlock (sin cambios)
 const handleForcePausaUnlock = async () => {
   const uid = PROGRESS_DOC_ID;
   console.log(
@@ -338,7 +277,6 @@ const handleForcePausaUnlock = async () => {
   );
   forcePausaUnlockBtn.disabled = true;
   forcePausaUnlockBtn.textContent = "Enviando...";
-
   try {
     const progressDocRef = doc(db, "progress", uid);
     await setDoc(progressDocRef, { pausaUnlocked: true }, { merge: true });
@@ -353,42 +291,20 @@ const handleForcePausaUnlock = async () => {
   }
 };
 
-// --- initAdmin (Modificado) ---
+// --- initAdmin (Simplificado) ---
 const initAdmin = () => {
   app = initializeApp(window.firebaseAdminSDK.firebaseConfig);
-  auth = getAuth(app);
   db = getFirestore(app);
-  provider = new GoogleAuthProvider();
-  loginBtn.addEventListener("click", signIn);
-  logoutBtn.addEventListener("click", () => signOut(auth));
+
+  // --- Se eliminaron los listeners de login/logout ---
   deleteProgressBtn.addEventListener("click", handleDeleteProgress);
   forcePausaUnlockBtn.addEventListener("click", handleForcePausaUnlock);
 
-  // =================================================================
-  // --- ¡¡LÓGICA CORREGIDA PARA EL BUCLE DE LOGIN!! ---
-  // =================================================================
-  onAuthStateChanged(auth, (user) => {
-    // Esta lógica ahora es simple y funciona con Popup o Redirect
-    if (user && user.providerData.some((p) => p.providerId === "google.com")) {
-      // Caso 1: El usuario es el Admin de Google. ¡Éxito!
-      console.log("Admin: Autenticado como", user.email);
-      userEmailEl.textContent = user.email;
-      loginView.classList.add("hidden-content");
-      panelView.classList.remove("hidden-content");
-      listenToProgress();
-    } else {
-      // Caso 2: El usuario NO es el admin de Google.
-      // (Puede ser 'null' o 'Anónimo').
-      // Mostramos la pantalla de login.
-      console.log("Admin: No autenticado como Google. Mostrando login.");
-      loginView.classList.remove("hidden-content");
-      panelView.classList.add("hidden-content");
-      stopAllListeners();
-    }
-  });
-  // =================================================================
-  // --- ¡¡FIN DE LA CORRECCIÓN!! ---
-  // =================================================================
+  // --- Se eliminó onAuthStateChanged ---
+
+  // --- Cargar los datos directamente al iniciar ---
+  console.log("Admin: Acceso directo. Cargando datos de progreso...");
+  listenToProgress();
 };
 
 // Iniciar la app de admin
