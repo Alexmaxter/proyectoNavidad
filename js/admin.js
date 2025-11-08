@@ -69,27 +69,22 @@ const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 
 let activeListeners = {};
 
-// --- ¡¡LÓGICA VITAL ANTI-BUCLE!! ---
-onAuthStateChanged(auth, (user) => {
-  // Tras la redirección, esperamos a que el usuario sea el de Google.
-  if (user && user.providerData.some((p) => p.providerId === "google.com")) {
-    // Caso 1: El usuario es el Admin de Google. ¡Éxito!
-    console.log("Admin: Autenticado como", user.email);
-    userEmailEl.textContent = user.email;
-    loginView.classList.add("hidden-content");
-    panelView.classList.remove("hidden-content");
-    listenToProgress();
-  } else {
-    // Caso 2: El usuario NO es el admin de Google.
-    // (Puede ser 'null' o 'Anónimo' mientras se procesa el redirect).
-    // En cualquier caso, NO cerramos sesión (para no cancelar el redirect)
-    // y simplemente mostramos la pantalla de login.
-    console.log("Admin: No autenticado como Google. Mostrando login.");
-    loginView.classList.remove("hidden-content");
-    panelView.classList.add("hidden-content");
-    stopAllListeners();
+// --- LÓGICA ANTI-BUCLE (VITAL) ---
+const signIn = async () => {
+  try {
+    // Primero, cerrar sesión de cualquier usuario activo (ej. Anónimo)
+    if (auth.currentUser) {
+      console.log(
+        "Admin: (signIn) Cerrando sesión del usuario actual antes de loguear..."
+      );
+      await signOut(auth);
+    }
+    // ESTA LÍNEA AHORA FUNCIONARÁ
+    await signInWithRedirect(auth, provider);
+  } catch (error) {
+    console.error("Admin: Error al iniciar redirección de Google:", error);
   }
-});
+};
 
 // createStepElement (sin cambios)
 const createStepElement = (sectionId, currentSection, visitedPath) => {
@@ -363,30 +358,32 @@ const initAdmin = () => {
   deleteProgressBtn.addEventListener("click", handleDeleteProgress);
   forcePausaUnlockBtn.addEventListener("click", handleForcePausaUnlock);
 
-  // --- ¡¡LÓGICA VITAL ANTI-BUCLE!! ---
-  // Esta es la versión corregida que SÍ maneja al usuario anónimo
+  // =================================================================
+  // --- ¡¡INICIO DE LA CORRECCIÓN PARA EL BUCLE DE LOGIN!! ---
+  // =================================================================
   onAuthStateChanged(auth, (user) => {
+    // Tras la redirección, esperamos a que el usuario sea el de Google.
     if (user && user.providerData.some((p) => p.providerId === "google.com")) {
       // Caso 1: El usuario es el Admin de Google. ¡Éxito!
       console.log("Admin: Autenticado como", user.email);
       userEmailEl.textContent = user.email;
       loginView.classList.add("hidden-content");
       panelView.classList.remove("hidden-content");
-      listenToProgress(); // <-- Ahora escucha el doc hardcodeado
-    } else if (user && user.isAnonymous) {
-      // Caso 2: El usuario es Anónimo (de la app principal).
-      console.warn(
-        "Admin: Detectado usuario 'Anónimo'. Cerrando sesión para mostrar login..."
-      );
-      signOut(auth); // Esto disparará onAuthStateChanged de nuevo, con user=null
+      listenToProgress();
     } else {
-      // Caso 3: No hay usuario (user=null) o es un usuario desconocido.
-      console.log("Admin: No autenticado. Mostrando login.");
+      // Caso 2: El usuario NO es el admin de Google.
+      // (Puede ser 'null' o 'Anónimo' mientras se procesa el redirect).
+      // En cualquier caso, NO cerramos sesión (para no cancelar el redirect)
+      // y simplemente mostramos la pantalla de login.
+      console.log("Admin: No autenticado como Google. Mostrando login.");
       loginView.classList.remove("hidden-content");
       panelView.classList.add("hidden-content");
       stopAllListeners();
     }
   });
+  // =================================================================
+  // --- ¡¡FIN DE LA CORRECCIÓN PARA EL BUCLE DE LOGIN!! ---
+  // =================================================================
 };
 
 // Iniciar la app de admin
