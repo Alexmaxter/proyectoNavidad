@@ -69,15 +69,25 @@ const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 let activeListeners = {};
 
 // --- signIn (MODIFICADO para compatibilidad móvil) ---
-const signIn = () => {
-  // Cambiamos signInWithPopup por signInWithRedirect
-  signInWithRedirect(auth, provider).catch((error) => {
-    // El catch aquí es solo para errores iniciales (ej. red)
+const signIn = async () => {
+  // <--- 1. Convertir a async
+  try {
+    // --- 2. Añadir este bloque ---
+    // Primero, cerrar sesión de cualquier usuario activo (ej. Valentino)
+    if (auth.currentUser) {
+      console.log(
+        "Admin: Cerrando sesión del usuario actual antes de loguear..."
+      );
+      await signOut(auth);
+    }
+    // -----------------------------
+
+    // 3. Proceder con la redirección (como antes, pero con await)
+    await signInWithRedirect(auth, provider);
+  } catch (error) {
+    // El catch ahora maneja todo
     console.error("Admin: Error al iniciar redirección de Google:", error);
-  });
-  // La lógica del .then() ya no va aquí.
-  // El resultado se capturará automáticamente en 'onAuthStateChanged'
-  // cuando la página se recargue después de la redirección.
+  }
 };
 
 /**
