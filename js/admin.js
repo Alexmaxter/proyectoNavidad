@@ -12,7 +12,7 @@ const {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithRedirect, // <-- CORRECCIÓN: Añadido
+  signInWithRedirect,
   signOut,
   getFirestore,
   collection,
@@ -69,6 +69,7 @@ const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 let activeListeners = {};
 
 // --- signIn (MODIFICADO para compatibilidad móvil) ---
+// --- ¡¡ESTA ES LA CORRECCIÓN!! ---
 const signIn = async () => {
   // <--- 1. Convertir a async
   try {
