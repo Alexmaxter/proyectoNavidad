@@ -23,7 +23,7 @@
   </head>
   <body>
     <main id="app-root">
-      <div id="admin-login" class="controles">
+      <div id="admin-login" class.is-loading"controles">
         <h1 class="titulo" style="opacity: 1; font-size: 2.5rem">
           Panel de Administración
         </h1>
@@ -31,7 +31,7 @@
           Debes iniciar sesión con Google para ver el progreso.
         </p>
         <div class="acciones">
-          <button id="login-btn" class="admin-button-google">
+          <button id="login-btn" class.is-loading"admin-button-google">
             <svg aria-hidden="true" height="20" viewBox="0 0 18 18" width="20">
               <path
                 d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6c1.5-1.38 2.36-3.25 2.36-5.05 0-.73-.06-1.45-.17-2.05z"
@@ -62,7 +62,7 @@
           </h1>
           <div class="admin-usuario-info">
             <span id="admin-user-email"></span>
-            <button id="logout-btn" class="admin-button-logout">
+            <button id="logout-btn" class.is-loading"admin-button-logout">
               Cerrar Sesión
             </button>
           </div>
@@ -72,25 +72,25 @@
 
         <div class="admin-main-container">
           <div class="admin-column" id="path-container">
-            <h2 class="admin-column-title">Mapa de Progreso</h2>
+            <h2 class.is-loading"admin-column-title">Mapa de Progreso</h2>
             <div id="visual-path"></div>
           </div>
 
           <div class="admin-column" id="details-container">
-            <h2 class="admin-column-title">Estado Actual</h2>
-            <div class="admin-user-card" id="details-cards"></div>
+            <h2 class.is-loading"admin-column-title">Estado Actual</h2>
+            <div class.is-loading"admin-user-card" id="details-cards"></div>
 
             <h2 class="admin-column-title" style="margin-top: 2rem">
               Registro de Intentos
             </h2>
-            <div class="admin-user-card" style="margin-top: 0">
-              <ul class="admin-attempts-list" id="attempts-list">
+            <div class.is-loading"admin-user-card" style="margin-top: 0">
+              <ul class.is-loading"admin-attempts-list" id="attempts-list">
                 <li>Cargando intentos...</li>
               </ul>
             </div>
 
-            <div class="admin-danger-zone">
-              <h2 class="admin-column-title">Zona Peligrosa</h2>
+            <div class.is-loading"admin-danger-zone">
+              <h2 class.is-loading"admin-column-title">Zona Peligrosa</h2>
               <button
                 id="delete-progress-btn"
                 class="admin-button-delete"
@@ -108,7 +108,7 @@
                 padding-top: 1rem;
               "
             >
-              <h2 class="admin-column-title">
+              <h2 class.is-loading"admin-column-title">
                 Zona de Pruebas (Control Remoto)
               </h2>
               <p
@@ -147,14 +147,19 @@
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+      
+      // --- ¡¡AQUÍ ESTABA EL ERROR!! ---
+      // Faltaba importar signInWithRedirect
       import {
         getAuth,
         onAuthStateChanged,
         GoogleAuthProvider,
         signInWithPopup,
-        signInWithRedirect,
+        signInWithRedirect, // <-- AÑADIDO
         signOut,
       } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+      // ---------------------------------
+
       import {
         getFirestore,
         doc,
@@ -173,7 +178,7 @@
         onAuthStateChanged,
         GoogleAuthProvider,
         signInWithPopup,
-        signInWithRedirect,
+        signInWithRedirect, // <-- AÑADIDO
         signOut,
         getFirestore,
         doc,
@@ -184,7 +189,7 @@
         getDocs,
         deleteDoc,
         setDoc,
-
+        
         // --- TU NUEVO firebaseConfig ---
         firebaseConfig: {
           apiKey: "AIzaSyBAv3HFQifOmS78tRYvo8yM4Um_PX0d_sk",
@@ -192,8 +197,8 @@
           projectId: "regalonavidad-9304b",
           storageBucket: "regalonavidad-9304b.firebasestorage.app",
           messagingSenderId: "920626025677",
-          appId: "1:920626025677:web:ee800a9860410818fc0584",
-        },
+          appId: "1:920626025677:web:ee800a9860410818fc0584"
+        }
         // -------------------------------
       };
     </script>

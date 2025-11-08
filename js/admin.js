@@ -11,7 +11,7 @@ const {
   getAuth,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithRedirect,
+  signInWithRedirect, // <-- Ahora SÍ será importado
   signOut,
   getFirestore,
   collection,
@@ -79,6 +79,7 @@ const signIn = async () => {
       );
       await signOut(auth);
     }
+    // ESTA LÍNEA AHORA FUNCIONARÁ
     await signInWithRedirect(auth, provider);
   } catch (error) {
     console.error("Admin: Error al iniciar redirección de Google:", error);
