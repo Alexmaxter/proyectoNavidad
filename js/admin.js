@@ -1,6 +1,6 @@
 /**
  * admin.js: Lógica del Panel de Administración
- * (VERSIÓN CORREGIDA PARA LOGIN ANÓNIMO)
+ * (VERSIÓN NUEVA: ARQUITECTURA "BD ÚNICA")
  */
 
 // Importamos el config de la app principal para saber la estructura
@@ -11,7 +11,6 @@ const {
   getAuth,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup,
   signInWithRedirect,
   signOut,
   getFirestore,
@@ -22,12 +21,15 @@ const {
   doc,
   getDocs,
   deleteDoc,
-  // --- CAMBIO: Importar setDoc ---
   setDoc,
 } = window.firebaseAdminSDK;
 
-// --- NUEVO: Mapa de Navegación Inversa ---
-// Esto nos permite trazar el camino hacia atrás.
+// --- ¡¡ESTA ES LA CLAVE!! ---
+// El ID del documento que vamos a monitorear.
+const PROGRESS_DOC_ID = "valentino";
+// ------------------------------
+
+// Mapa de Navegación Inversa (sin cambios)
 const pathMap = {
   decision: "intro",
   confirmacion1: "decision",
@@ -40,17 +42,18 @@ const pathMap = {
   explicacion3: "acertijo3",
   final2: "confirmacion2",
   pausa: "explicacion3",
-  final: "pausa", // Aunque se salta con QR, lo mapeamos
+  final: "pausa",
   countdown: "final",
 };
-// --- FIN DEL NUEVO MAPA ---
 
 // Variables globales del Admin
 let app;
 let auth;
 let db;
 let provider;
-let currentUserId = null;
+// --- CAMBIO ---
+// currentUserId ahora es fijo, ya no lo buscamos.
+let currentUserId = PROGRESS_DOC_ID;
 
 // Referencias a los elementos del DOM (sin cambios)
 const loginView = document.getElementById("admin-login");
@@ -62,13 +65,11 @@ const visualPathEl = document.getElementById("visual-path");
 const detailsCardsEl = document.getElementById("details-cards");
 const attemptsListEl = document.getElementById("attempts-list");
 const deleteProgressBtn = document.getElementById("delete-progress-btn");
-
-// --- CAMBIO: Añadir referencia al nuevo botón ---
 const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 
 let activeListeners = {};
 
-// --- CORRECCIÓN 1: en signIn (Sigue siendo útil) ---
+// --- LÓGICA ANTI-BUCLE (VITAL) ---
 const signIn = async () => {
   try {
     // Primero, cerrar sesión de cualquier usuario activo (ej. Anónimo)
@@ -78,38 +79,27 @@ const signIn = async () => {
       );
       await signOut(auth);
     }
-    // Proceder con la redirección para el admin de Google
     await signInWithRedirect(auth, provider);
   } catch (error) {
     console.error("Admin: Error al iniciar redirección de Google:", error);
   }
 };
 
-/**
- * --- FUNCIÓN MODIFICADA ---
- * Ahora comprueba contra el "visitedPath" (Set) en lugar de "maxStep" (Number)
- */
+// createStepElement (sin cambios)
 const createStepElement = (sectionId, currentSection, visitedPath) => {
   const sectionData = config.sections[sectionId];
   if (!sectionData) return null;
-
   const step = sectionData.step;
   const el = document.createElement("div");
   el.className = "path-step";
-
-  // --- LÓGICA DE ESTADO CORREGIDA ---
   if (sectionId === currentSection) {
-    el.classList.add("current"); // Dónde está AHORA
+    el.classList.add("current");
   }
-
-  // Comprueba si la sección está en el Set de visitados
   if (visitedPath.has(sectionId)) {
-    el.classList.add("visited"); // Pasos alcanzados
+    el.classList.add("visited");
   } else if (sectionId !== currentSection) {
-    el.classList.add("locked"); // Pasos futuros o del camino alterno
+    el.classList.add("locked");
   }
-  // --- FIN DE LA LÓGICA CORREGIDA ---
-
   el.innerHTML = `
     <strong>${sectionId}</strong>
     <span>(Paso ${step})</span>
@@ -117,27 +107,17 @@ const createStepElement = (sectionId, currentSection, visitedPath) => {
   return el;
 };
 
-/**
- * --- FUNCIÓN MODIFICADA ---
- * Ahora construye el "visitedPath" (Set) trazando el camino hacia atrás
- * desde la "lastSection" (sección máxima alcanzada).
- */
+// renderVisualPath (sin cambios)
 const renderVisualPath = (currentSection, maxStep, lastSection) => {
   if (!visualPathEl) return;
   visualPathEl.innerHTML = "";
-
-  // --- NUEVA LÓGICA DE TRAZADO de CAMINO ---
   const visitedPath = new Set();
-  let currentTrace = lastSection; // Empezar desde la sección máxima alcanzada
-
-  // Trazar el camino hacia atrás hasta llegar a 'intro'
+  let currentTrace = lastSection;
   while (currentTrace) {
     visitedPath.add(currentTrace);
     currentTrace = pathMap[currentTrace];
   }
-  visitedPath.add("intro"); // Asegurarse de que 'intro' esté siempre
-  // --- FIN DE LA NUEVA LÓGICA ---
-
+  visitedPath.add("intro");
   const caminoRapido = ["confirmacion1", "confirmacion2", "final2"];
   const caminoPaciente = [
     "acertijo1",
@@ -150,15 +130,12 @@ const renderVisualPath = (currentSection, maxStep, lastSection) => {
     "final",
     "countdown",
   ];
-
-  // Renderizar usando el nuevo "visitedPath"
   visualPathEl.appendChild(
     createStepElement("intro", currentSection, visitedPath)
   );
   visualPathEl.appendChild(
     createStepElement("decision", currentSection, visitedPath)
   );
-
   const branchRapido = document.createElement("div");
   branchRapido.className = "path-branch";
   branchRapido.innerHTML = `<h3 class="path-branch-title">Camino Rápido</h3>`;
@@ -168,7 +145,6 @@ const renderVisualPath = (currentSection, maxStep, lastSection) => {
     );
   });
   visualPathEl.appendChild(branchRapido);
-
   const branchPaciente = document.createElement("div");
   branchPaciente.className = "path-branch";
   branchPaciente.innerHTML = `<h3 class="path-branch-title">Camino Paciente</h3>`;
@@ -180,7 +156,7 @@ const renderVisualPath = (currentSection, maxStep, lastSection) => {
   visualPathEl.appendChild(branchPaciente);
 };
 
-// --- renderDetails (sin cambios) ---
+// renderDetails (sin cambios)
 const renderDetails = (userData) => {
   if (!detailsCardsEl) return;
   const currentSection = userData.currentSection || "N/A";
@@ -214,59 +190,60 @@ const renderDetails = (userData) => {
 };
 
 /**
- * --- FUNCIÓN MODIFICADA ---
- * Pasa `lastSection` a la función de renderizado.
+ * --- ¡¡FUNCIÓN MODIFICADA!! ---
+ * Ahora escucha UN SOLO documento.
  */
 const listenToProgress = () => {
-  const progressCollection = collection(db, "progress");
-  const unsubscribe = onSnapshot(progressCollection, (snapshot) => {
+  // --- CAMBIO ---
+  // Ya no consultamos la colección, apuntamos directo al doc
+  const progressDocRef = doc(db, "progress", PROGRESS_DOC_ID);
+
+  const unsubscribe = onSnapshot(progressDocRef, (docSnap) => {
     console.log("Admin: ¡Datos de progreso recibidos!");
-    if (snapshot.empty) {
+    if (!docSnap.exists()) {
       visualPathEl.innerHTML =
-        "<p class='narrativa'>Valentino aún no ha iniciado la experiencia.</p>";
+        "<p class='narrativa'>El documento 'valentino' aún no ha sido creado.</p>";
       detailsCardsEl.innerHTML = "";
       attemptsListEl.innerHTML = "<li>...</li>";
-      currentUserId = null;
       deleteProgressBtn.disabled = true;
-      forcePausaUnlockBtn.disabled = true; // --- CAMBIO: Deshabilitar botón
+      forcePausaUnlockBtn.disabled = true;
       return;
     }
-    // --- CAMBIO ---
-    // En modo anónimo, puede haber MÚLTIPLOS usuarios.
-    // Por ahora, solo tomaremos el primero que encuentre.
-    // Para un admin real, necesitarías una UI para *seleccionar* el usuario.
-    const userDoc = snapshot.docs[0];
-    const userData = userDoc.data();
-    const userId = userDoc.id;
-    currentUserId = userId; // <-- CUIDADO: Esto solo funciona si hay UN usuario
-    deleteProgressBtn.disabled = false;
-    forcePausaUnlockBtn.disabled = false; // --- CAMBIO: Habilitar botón
 
-    // --- CAMBIO AQUÍ ---
-    // Pasamos los 3 datos necesarios a la lógica de renderizado
+    const userData = docSnap.data();
+    deleteProgressBtn.disabled = false;
+    forcePausaUnlockBtn.disabled = false;
+
     renderVisualPath(
       userData.currentSection,
       userData.maxStep,
       userData.lastSection
     );
-    // --- FIN DEL CAMBIO ---
 
     renderDetails(userData);
-    listenToAttempts(userId);
+    listenToAttempts(PROGRESS_DOC_ID); // <-- Usamos el ID hardcodeado
   });
   activeListeners["progress"] = unsubscribe;
 };
 
-// --- listenToAttempts (sin cambios) ---
+/**
+ * --- ¡¡FUNCIÓN MODIFICADA!! ---
+ * El ID que recibe ahora es siempre el hardcodeado.
+ */
 const listenToAttempts = (userId) => {
   if (activeListeners[userId]) {
+    // Si ya hay un listener para "valentino", no crear otro
     return;
   }
   if (!attemptsListEl) return;
+
+  // --- CAMBIO ---
+  // La ruta a la subcolección usa el ID hardcodeado
   const attemptsQuery = query(
     collection(db, "progress", userId, "attempts"),
     orderBy("timestamp", "desc")
   );
+
   const unsubscribe = onSnapshot(attemptsQuery, (snapshot) => {
     console.log(`Admin: ¡Nuevos intentos recibidos para ${userId}!`);
     if (snapshot.empty) {
@@ -295,34 +272,30 @@ const listenToAttempts = (userId) => {
       attemptsListEl.appendChild(item);
     });
   });
-  activeListeners[userId] = unsubscribe;
+  activeListeners[userId] = unsubscribe; // Guardar listener usando el ID
 };
 
-// --- stopAllListeners (sin cambios) ---
+// stopAllListeners (sin cambios)
 const stopAllListeners = () => {
   console.log("Admin: Deteniendo todos los listeners de realtime.");
   Object.values(activeListeners).forEach((unsubscribe) => unsubscribe());
   activeListeners = {};
 };
 
-// --- handleDeleteProgress (sin cambios) ---
+/**
+ * --- ¡¡FUNCIÓN MODIFICADA!! ---
+ * Ahora borra el documento hardcodeado.
+ */
 const handleDeleteProgress = async () => {
-  if (!currentUserId) {
-    alert("No hay un usuario que borrar.");
-    return;
-  }
-  const uid = currentUserId;
+  const uid = PROGRESS_DOC_ID; // <-- Usar el ID hardcodeado
   const confirmation = prompt(
-    `¡ADVERTENCIA!\n\nEstás a punto de borrar TODO el progreso del usuario ${uid.substring(
-      0,
-      8
-    )}...\n\nEscribe "borrar" para confirmar.`
+    `¡ADVERTENCIA!\n\nEstás a punto de borrar TODO el progreso del documento '${uid}'...\n\nEscribe "borrar" para confirmar.`
   );
   if (confirmation !== "borrar") {
     alert("Reinicio cancelado.");
     return;
   }
-  console.log(`Admin: Borrando progreso para el usuario ${uid}...`);
+  console.log(`Admin: Borrando progreso para el documento ${uid}...`);
   deleteProgressBtn.disabled = true;
   deleteProgressBtn.textContent = "Borrando...";
   try {
@@ -347,33 +320,28 @@ const handleDeleteProgress = async () => {
   }
 };
 
-// --- NUEVA FUNCIÓN: Handler para el botón de forzar desbloqueo ---
+/**
+ * --- ¡¡FUNCIÓN MODIFICADA!! ---
+ * Ahora desbloquea el documento hardcodeado.
+ */
 const handleForcePausaUnlock = async () => {
-  if (!currentUserId) {
-    alert("No hay un usuario al cual desbloquear.");
-    return;
-  }
+  const uid = PROGRESS_DOC_ID; // <-- Usar el ID hardcodeado
   console.log(
-    `Admin: Forzando desbloqueo de 'pausa' para el usuario ${currentUserId}...`
+    `Admin: Forzando desbloqueo de 'pausa' para el documento ${uid}...`
   );
   forcePausaUnlockBtn.disabled = true;
   forcePausaUnlockBtn.textContent = "Enviando...";
 
   try {
-    const progressDocRef = doc(db, "progress", currentUserId);
-    // Escribimos 'pausaUnlocked: true' en el documento del usuario
+    const progressDocRef = doc(db, "progress", uid);
     await setDoc(progressDocRef, { pausaUnlocked: true }, { merge: true });
-
     console.log("Admin: ¡Desbloqueo enviado!");
     alert("¡Desbloqueo forzado enviado al usuario!");
-
-    // Opcional: cambiar el texto del botón para mostrar que ya se hizo
     forcePausaUnlockBtn.textContent = "¡Desbloqueo Enviado!";
-    // No lo re-habilitamos para no enviarlo múltiples veces
   } catch (error) {
     console.error("Admin: Error al forzar el desbloqueo:", error);
     alert("Error al enviar el desbloqueo: " + error.message);
-    forcePausaUnlockBtn.disabled = false; // Re-habilitar si falla
+    forcePausaUnlockBtn.disabled = false;
     forcePausaUnlockBtn.textContent = "Forzar Desbloqueo de Pausa (Remoto)";
   }
 };
@@ -385,16 +353,11 @@ const initAdmin = () => {
   db = getFirestore(app);
   provider = new GoogleAuthProvider();
   loginBtn.addEventListener("click", signIn);
-
-  // --- CORRECCIÓN: Llamar a signOut(auth) con una función de flecha ---
   logoutBtn.addEventListener("click", () => signOut(auth));
-
   deleteProgressBtn.addEventListener("click", handleDeleteProgress);
-
-  // --- CAMBIO: Añadir listener al nuevo botón ---
   forcePausaUnlockBtn.addEventListener("click", handleForcePausaUnlock);
 
-  // --- ¡¡CORRECCIÓN 2: Lógica de autenticación robusta!! ---
+  // --- ¡¡LÓGICA VITAL ANTI-BUCLE!! (Sin cambios) ---
   onAuthStateChanged(auth, (user) => {
     if (user && user.providerData.some((p) => p.providerId === "google.com")) {
       // Caso 1: El usuario es el Admin de Google. ¡Éxito!
@@ -402,7 +365,7 @@ const initAdmin = () => {
       userEmailEl.textContent = user.email;
       loginView.classList.add("hidden-content");
       panelView.classList.remove("hidden-content");
-      listenToProgress();
+      listenToProgress(); // <-- Ahora escucha el doc hardcodeado
     } else if (user && user.isAnonymous) {
       // Caso 2: El usuario es Anónimo (de la app principal).
       console.warn(
@@ -410,7 +373,7 @@ const initAdmin = () => {
       );
       signOut(auth); // Esto disparará onAuthStateChanged de nuevo, con user=null
     } else {
-      // Caso 3: No hay usuario (user=null) o es un usuario desconocido (como el de email/pass)
+      // Caso 3: No hay usuario (user=null) o es un usuario desconocido.
       console.log("Admin: No autenticado. Mostrando login.");
       loginView.classList.remove("hidden-content");
       panelView.classList.add("hidden-content");

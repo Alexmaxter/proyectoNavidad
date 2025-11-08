@@ -152,7 +152,7 @@
         onAuthStateChanged,
         GoogleAuthProvider,
         signInWithPopup,
-        signInWithRedirect, // <-- CORRECCIÓN: Añadido
+        signInWithRedirect,
         signOut,
       } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
       import {
@@ -164,7 +164,6 @@
         orderBy,
         getDocs,
         deleteDoc,
-        // --- CAMBIO: Necesitamos setDoc para el botón ---
         setDoc,
       } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
@@ -174,7 +173,7 @@
         onAuthStateChanged,
         GoogleAuthProvider,
         signInWithPopup,
-        signInWithRedirect, // <-- CORRECCIÓN: Añadido
+        signInWithRedirect,
         signOut,
         getFirestore,
         doc,
@@ -184,16 +183,18 @@
         orderBy,
         getDocs,
         deleteDoc,
-        // --- CAMBIO: Pasar setDoc ---
         setDoc,
+
+        // --- TU NUEVO firebaseConfig ---
         firebaseConfig: {
-          apiKey: "AIzaSyCPKR80Dft600xzIGvrfeXCYQmOdro8kx0",
-          authDomain: "valentinoexperiencia-fcb5f.firebaseapp.com",
-          projectId: "valentinoexperiencia-fcb5f",
-          storageBucket: "valentinoexperiencia-fcb5f.firebasestorage.app",
-          messagingSenderId: "50762641960",
-          appId: "1:50762641960:web:9af4c1811d6c7b80977b1d",
+          apiKey: "AIzaSyBAv3HFQifOmS78tRYvo8yM4Um_PX0d_sk",
+          authDomain: "regalonavidad-9304b.firebaseapp.com",
+          projectId: "regalonavidad-9304b",
+          storageBucket: "regalonavidad-9304b.firebasestorage.app",
+          messagingSenderId: "920626025677",
+          appId: "1:920626025677:web:ee800a9860410818fc0584",
         },
+        // -------------------------------
       };
     </script>
 

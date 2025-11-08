@@ -1,13 +1,13 @@
 /**
  * firebase-manager.js: Módulo para manejar Firebase
- * (VERSIÓN CORREGIDA CON LOGIN ANÓNIMO)
+ * (VERSIÓN NUEVA: ARQUITECTURA "BD ÚNICA")
  */
 
 const {
   initializeApp,
   getAuth,
   onAuthStateChanged,
-  signInAnonymously, // <-- CAMBIADO
+  signInAnonymously, // <-- Importación correcta
   getFirestore,
   doc,
   setDoc,
@@ -17,38 +17,39 @@ const {
   firebaseConfig,
 } = window.firebaseSDK;
 
-// --- RELLENA ESTOS DATOS con el usuario que creaste en Firebase ---
-// --- ELIMINADOS USER_EMAIL y USER_PASSWORD ---
-// -------------------------------------------------------------
+// --- ¡¡ESTA ES LA CLAVE!! ---
+// Todas las escrituras irán a este ID de documento.
+const PROGRESS_DOC_ID = "valentino";
+// ------------------------------
 
 let app;
 let auth;
 let db;
-let currentUserId = null;
+let currentUserId = null; // Lo guardamos solo para saber que estamos autenticados
 let currentMaxStep = 0;
 
 /**
  * Inicializa Firebase e inicia sesión anónimamente.
  */
 const init = () => {
-  console.log("[Firebase] Inicializando...");
+  console.log("[Firebase] Inicializando (Arquitectura BD Única)...");
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
 
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // --- CAMBIO EN EL LOG ---
+      if (user && user.isAnonymous) {
+        // Usuario anónimo ya existe
         console.log(
-          `[Firebase] Usuario ya autenticado. UID: ${user.uid} (Anónimo: ${user.isAnonymous})`
+          `[Firebase] Usuario anónimo ya autenticado. UID: ${user.uid}`
         );
         currentUserId = user.uid;
         resolve();
       } else {
-        // --- ¡¡LÓGICA CAMBIADA!! ---
+        // No hay usuario, o es un usuario incorrecto (ej. admin)
         console.log(
-          `[Firebase] No hay usuario. Intentando inicio de sesión anónimo...`
+          `[Firebase] No hay usuario anónimo. Intentando nuevo inicio de sesión...`
         );
         signInAnonymously(auth)
           .then((userCredential) => {
@@ -63,7 +64,11 @@ const init = () => {
               "[Firebase] ERROR en inicio de sesión anónimo:",
               error
             );
-            alert("Error de conexión con Firebase.");
+            // Este es el error (auth/admin-restricted-operation)
+            // Si el Paso Cero no se hizo, fallará aquí.
+            alert(
+              "Error de conexión con Firebase. Verifica la configuración de Identity Platform."
+            );
             reject(error);
           });
       }
@@ -81,14 +86,15 @@ const loadProgress = async () => {
     );
     return 0;
   }
-  const docRef = doc(db, "progress", currentUserId);
+  // --- CAMBIO ---
+  // Lee siempre desde el documento hardcodeado
+  const docRef = doc(db, "progress", PROGRESS_DOC_ID);
   try {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const data = docSnap.data();
       console.log("[Firebase] Progreso cargado:", data);
       currentMaxStep = data.maxStep || 0;
-      // Devolver el progreso completo para que app.js lo use
       return data;
     } else {
       console.log(
@@ -110,22 +116,28 @@ const saveProgress = async (newStep, sectionId) => {
     console.error("[Firebase] No se puede guardar: Usuario no autenticado.");
     return;
   }
+
+  // --- CAMBIO ---
+  // Comparamos con el maxStep local para no escribir en la BD innecesariamente
   if (newStep <= currentMaxStep) {
     return;
   }
+
   console.log(
     `[Firebase] Guardando nuevo progreso: Paso ${newStep} (Sección: ${sectionId})`
   );
-  currentMaxStep = newStep;
+  currentMaxStep = newStep; // Actualizamos el maxStep local
 
-  // Guardamos maxStep Y lastSection (para la sección máxima)
-  const docRef = doc(db, "progress", currentUserId);
+  // --- CAMBIO ---
+  // Guarda siempre en el documento hardcodeado
+  const docRef = doc(db, "progress", PROGRESS_DOC_ID);
   const dataToSave = {
     maxStep: newStep,
     lastSection: sectionId, // Esta es la "Sección Máxima"
     lastUpdated: new Date().toISOString(),
   };
   try {
+    // Usamos merge: true para crear el documento si no existe, o actualizarlo si ya existe
     await setDoc(docRef, dataToSave, { merge: true });
     console.log("[Firebase] ¡Progreso guardado!");
   } catch (error) {
@@ -134,28 +146,26 @@ const saveProgress = async (newStep, sectionId) => {
 };
 
 /**
- * --- NUEVA FUNCIÓN ---
  * Actualiza la ubicación "actual" del usuario en CADA navegación.
- * @param {string} sectionId - La sección que el usuario está viendo AHORA.
  */
 const updateCurrentLocation = async (sectionId) => {
   if (!currentUserId) {
-    return; // No hacer nada si el usuario aún no está logueado
+    return;
   }
 
   console.log(`[Firebase] Actualizando ubicación actual a: ${sectionId}`);
-  const docRef = doc(db, "progress", currentUserId);
+  // --- CAMBIO ---
+  // Actualiza siempre el documento hardcodeado
+  const docRef = doc(db, "progress", PROGRESS_DOC_ID);
 
   try {
-    // Usamos setDoc con merge:true para crear/actualizar solo estos campos
-    // sin sobrescribir maxStep.
     await setDoc(
       docRef,
       {
-        currentSection: sectionId, // Nuevo campo para "Sección Actual"
+        currentSection: sectionId,
         lastUpdated: new Date().toISOString(),
       },
-      { merge: true }
+      { merge: true } // merge: true es VITAL aquí para no borrar maxStep
     );
   } catch (error) {
     console.error("[Firebase] Error al actualizar la ubicación actual:", error);
@@ -182,10 +192,12 @@ const saveRiddleAttempt = async (riddleId, attempt, isCorrect) => {
       isCorrect: isCorrect,
       timestamp: new Date().toISOString(),
     };
+    // --- CAMBIO ---
+    // Guarda en la subcolección del documento hardcodeado
     const attemptsCollectionRef = collection(
       db,
       "progress",
-      currentUserId,
+      PROGRESS_DOC_ID,
       "attempts"
     );
     await addDoc(attemptsCollectionRef, attemptData);
@@ -195,11 +207,11 @@ const saveRiddleAttempt = async (riddleId, attempt, isCorrect) => {
   }
 };
 
-// Exportar las funciones (incluyendo la nueva)
+// Exportar las funciones
 export default {
   init,
   loadProgress,
   saveProgress,
-  updateCurrentLocation, // <-- NUEVO
+  updateCurrentLocation,
   saveRiddleAttempt,
 };
