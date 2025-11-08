@@ -11,7 +11,8 @@ const {
   getAuth,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithRedirect, // <-- Ahora SÍ será importado
+  signInWithPopup, // <-- ¡Ahora usaremos esta!
+  signInWithRedirect,
   signOut,
   getFirestore,
   collection,
@@ -69,22 +70,37 @@ const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 
 let activeListeners = {};
 
-// --- LÓGICA ANTI-BUCLE (VITAL) ---
+// =================================================================
+// --- ¡¡INICIO DE LA CORRECCIÓN: USAR POPUP!! ---
+// =================================================================
 const signIn = async () => {
   try {
-    // Primero, cerrar sesión de cualquier usuario activo (ej. Anónimo)
+    // 1. Sigue siendo buena idea desconectar al usuario anónimo primero
     if (auth.currentUser) {
       console.log(
         "Admin: (signIn) Cerrando sesión del usuario actual antes de loguear..."
       );
       await signOut(auth);
     }
-    // ESTA LÍNEA AHORA FUNCIONARÁ
-    await signInWithRedirect(auth, provider);
+
+    // 2. --- CAMBIO DE ESTRATEGIA: signInWithPopup ---
+    console.log("Admin: Abriendo popup de Google...");
+    const userCredential = await signInWithPopup(auth, provider);
+    console.log("Admin: Popup exitoso. Usuario:", userCredential.user.email);
+    // El listener 'onAuthStateChanged' (que ya está corregido)
+    // detectará a este nuevo usuario y mostrará el panel.
   } catch (error) {
-    console.error("Admin: Error al iniciar redirección de Google:", error);
+    console.error("Admin: Error durante el inicio de sesión con popup:", error);
+    if (error.code === "auth/popup-closed-by-user") {
+      console.warn("Admin: Popup cerrado por el usuario.");
+    } else {
+      alert("Error al iniciar sesión: " + error.message);
+    }
   }
 };
+// =================================================================
+// --- ¡¡FIN DE LA CORRECCIÓN: USAR POPUP!! ---
+// =================================================================
 
 // createStepElement (sin cambios)
 const createStepElement = (sectionId, currentSection, visitedPath) => {
@@ -359,7 +375,7 @@ const initAdmin = () => {
   forcePausaUnlockBtn.addEventListener("click", handleForcePausaUnlock);
 
   // =================================================================
-  // --- ¡¡INICIO DE LA CORRECCIÓN PARA EL BUCLE DE LOGIN!! ---
+  // --- ¡¡LÓGICA CORREGIDA PARA EL BUCLE DE LOGIN!! ---
   // =================================================================
   onAuthStateChanged(auth, (user) => {
     // Tras la redirección, esperamos a que el usuario sea el de Google.

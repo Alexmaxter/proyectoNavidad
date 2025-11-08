@@ -148,17 +148,14 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
       
-      // --- ¡¡AQUÍ ESTABA EL ERROR!! ---
-      // Faltaba importar signInWithRedirect
       import {
         getAuth,
         onAuthStateChanged,
         GoogleAuthProvider,
         signInWithPopup,
-        signInWithRedirect, // <-- AÑADIDO
+        signInWithRedirect, 
         signOut,
       } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-      // ---------------------------------
 
       import {
         getFirestore,
@@ -177,8 +174,8 @@
         getAuth,
         onAuthStateChanged,
         GoogleAuthProvider,
-        signInWithPopup,
-        signInWithRedirect, // <-- AÑADIDO
+        signInWithPopup, // <--- Exportamos la función de Popup
+        signInWithRedirect,
         signOut,
         getFirestore,
         doc,
@@ -190,7 +187,6 @@
         deleteDoc,
         setDoc,
         
-        // --- TU NUEVO firebaseConfig ---
         firebaseConfig: {
           apiKey: "AIzaSyBAv3HFQifOmS78tRYvo8yM4Um_PX0d_sk",
           authDomain: "regalonavidad-9304b.firebaseapp.com",
@@ -199,10 +195,13 @@
           messagingSenderId: "920626025677",
           appId: "1:920626025677:web:ee800a9860410818fc0584"
         }
-        // -------------------------------
       };
+
+      // --- ¡¡CORRECCIÓN DE ORDEN DE CARGA!! ---
+      // Importamos admin.js aquí para asegurar que
+      // window.firebaseAdminSDK exista ANTES de que se ejecute.
+      import "./js/admin.js";
     </script>
 
-    <script src="js/admin.js" type="module"></script>
-  </body>
+    </body>
 </html>
