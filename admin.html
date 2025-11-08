@@ -169,12 +169,13 @@
         setDoc,
       } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
+      // 1. Se define el objeto SDK
       window.firebaseAdminSDK = {
         initializeApp,
         getAuth,
         onAuthStateChanged,
         GoogleAuthProvider,
-        signInWithPopup, // <--- Exportamos la función de Popup
+        signInWithPopup, // <-- Exportamos la función de Popup
         signInWithRedirect,
         signOut,
         getFirestore,
@@ -197,11 +198,9 @@
         }
       };
 
-      // --- ¡¡CORRECCIÓN DE ORDEN DE CARGA!! ---
-      // Importamos admin.js aquí para asegurar que
-      // window.firebaseAdminSDK exista ANTES de que se ejecute.
+      // 2. Se importa admin.js DESPUÉS de que el objeto esté definido
       import "./js/admin.js";
-    </script>
 
+    </script>
     </body>
 </html>

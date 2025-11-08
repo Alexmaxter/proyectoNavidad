@@ -6,13 +6,14 @@
 // Importamos el config de la app principal para saber la estructura
 import config from "./config.js";
 
+// Gracias a la corrección en admin.html, esto ahora se ejecuta
+// DESPUÉS de que window.firebaseAdminSDK está definido.
 const {
   initializeApp,
   getAuth,
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup, // <-- ¡Ahora usaremos esta!
-  signInWithRedirect,
   signOut,
   getFirestore,
   collection,
@@ -52,8 +53,6 @@ let app;
 let auth;
 let db;
 let provider;
-// --- CAMBIO ---
-// currentUserId ahora es fijo, ya no lo buscamos.
 let currentUserId = PROGRESS_DOC_ID;
 
 // Referencias a los elementos del DOM (sin cambios)
@@ -71,7 +70,7 @@ const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 let activeListeners = {};
 
 // =================================================================
-// --- ¡¡INICIO DE LA CORRECCIÓN: USAR POPUP!! ---
+// --- ¡¡CORRECCIÓN: USAR POPUP!! ---
 // =================================================================
 const signIn = async () => {
   try {
@@ -207,12 +206,9 @@ const renderDetails = (userData) => {
 };
 
 /**
- * --- ¡¡FUNCIÓN MODIFICADA!! ---
- * Ahora escucha UN SOLO documento.
+ * Escucha el documento de progreso único
  */
 const listenToProgress = () => {
-  // --- CAMBIO ---
-  // Ya no consultamos la colección, apuntamos directo al doc
   const progressDocRef = doc(db, "progress", PROGRESS_DOC_ID);
 
   const unsubscribe = onSnapshot(progressDocRef, (docSnap) => {
@@ -238,24 +234,20 @@ const listenToProgress = () => {
     );
 
     renderDetails(userData);
-    listenToAttempts(PROGRESS_DOC_ID); // <-- Usamos el ID hardcodeado
+    listenToAttempts(PROGRESS_DOC_ID);
   });
   activeListeners["progress"] = unsubscribe;
 };
 
 /**
- * --- ¡¡FUNCIÓN MODIFICADA!! ---
- * El ID que recibe ahora es siempre el hardcodeado.
+ * Escucha la subcolección de intentos
  */
 const listenToAttempts = (userId) => {
   if (activeListeners[userId]) {
-    // Si ya hay un listener para "valentino", no crear otro
     return;
   }
   if (!attemptsListEl) return;
 
-  // --- CAMBIO ---
-  // La ruta a la subcolección usa el ID hardcodeado
   const attemptsQuery = query(
     collection(db, "progress", userId, "attempts"),
     orderBy("timestamp", "desc")
@@ -289,7 +281,7 @@ const listenToAttempts = (userId) => {
       attemptsListEl.appendChild(item);
     });
   });
-  activeListeners[userId] = unsubscribe; // Guardar listener usando el ID
+  activeListeners[userId] = unsubscribe;
 };
 
 // stopAllListeners (sin cambios)
@@ -300,11 +292,10 @@ const stopAllListeners = () => {
 };
 
 /**
- * --- ¡¡FUNCIÓN MODIFICADA!! ---
- * Ahora borra el documento hardcodeado.
+ * Borra el documento de progreso
  */
 const handleDeleteProgress = async () => {
-  const uid = PROGRESS_DOC_ID; // <-- Usar el ID hardcodeado
+  const uid = PROGRESS_DOC_ID;
   const confirmation = prompt(
     `¡ADVERTENCIA!\n\nEstás a punto de borrar TODO el progreso del documento '${uid}'...\n\nEscribe "borrar" para confirmar.`
   );
@@ -338,11 +329,10 @@ const handleDeleteProgress = async () => {
 };
 
 /**
- * --- ¡¡FUNCIÓN MODIFICADA!! ---
- * Ahora desbloquea el documento hardcodeado.
+ * Desbloquea la sección 'pausa' remotamente
  */
 const handleForcePausaUnlock = async () => {
-  const uid = PROGRESS_DOC_ID; // <-- Usar el ID hardcodeado
+  const uid = PROGRESS_DOC_ID;
   console.log(
     `Admin: Forzando desbloqueo de 'pausa' para el documento ${uid}...`
   );
@@ -378,7 +368,7 @@ const initAdmin = () => {
   // --- ¡¡LÓGICA CORREGIDA PARA EL BUCLE DE LOGIN!! ---
   // =================================================================
   onAuthStateChanged(auth, (user) => {
-    // Tras la redirección, esperamos a que el usuario sea el de Google.
+    // Esta lógica ahora es simple y funciona con Popup o Redirect
     if (user && user.providerData.some((p) => p.providerId === "google.com")) {
       // Caso 1: El usuario es el Admin de Google. ¡Éxito!
       console.log("Admin: Autenticado como", user.email);
@@ -388,9 +378,8 @@ const initAdmin = () => {
       listenToProgress();
     } else {
       // Caso 2: El usuario NO es el admin de Google.
-      // (Puede ser 'null' o 'Anónimo' mientras se procesa el redirect).
-      // En cualquier caso, NO cerramos sesión (para no cancelar el redirect)
-      // y simplemente mostramos la pantalla de login.
+      // (Puede ser 'null' o 'Anónimo').
+      // Mostramos la pantalla de login.
       console.log("Admin: No autenticado como Google. Mostrando login.");
       loginView.classList.remove("hidden-content");
       panelView.classList.add("hidden-content");
@@ -398,7 +387,7 @@ const initAdmin = () => {
     }
   });
   // =================================================================
-  // --- ¡¡FIN DE LA CORRECCIÓN PARA EL BUCLE DE LOGIN!! ---
+  // --- ¡¡FIN DE LA CORRECCIÓN!! ---
   // =================================================================
 };
 
