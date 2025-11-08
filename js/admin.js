@@ -358,7 +358,8 @@ const initAdmin = () => {
   deleteProgressBtn.addEventListener("click", handleDeleteProgress);
   forcePausaUnlockBtn.addEventListener("click", handleForcePausaUnlock);
 
-  // --- ¡¡LÓGICA VITAL ANTI-BUCLE!! (Sin cambios) ---
+  // --- ¡¡LÓGICA VITAL ANTI-BUCLE!! ---
+  // Esta es la versión corregida que SÍ maneja al usuario anónimo
   onAuthStateChanged(auth, (user) => {
     if (user && user.providerData.some((p) => p.providerId === "google.com")) {
       // Caso 1: El usuario es el Admin de Google. ¡Éxito!
