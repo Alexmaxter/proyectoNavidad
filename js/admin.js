@@ -69,22 +69,27 @@ const forcePausaUnlockBtn = document.getElementById("force-pausa-unlock-btn");
 
 let activeListeners = {};
 
-// --- LÓGICA ANTI-BUCLE (VITAL) ---
-const signIn = async () => {
-  try {
-    // Primero, cerrar sesión de cualquier usuario activo (ej. Anónimo)
-    if (auth.currentUser) {
-      console.log(
-        "Admin: (signIn) Cerrando sesión del usuario actual antes de loguear..."
-      );
-      await signOut(auth);
-    }
-    // ESTA LÍNEA AHORA FUNCIONARÁ
-    await signInWithRedirect(auth, provider);
-  } catch (error) {
-    console.error("Admin: Error al iniciar redirección de Google:", error);
+// --- ¡¡LÓGICA VITAL ANTI-BUCLE!! ---
+onAuthStateChanged(auth, (user) => {
+  // Tras la redirección, esperamos a que el usuario sea el de Google.
+  if (user && user.providerData.some((p) => p.providerId === "google.com")) {
+    // Caso 1: El usuario es el Admin de Google. ¡Éxito!
+    console.log("Admin: Autenticado como", user.email);
+    userEmailEl.textContent = user.email;
+    loginView.classList.add("hidden-content");
+    panelView.classList.remove("hidden-content");
+    listenToProgress();
+  } else {
+    // Caso 2: El usuario NO es el admin de Google.
+    // (Puede ser 'null' o 'Anónimo' mientras se procesa el redirect).
+    // En cualquier caso, NO cerramos sesión (para no cancelar el redirect)
+    // y simplemente mostramos la pantalla de login.
+    console.log("Admin: No autenticado como Google. Mostrando login.");
+    loginView.classList.remove("hidden-content");
+    panelView.classList.add("hidden-content");
+    stopAllListeners();
   }
-};
+});
 
 // createStepElement (sin cambios)
 const createStepElement = (sectionId, currentSection, visitedPath) => {
