@@ -9,6 +9,7 @@ import FirebaseManager from "./firebase-manager.js";
 
 /**
  * app.js: El Orquestador
+ * (Versión con Mega Precarga: 3 pasos por camino)
  */
 const App = {
   _isAudioStarted: false,
@@ -22,7 +23,7 @@ const App = {
   _pausaFadeTimer: null,
   _isFirebaseConnected: false,
   _videoElementForPausa: null,
-  _pausaCheckInterval: null, // --- NUEVO: Timer para chequear la pausa
+  _pausaCheckInterval: null,
 
   async init() {
     console.log("[App.js] 1. Proyecto Navidad: Iniciando...");
@@ -84,41 +85,62 @@ const App = {
     this._preloadCriticalAssets();
   },
 
-  /**
-   * --- FUNCIÓN MODIFICADA ---
-   * Precarga assets y pasa el callback de progreso a Render.js
-   */
+  // --- MEGA PRECARGA: 3 pasos de profundidad ---
   async _preloadCriticalAssets() {
-    console.log("[App.js] 3. Iniciando precarga de assets críticos...");
+    console.log("[App.js] 3. Iniciando MEGA PRECARGA de assets críticos...");
+
+    // Referencias a las secciones
     const intro = config.sections.intro;
     const decision = config.sections.decision;
 
+    // Camino Paciente (Pasos 1, 2 y 3)
+    const pac1 = config.sections.acertijo1;
+    const pac2 = config.sections.explicacion1;
+    const pac3 = config.sections.acertijo2; // <-- NUEVO: Agregamos el 3er paso
+
+    // Camino Rápido (Pasos 1, 2 y Final)
+    const rap1 = config.sections.confirmacion1;
+    const rap2 = config.sections.confirmacion2;
+    const rap3 = config.sections.final2; // <-- NUEVO: Agregamos el final alternativo
+
     const assetsToLoad = [
+      // 1. Base
       { type: "image", src: intro.background },
       { type: "audio", src: intro.audio },
       { type: "image", src: decision.background },
       { type: "audio", src: decision.audio },
       { type: "audio", src: config.global.audioBGM },
+
+      // 2. Camino Paciente (3 niveles de profundidad)
+      { type: "image", src: pac1.background },
+      { type: "audio", src: pac1.audio },
+      { type: "image", src: pac2.background },
+      { type: "audio", src: pac2.audio },
+      { type: "image", src: pac3.background }, // Pre-cargando Acertijo 2
+      { type: "audio", src: pac3.audio },
+
+      // 3. Camino Rápido (3 niveles de profundidad - Todo el camino rápido)
+      { type: "image", src: rap1.background },
+      { type: "audio", src: rap1.audio },
+      { type: "image", src: rap2.background },
+      { type: "audio", src: rap2.audio },
+      { type: "image", src: rap3.background }, // Pre-cargando Final 2
+      { type: "audio", src: rap3.audio },
     ];
 
-    // --- NUEVA LÓGICA DE PROGRESO ---
-    // 1. Definir el callback que actualiza la UI
     const onProgress = (percentage) => {
-      // Esta función se llamará desde el preloader
       Render.updateLoadingProgress(percentage);
     };
 
-    // 2. Pasar el callback al preloader
+    // Bloquear hasta que todo esto cargue
     await Preloader.loadAssets(assetsToLoad, onProgress);
-    // --- FIN DE LA NUEVA LÓGICA ---
 
-    console.log("[App.js] 6. Assets críticos CARGADOS.");
+    console.log("[App.js] 6. Assets críticos (Mega Precarga) CARGADOS.");
     this._isCriticalLoadingDone = true;
     if (this._currentSection === "intro") {
       console.log(
         "[App.js] 7. La intro ya estaba visible. Ocultando barra de carga."
       );
-      // Ocultar la barra (is-loading) y mostrar el botón de Play
       Render.setIntroLoading(false);
     }
   },
@@ -153,7 +175,6 @@ const App = {
       console.log(
         `[App.js] Precargando ${assetsToLoad.length} assets de '${sectionId}' en 2do plano...`
       );
-      // No necesitamos reportar progreso para las cargas en 2do plano
       Preloader.loadAssets(assetsToLoad, null);
     }
   },
@@ -180,17 +201,12 @@ const App = {
     });
   },
 
-  /**
-   * --- FUNCIÓN MODIFICADA ---
-   * Se asegura de que setIntroLoading se llame si la precarga ya terminó.
-   */
   async showSection(sectionId) {
     console.log(`[App.js] Intento de navegar a: ${sectionId}`);
     const sectionData = config.sections[sectionId];
     if (!sectionData) return;
     const requestedStep = sectionData.step;
 
-    // --- CAMBIO: Ya no se necesita el admin_unlock en la URL aquí ---
     if (requestedStep < this._userMaxStep) {
       if (this._isExceptionNav) {
         console.log(
@@ -213,7 +229,6 @@ const App = {
       if (this._currentSection === "final") {
         this._videoElementForPausa = null;
       }
-      // --- CAMBIO: Detener el timer de 'pausa' si salimos de ella ---
       if (this._currentSection === "pausa") {
         if (this._pausaCheckInterval) {
           console.log("[App.js] Saliendo de Pausa. Deteniendo timer.");
@@ -264,18 +279,13 @@ const App = {
 
     if (sectionData.type === "intro") {
       Render.section(sectionId);
-      // Si la precarga ya terminó, oculta la barra de carga
       if (this._isCriticalLoadingDone) {
         Render.setIntroLoading(false);
       }
-      // Si la precarga NO ha terminado, app.js llamará a setIntroLoading(false)
-      // cuando _preloadCriticalAssets termine.
-
       await this._fadeIn();
       return;
     }
 
-    // Lógica de BGM
     let targetBGMType = "none";
     if (sectionId === "countdown") {
       targetBGMType = "final";
@@ -295,9 +305,7 @@ const App = {
 
     Render.section(sectionId);
 
-    // --- NUEVO: Lógica de Pausa y Final ---
     if (sectionId === "final") {
-      // Capturar el elemento de video renderizado
       this._videoElementForPausa = document.querySelector("#app-root video");
       console.log(
         "[App.js] Elemento de video capturado.",
@@ -305,17 +313,13 @@ const App = {
       );
     }
     if (sectionId === "pausa") {
-      // Iniciar la lógica de desbloqueo de tiempo
-      // --- CAMBIO: Se ejecuta 1 vez y luego en intervalo ---
-      this._checkPausaUnlock(); // Chequear inmediatamente
+      this._checkPausaUnlock();
       this._pausaCheckInterval = setInterval(
         () => this._checkPausaUnlock(),
         30000
-      ); // Y luego cada 30 seg
+      );
     }
-    // --- FIN NUEVO ---
 
-    // Lógica de Narración
     const skip = this._skipNarrationFor === sectionId;
     this._skipNarrationFor = null;
     if (sectionData.audio && !skip) {
@@ -329,14 +333,12 @@ const App = {
     this._preloadNextSections(sectionId);
   },
 
-  // --- NUEVA FUNCIÓN HELPER ---
   _showPausaButton() {
     const acciones = document.getElementById("pausa-acciones");
     if (acciones && acciones.classList.contains("hidden-content")) {
       console.log("[App.js] ¡Desbloqueando botón 'Siguiente' de Pausa!");
       acciones.classList.remove("hidden-content");
 
-      // --- CAMBIO: Una vez que se muestra, detenemos el timer ---
       if (this._pausaCheckInterval) {
         console.log("[App.js] Botón de Pausa mostrado. Deteniendo timer.");
         clearInterval(this._pausaCheckInterval);
@@ -345,35 +347,29 @@ const App = {
     }
   },
 
-  // --- FUNCIÓN MODIFICADA ---
   async _checkPausaUnlock() {
     console.log("[App.js] Verificando desbloqueo de Pausa...");
-    // --- USA LA FECHA REAL ---
-    const unlockTime = new Date("2025-12-25T00:00:00-03:00").getTime(); // AR
+    const unlockTime = new Date(config.global.unlockDate).getTime();
 
-    // 1. Check Admin Force-Unlock (desde Firebase)
     if (this._isFirebaseConnected) {
-      // Volvemos a cargar el progreso para ver si el admin activó el flag
       const progressData = await FirebaseManager.loadProgress();
       if (progressData.pausaUnlocked === true) {
         console.log("[App.js] Admin forzó desbloqueo (Flag de Firebase).");
         this._showPausaButton();
-        return; // Salimos, ya está desbloqueado
+        return;
       }
     }
 
-    // 2. Check Server Time (usando una API pública)
     try {
-      // Usamos una API de tiempo para evitar que el usuario cambie la hora local
       const response = await fetch("https://worldtimeapi.org/api/ip");
       if (!response.ok) throw new Error("Fallo en la API de tiempo");
       const data = await response.json();
       const serverTime = new Date(data.utc_datetime).getTime();
 
       console.log(
-        `[App.js] Hora Servidor: ${new Date(
-          serverTime
-        )}, Hora Desbloqueo: ${new Date(unlockTime)}`
+        `[App.js] Hora Servidor: ${new Date(serverTime)}, Objetivo: ${new Date(
+          unlockTime
+        )}`
       );
 
       if (serverTime >= unlockTime) {
@@ -384,9 +380,15 @@ const App = {
       }
     } catch (e) {
       console.error(
-        "Error al fetchear la hora del servidor. El timer reintentará.",
+        "Error al fetchear hora servidor. Intentando fallback local...",
         e
       );
+
+      const localTime = Date.now();
+      if (localTime >= unlockTime) {
+        console.log("[App.js] (Fallback) Tiempo cumplido según hora local.");
+        this._showPausaButton();
+      }
     }
   },
 
@@ -425,28 +427,19 @@ const App = {
     Router.navigate(sectionId);
   },
 
-  // --- NUEVA FUNCIÓN ---
   _handlePausaNext(sectionId) {
     console.log(
       "[App.js] Botón 'Siguiente' de Pausa presionado. Intentando desbloquear video..."
     );
 
-    // 1. Asegurarse de que el audio principal esté iniciado (BGM)
     if (!this._isAudioStarted) {
       this._isAudioStarted = true;
-      AudioManager.playBGM(); // Inicia la BGM principal
+      AudioManager.playBGM();
       this._activeBGMType = "main";
     }
 
-    // 2. Navegar a la sección 'final'
     Router.navigate(sectionId);
 
-    // 3. El router llamará a showSection('final')
-    //    showSection('final') renderizará el video y lo guardará en this._videoElementForPausa
-    //    El video tiene autoplay=true, controls=false.
-
-    // 4. Usar un pequeño timeout para asegurar que el DOM esté actualizado
-    //    y *luego* forzar play y fullscreen.
     setTimeout(() => {
       if (this._videoElementForPausa) {
         console.log("[App.js] Intentando play() y fullscreen() en el video...");
@@ -455,8 +448,6 @@ const App = {
             "play() automático falló, el navegador mostrará controles:",
             err.message
           );
-          // SI el play() falla, el navegador *mostrará* los controles.
-          // Es la única forma de que el usuario vea el video.
           this._videoElementForPausa.controls = true;
         });
         Render.forceVideoFullscreen();
@@ -465,7 +456,7 @@ const App = {
           "[App.js] _handlePausaNext: No se encontró el elemento de video para forzar play."
         );
       }
-    }, 100); // 100ms para que el DOM se actualice post-navegación
+    }, 100);
   },
 
   _handleNarrationEnd() {
@@ -475,8 +466,6 @@ const App = {
       console.log("[App.js] Mostrando botón 'Comenzar'.");
       Render.showActions();
     } else if (this._currentSection === "pausa") {
-      // --- CAMBIO: Ya no hacemos el fade de 10 seg ---
-      // La lógica ahora depende del botón que aparece con la fecha.
       console.log(
         "[App.js] Narración de Pausa terminada. Esperando desbloqueo de fecha."
       );
@@ -484,7 +473,6 @@ const App = {
   },
 };
 
-// --- PUNTO DE ENTRADA ---
 document.addEventListener("DOMContentLoaded", () => {
   App.init();
 });

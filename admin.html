@@ -34,25 +34,25 @@
 
         <div class="admin-main-container">
           <div class="admin-column" id="path-container">
-            <h2 class.is-loading"admin-column-title">Mapa de Progreso</h2>
+            <h2 class="admin-column-title">Mapa de Progreso</h2>
             <div id="visual-path"></div>
           </div>
 
           <div class="admin-column" id="details-container">
-            <h2 class.is-loading"admin-column-title">Estado Actual</h2>
-            <div class.is-loading"admin-user-card" id="details-cards"></div>
+            <h2 class="admin-column-title">Estado Actual</h2>
+            <div class="admin-user-card" id="details-cards"></div>
 
             <h2 class="admin-column-title" style="margin-top: 2rem">
               Registro de Intentos
             </h2>
-            <div class.is-loading"admin-user-card" style="margin-top: 0">
-              <ul class.is-loading"admin-attempts-list" id="attempts-list">
+            <div class="admin-user-card" style="margin-top: 0">
+              <ul class="admin-attempts-list" id="attempts-list">
                 <li>Cargando intentos...</li>
               </ul>
             </div>
 
-            <div class.is-loading"admin-danger-zone">
-              <h2 class.is-loading"admin-column-title">Zona Peligrosa</h2>
+            <div class="admin-danger-zone">
+              <h2 class="admin-column-title">Zona Peligrosa</h2>
               <button
                 id="delete-progress-btn"
                 class="admin-button-delete"
@@ -70,7 +70,7 @@
                 padding-top: 1rem;
               "
             >
-              <h2 class.is-loading"admin-column-title">
+              <h2 class="admin-column-title">
                 Zona de Pruebas (Control Remoto)
               </h2>
               <p
@@ -110,7 +110,7 @@
     <script type="module">
       // ESTE SCRIPT SE EJECUTA PRIMERO
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-      
+
       import {
         getFirestore,
         doc,
@@ -135,21 +135,18 @@
         getDocs,
         deleteDoc,
         setDoc,
-        
+
         firebaseConfig: {
           apiKey: "AIzaSyBAv3HFQifOmS78tRYvo8yM4Um_PX0d_sk",
           authDomain: "regalonavidad-9304b.firebaseapp.com",
           projectId: "regalonavidad-9304b",
           storageBucket: "regalonavidad-9304b.firebasestorage.app",
           messagingSenderId: "920626025677",
-          appId: "1:920626025677:web:ee800a9860410818fc0584"
-        }
+          appId: "1:920626025677:web:ee800a9860410818fc0584",
+        },
       };
-      
-      // La línea 'import "./js/admin.js";' se elimina de aquí.
     </script>
-    
+
     <script src="js/admin.js" type="module" defer></script>
-    
-    </body>
+  </body>
 </html>

@@ -1,13 +1,21 @@
 /**
  * config.js: Configuración Central del Proyecto Navidad.
- * (Actualizado con la sección #pausa y contenido final)
+ * (Fechas separadas correctamente: Desbloqueo 2025, Contador 2027)
  */
 const config = {
   // Configuración global
   global: {
+    // Si no se escucha la música, cambia esto a "./assets/audio/background_video.mp3"
     audioBGM: "./assets/audio/background.mp3",
     audioBGMFinal: "./assets/audio/background-final.mp3",
-    countdownDate: "2027-12-15T00:00:00", // Formato ISO
+
+    // FECHA 1: El objetivo del CONTADOR VISUAL (al final de la experiencia)
+    // Se apunta al 15 de Diciembre de 2027
+    countdownDate: "2027-12-15T00:00:00",
+
+    // FECHA 2: Cuándo se DESBLOQUEA el botón "Siguiente" en la Pausa
+    // Se apunta a la Navidad de este año (2025)
+    unlockDate: "2025-12-25T00:00:00",
   },
 
   // Configuración de audio
@@ -115,27 +123,26 @@ const config = {
       background: "./assets/img/explicacion3-bg.png",
       audio: "./assets/audio/explicacion3.mp3",
       buttonText: "Siguiente",
-      onNavigate: "pausa", // <-- Dirige a la pausa
+      onNavigate: "pausa",
     },
 
-    // --- SECCIÓN DE PAUSA (ACTUALIZADA) ---
+    // --- SECCIÓN DE PAUSA ---
     pausa: {
       type: "explanation",
-      step: 8, // <-- Paso 8
-      title: null, // <-- Sin título
+      step: 8,
+      title: null,
       narrative:
-        "Todavía no es el momento.<br>Pero lo reconocerás cuando llegue.", // <-- Tu texto
+        "Todavía no es el momento.<br>Pero lo reconocerás cuando llegue.",
       background: "./assets/img/explicacion3-bg.png",
-      audio: "./assets/audio/pausa.mp3", // <-- Tu audio
-      // --- CAMBIOS AQUÍ ---
-      buttonText: "Siguiente", // <-- Texto del botón
-      onNavigate: "final", // <-- Destino del botón
+      audio: "./assets/audio/pausa.mp3",
+      buttonText: "Siguiente",
+      onNavigate: "final",
     },
 
-    // --- Finales (Steps Re-numerados) ---
+    // --- Finales ---
     final: {
       type: "video",
-      step: 9, // <-- Paso 9 (Para el QR)
+      step: 9,
       background: null,
       audio: null,
       video: "./assets/video/Final.mp4",
@@ -143,7 +150,7 @@ const config = {
     },
     countdown: {
       type: "countdown",
-      step: 10, // <-- Paso 10
+      step: 10,
       title: null,
       background: null,
       audio: null,
@@ -193,8 +200,7 @@ const config = {
     },
   },
 
-  // --- Mapa de Pasos (Actualizado) ---
-  // Define a qué sección saltar si se recarga la página
+  // --- Mapa de Pasos ---
   stepToSectionMap: {
     0: "intro",
     1: "decision",
@@ -204,7 +210,7 @@ const config = {
     5: "explicacion2",
     6: "acertijo3",
     7: "explicacion3",
-    8: "pausa", // <-- El "no retorno" ahora apunta aquí
+    8: "pausa",
     9: "final",
     10: "countdown",
   },
